@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Estado de Actividades</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f6f8;
+      margin: 40px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    table {
+      width: 80%;
+      margin: auto;
+      border-collapse: collapse;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background-color: #007acc;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    tr:hover {
+      background-color: #e0f7fa;
+    }
+  </style>
+</head>
+<body>
+  <h1>Estado de Actividades</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Status Main</th>
+        <th>Transcurrido Total Calculado</th>
+        <th>Transcurrido Total Manual</th>
+        <th>Diferencia</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>READY</td><td>320.455867577222</td><td>320.455867577222</td><td>0</td></tr>
+      <tr><td>2</td><td>DELAY</td><td>9.12270991638889</td><td>9.12270991638889</td><td>0</td></tr>
+      <tr><td>3</td><td>STANDBY</td><td>192.328769556945</td><td>192.328769556945</td><td>0</td></tr>
+      <tr><td>4</td><td>MAINT</td><td>192.840880780278</td><td>192.840880780278</td><td>0</td></tr>
+      <tr><td>5</td><td>OUTOFPLAN</td><td>24.5300352675</td><td>24.5300352675</td><td>0</td></tr>
+    </tbody>
+  </table>
+</body>
+</html>
