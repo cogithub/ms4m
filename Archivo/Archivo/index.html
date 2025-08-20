@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Estado y Horas Transcurridas (al 2025-06-30)</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --card: #0f162e;
+      --muted: #8ea0b7;
+      --text: #eaf1ff;
+      --accent: #6aa0ff;
+      --accent-2: #55d6be;
+      --accent-3: #f6c177;
+      --accent-4: #ef8ba5;
+      --accent-5: #a29bfe;
+      --radius: 16px;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    * { box-sizing: border-box }
+    html, body { height: 100% }
+    body {
+      margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 800px at 10% -10%, rgba(86,120,255,.15), transparent 60%),
+                  radial-gradient(1200px 800px at 110% 10%, rgba(85,214,190,.12), transparent 60%), var(--bg);
+      color: var(--text);
+    }
+    .container { max-width: 1100px; margin: 40px auto; padding: 0 20px }
+    .header {
+      display: grid; gap: 10px;
+    }
+    h1 { margin: 0; font-size: clamp(22px, 4vw, 34px); letter-spacing: .3px }
+    .sub { color: var(--muted); font-size: 14px }
+
+    .grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 18px; margin-top: 18px }
+    @media (max-width: 860px){ .grid { grid-template-columns: 1fr; } }
+
+    .card { background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01)); border: 1px solid rgba(255,255,255,.08); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .card-inner { padding: 18px }
+
+    .controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 6px }
+    .btn, .select { appearance: none; border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.03); color: var(--text); border-radius: 12px; padding: 8px 12px; font-size: 14px; cursor: pointer }
+    .btn:hover { background: rgba(255,255,255,.06) }
+    .kpi { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-top: 12px }
+    .kpi .tile { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 14px }
+    .kpi .label { color: var(--muted); font-size: 12px; letter-spacing: .3px }
+    .kpi .value { font-size: 20px; margin-top: 6px }
+
+    table { width: 100%; border-collapse: collapse; overflow: hidden; border-radius: 12px; }
+    thead th { text-align: left; font-weight: 600; font-size: 13px; padding: 12px; color: var(--muted); background: rgba(255,255,255,.04); border-bottom: 1px solid rgba(255,255,255,.08) }
+    tbody td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,.06) }
+    tbody tr:hover { background: rgba(255,255,255,.03) }
+    .status { display: inline-flex; align-items: center; gap: 8px; font-weight: 600 }
+    .dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block }
+    .READY { background: var(--accent) }
+    .DELAY { background: var(--accent-3) }
+    .STANDBY { background: var(--accent-5) }
+    .MAINT { background: var(--accent-2) }
+    .OUTOFPLAN { background: var(--accent-4) }
+
+    /* Chart */
+    .chart-wrap { padding: 10px; }
+    .bar { height: 36px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; margin: 8px 0 }
+    .bar .label { min-width: 110px; color: var(--muted); font-size: 13px }
+    .bar .track { height: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 999px; position: relative; overflow: hidden }
+    .bar .fill { position: absolute; inset: 0 auto 0 0; width: 0%; border-radius: 999px; background: linear-gradient(90deg, rgba(106,160,255,1), rgba(162,155,254,1)) }
+    .bar .num { font-variant-numeric: tabular-nums; font-size: 13px }
+
+    .footer { margin: 24px 0; color: var(--muted); font-size: 12px }
+    .small { font-size: 12px; color: var(--muted) }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Estado y horas transcurridas</h1>
+      <div class="sub">Fuente: datos proporcionados por el usuario. <br>Periodo considerado: <b>al 2025-06-30</b>. Formato regional <b>es-CL</b> (coma como separador decimal).</div>
+    </div>
+
+    <div class="grid">
+      <!-- Tabla -->
+      <div class="card">
+        <div class="card-inner">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap">
+            <h2 style="margin:0; font-size:18px">Detalle</h2>
+            <div class="controls">
+              <label class="small"><input type="checkbox" id="precToggle"> Alta precisión</label>
+              <button class="btn" id="exportBtn" title="Exportar a CSV">Exportar CSV</button>
+            </div>
+          </div>
+
+          <div class="kpi">
+            <div class="tile">
+              <div class="label">Total horas</div>
+              <div class="value" id="kpiTotal">—</div>
+            </div>
+            <div class="tile">
+              <div class="label">Máximo (estado)</div>
+              <div class="value" id="kpiMax">—</div>
+            </div>
+            <div class="tile">
+              <div class="label">Mínimo (estado)</div>
+              <div class="value" id="kpiMin">—</div>
+            </div>
+          </div>
+
+          <div style="overflow:auto; margin-top:12px">
+            <table id="dataTable">
+              <thead>
+                <tr>
+                  <th style="width:70px">Id</th>
+                  <th>Estado</th>
+                  <th style="width:220px">Transcurrido (h)</th>
+                  <th style="width:140px">% del total</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chart -->
+      <div class="card">
+        <div class="card-inner">
+          <h2 style="margin:0 0 8px 0; font-size:18px">Distribución (barra horizontal)</h2>
+          <div class="chart-wrap" id="chart"></div>
+          <div class="footer">Las barras están escaladas respecto al valor máximo.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">Generado automáticamente. Puedes guardar este archivo como <code>index.html</code> y abrirlo en tu navegador.</div>
+  </div>
+
+  <script>
+    // Datos originales con coma decimal (como texto)
+    const rawRows = [
+      { id: 1, status: 'READY', hoursStr: '320,455867577222' },
+      { id: 2, status: 'DELAY', hoursStr: '9,12270991638889' },
+      { id: 3, status: 'STANDBY', hoursStr: '192,328769556945' },
+      { id: 4, status: 'MAINT', hoursStr: '192,840880780278' },
+      { id: 5, status: 'OUTOFPLAN', hoursStr: '24,5300352675' },
+    ];
+
+    // Utilidades de formato
+    const fmtShort = new Intl.NumberFormat('es-CL', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmtLong  = new Intl.NumberFormat('es-CL', { minimumFractionDigits: 6, maximumFractionDigits: 12 });
+    const fmtPct   = new Intl.NumberFormat('es-CL', { style: 'percent', minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+    function parseCommaNumber(s){
+      if (typeof s === 'number') return s;
+      return parseFloat(String(s).replace(/\./g,'').replace(',', '.'));
+    }
+
+    // Prepara datos numéricos
+    const rows = rawRows.map(r => ({...r, hours: parseCommaNumber(r.hoursStr)}));
+
+    function render(){
+      const highPrecision = document.getElementById('precToggle').checked;
+      const fmt = highPrecision ? fmtLong : fmtShort;
+
+      const total = rows.reduce((acc, r) => acc + r.hours, 0);
+      const maxRow = rows.reduce((a,b) => a.hours > b.hours ? a : b);
+      const minRow = rows.reduce((a,b) => a.hours < b.hours ? a : b);
+
+      // KPIs
+      document.getElementById('kpiTotal').textContent = fmt.format(total);
+      document.getElementById('kpiMax').textContent = `${maxRow.status} · ${fmt.format(maxRow.hours)}`;
+      document.getElementById('kpiMin').textContent = `${minRow.status} · ${fmt.format(minRow.hours)}`;
+
+      // Tabla
+      const tbody = document.querySelector('#dataTable tbody');
+      tbody.innerHTML = '';
+      rows.forEach(r => {
+        const tr = document.createElement('tr');
+        const pct = r.hours / total;
+        tr.innerHTML = `
+          <td>${r.id}</td>
+          <td><span class="status"><span class="dot ${r.status}"></span>${r.status}</span></td>
+          <td style="font-variant-numeric: tabular-nums">${fmt.format(r.hours)}</td>
+          <td style="font-variant-numeric: tabular-nums">${fmtPct.format(pct)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Barra horizontal simple (sin librerías)
+      const chart = document.getElementById('chart');
+      chart.innerHTML = '';
+      const maxVal = Math.max(...rows.map(r => r.hours));
+      rows.forEach(r => {
+        const pct = (r.hours / maxVal) * 100;
+        const bar = document.createElement('div');
+        bar.className = 'bar';
+        bar.innerHTML = `
+          <div class="label">${r.status}</div>
+          <div class="track"><div class="fill ${r.status}" style="width:${pct.toFixed(2)}%"></div></div>
+          <div class="num">${fmt.format(r.hours)}</div>
+        `;
+        chart.appendChild(bar);
+      });
+    }
+
+    // Exportar a CSV (coma decimal conservada)
+    function exportCSV(){
+      const header = ['Id','Estado','Transcurrido (h)','Fecha de corte'];
+      const lines = [header.join(';')];
+      rawRows.forEach(r => {
+        lines.push([r.id, r.status, r.hoursStr, '2025-06-30'].join(';'));
+      });
+      const blob = new Blob(["\ufeff" + lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'estado-horas-2025-06-30.csv';
+      document.body.appendChild(a); a.click();
+      a.remove(); URL.revokeObjectURL(url);
+    }
+
+    document.getElementById('precToggle').addEventListener('change', render);
+    document.getElementById('exportBtn').addEventListener('click', exportCSV);
+
+    render();
+  </script>
+</body>
+</html>
