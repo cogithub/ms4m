@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Duración de Estados</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      margin: 40px;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #007acc;
+      color: black;
+    }
+    .calculated {
+      background-color: #fff8b3;
+    }
+    canvas {
+      margin-top: 40px;
+    }
+    .note {
+      margin-top: 10px;
+      font-style: italic;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Duración de Estados (Hr)</h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Id status main</th>
+        <th>Status</th>
+        <th class="calculated">Transcurrido total calculado</th>
+        <th class="calculated">Transcurrido total manual</th>
+        <th class="calculated">Manual - Calculado</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td><td>READY</td>
+        <td class="calculated">320.455867577222</td>
+        <td class="calculated">320.455867577222</td>
+        <td class="calculated">0 ✅</td>
+      </tr>
+      <tr>
+        <td>2</td><td>DELAY</td>
+        <td class="calculated">9.12270991638889</td>
+        <td class="calculated">9.12270991638889</td>
+        <td class="calculated">0 ✅</td>
+      </tr>
+      <tr>
+        <td>3</td><td>STANDBY</td>
+        <td class="calculated">192.328769556945</td>
+        <td class="calculated">192.328769556945</td>
+        <td class="calculated">0 ✅</td>
+      </tr>
+      <tr>
+        <td>4</td><td>MAINT</td>
+        <td class="calculated">192.840880780278</td>
+        <td class="calculated">192.840880780278</td>
+        <td class="calculated">0 ✅</td>
+      </tr>
+      <tr>
+        <td>5</td><td>OUTOFPLAN</td>
+        <td class="calculated">24.5300352675</td>
+        <td class="calculated">24.5300352675</td>
+        <td class="calculated">0 ✅</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="note">Las columnas en amarillo son calculadas o extraídas de otra tabla o página o API.</p>
+
+  <canvas id="barChart" width="800" height="400"></canvas>
+
+  <script>
+    const ctx = document.getElementById('barChart').getContext('2d');
+    const barChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['READY', 'DELAY', 'STANDBY', 'MAINT', 'OUTOFPLAN'],
+        datasets: [{
+          label: 'Duración (Hr)',
+          data: [
+            320.455867577222,
+            9.12270991638889,
+            192.328769556945,
+            192.840880780278,
+            24.5300352675
+          ],
+          backgroundColor: [
+            '#4e79a7',
+            '#f28e2b',
+            '#76b7b2',
+            '#e15759',
+            '#59a14f'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Horas'
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Estados'
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.dataset.label + ': ' + context.raw.toFixed(2) + ' Hr';
+              }
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
