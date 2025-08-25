@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download ZIP File</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Download ZIP File</h1>
+    <button onclick="downloadZIP()">Download ZIP</button>
+    <div id="status"></div>
+
+    <script>
+        async function downloadZIP() {
+            // Replace with your ZIP service URL
+            const zipUrl = 'http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2024/01&f=production';
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = 'Downloading...';
+
+            try {
+                const response = await fetch(zipUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'downloaded_file.zip'; // Set the downloaded file name
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+
+                statusDiv.textContent = 'Download completed!';
+            } catch (error) {
+                console.error('Error downloading ZIP:', error);
+                statusDiv.innerHTML = `<p class="error">Failed to download ZIP: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
