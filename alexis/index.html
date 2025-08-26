@@ -88,14 +88,14 @@
     <div class="filter-container">
         <label for="startDate">Start Date:</label>
         <input type="date" id="startDate" required>
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" required>
+        <!-- <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" required> -->
         <button onclick="fetchCSV()">Fetch CSV from Service</button>
     </div>
-    <div class="filter-container">
+    <!-- <div class="filter-container">
         <label for="csvFile">Upload Local CSV:</label>
         <input type="file" id="csvFile" accept=".csv" onchange="readLocalCSV()">
-    </div>
+    </div> -->
     <div id="status"></div>
     <table id="dataTable">
         <thead id="tableHead"></thead>
@@ -118,10 +118,10 @@
                 statusDiv.innerHTML = '<p class="error">Please select both start and end dates.</p>';
                 return;
             }
-            if (new Date(startDate) > new Date(endDate)) {
-                statusDiv.innerHTML = '<p class="error">Start date cannot be later than end date.</p>';
-                return;
-            }
+            // if (new Date(startDate) > new Date(endDate)) {
+            //     statusDiv.innerHTML = '<p class="error">Start date cannot be later than end date.</p>';
+            //     return;
+            // }
 
             // Construct URL with date parameters
             const csvUrl = ` http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${startDate}&f=production`;

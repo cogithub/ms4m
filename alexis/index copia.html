@@ -88,14 +88,14 @@
     <div class="filter-container">
         <label for="startDate">Start Date:</label>
         <input type="date" id="startDate" required>
-        <label for="endDate">End Date:</label>
-        <input type="date" id="endDate" required>
+        <!-- <label for="endDate">End Date:</label>
+        <input type="date" id="endDate" required> -->
         <button onclick="fetchCSV()">Fetch CSV from Service</button>
     </div>
-    <div class="filter-container">
+    <!-- <div class="filter-container">
         <label for="csvFile">Upload Local CSV:</label>
-        <input type="file" id="csvFile" accept=".cvs" onchange="readLocalCSV()">
-    </div>
+        <input type="file" id="csvFile" accept=".csv" onchange="readLocalCSV()">
+    </div> -->
     <div id="status"></div>
     <table id="dataTable">
         <thead id="tableHead"></thead>
@@ -105,24 +105,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script>
         async function fetchCSV() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
+            var startDate = document.getElementById('startDate').value;
+            const yyyyMM = startDate.slice(0, 7);
+            startDate=yyyyMM.replace('-','/');
+            
+            //const endDate = document.getElementById('endDate').value;
             const statusDiv = document.getElementById('status');
 
             // Validate dates
-            if (!startDate || !endDate) {
+            //if (!startDate || !endDate) {
+            if (!startDate ) {
                 statusDiv.innerHTML = '<p class="error">Please select both start and end dates.</p>';
                 return;
             }
-            if (new Date(startDate) > new Date(endDate)) {
-                statusDiv.innerHTML = '<p class="error">Start date cannot be later than end date.</p>';
-                return;
-            }
+            // if (new Date(startDate) > new Date(endDate)) {
+            //     statusDiv.innerHTML = '<p class="error">Start date cannot be later than end date.</p>';
+            //     return;
+            // }
 
             // Construct URL with date parameters
-            const csvUrl = `https://example.com/data.csv?startDate=${startDate}&endDate=${endDate}`;
+            const csvUrl = ` http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${startDate}&f=production`;
             statusDiv.textContent = 'Fetching CSV...';
-
+//debugger
             try {
                 const response = await fetch(csvUrl);
                 if (!response.ok) {
