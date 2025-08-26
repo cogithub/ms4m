@@ -110,7 +110,8 @@
             const statusDiv = document.getElementById('status');
 
             // Validate dates
-            if (!startDate || !endDate) {
+            //if (!startDate || !endDate) {
+            if (!startDate ) {
                 statusDiv.innerHTML = '<p class="error">Please select both start and end dates.</p>';
                 return;
             }
@@ -120,7 +121,7 @@
             }
 
             // Construct URL with date parameters
-            const csvUrl = `https://example.com/data.csv?startDate=${startDate}&endDate=${endDate}`;
+            const csvUrl = ` http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${startDate}&f=production`;
             statusDiv.textContent = 'Fetching CSV...';
 
             try {

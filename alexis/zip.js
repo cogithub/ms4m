@@ -1,6 +1,6 @@
 // Función para consumir el servicio CSV
 async function consumirCSV() {
-  const url = 'http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2024/01&f=production';
+  const url = 'http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2023/11/22&f=production';
   try {
     // Hacer la solicitud al servicio
     const respuesta = await fetch(url);
