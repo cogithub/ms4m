@@ -2,8 +2,8 @@ const fs = require('fs');
 const zlib = require('zlib');
 
 // Leer el archivo .gz
-const filePath = 'file_2025_06.mss.gz';
-const outputPath = 'archivo_descomprimido.txt';
+const filePath = 'targets'+'.mss.gz';
+const outputPath =filePath.replace('.gz', '');
 
 fs.readFile(filePath, (err, data) => {
   if (err) {

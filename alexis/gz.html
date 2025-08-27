@@ -1,0 +1,33 @@
+<input type="file" id="fileInput" accept=".gz" />
+<button onclick="decompressFile()">Descomprimir</button>
+<div id="output"></div>
+
+<script src="https://unpkg.com/pako@2.1.0/dist/pako.min.js"></script>
+
+<script>
+  async function decompressFile() {
+    const fileInput = document.getElementById('fileInput');
+    const output = document.getElementById('output');
+
+    if (!fileInput.files.length) {
+      output.textContent = 'Por favor, selecciona un archivo .gz';
+      return;
+    }
+
+    const file = fileInput.files[0];
+    try {
+      // Leer el archivo como un ArrayBuffer
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+
+      // Descomprimir usando pako
+      const decompressed = pako.ungzip(uint8Array, { to: 'string' });
+
+      // Mostrar el contenido descomprimido
+      output.textContent = decompressed;
+      console.log('Archivo descomprimido:', decompressed);
+    } catch (error) {
+      output.textContent = 'Error al descomprimir: ' + error.message;
+    }
+  }
+</script>
