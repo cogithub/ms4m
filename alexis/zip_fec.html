@@ -1,4 +1,43 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
@@ -9,7 +48,30 @@
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-6 rounded-lg shadow-lg text-center">
         <h1 class="text-2xl font-bold mb-4">Descargar Archivo ZIP</h1>
-        <p class="text-gray-600 mb-6">Haz clic en el botón para descargar el archivo ZIP en una nueva ventana.</p>
+        <p class="text-gray-600 mb-4">Selecciona el mes y año para descargar el archivo ZIP.</p>
+        <div class="mb-4">
+            <label for="mes" class="mr-2">Mes:</label>
+            <select id="mes" class="border rounded p-1">
+                <option value="01">Enero</option>
+                <option value="02">Febrero</option>
+                <option value="03">Marzo</option>
+                <option value="04">Abril</option>
+                <option value="05">Mayo</option>
+                <option value="06" selected>Junio</option>
+                <option value="07">Julio</option>
+                <option value="08">Agosto</option>
+                <option value="09">Septiembre</option>
+                <option value="10">Octubre</option>
+                <option value="11">Noviembre</option>
+                <option value="12">Diciembre</option>
+            </select>
+            <label for="ano" class="ml-4 mr-2">Año:</label>
+            <select id="ano" class="border rounded p-1">
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+            </select>
+        </div>
         <button id="botonDescargar" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Descargar ZIP
         </button>
@@ -17,8 +79,9 @@
     </div>
     <script>
         async function descargarZipEnVentanaNueva() {
-            
-            const url = "http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/06&f=production"; // Reemplaza con el endpoint real
+            const mes = document.getElementById("mes").value;
+            const ano = document.getElementById("ano").value;
+            const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${ano}/${mes}&f=production`;
             
             const headers = {
                 // "Authorization": "Bearer tu_token_aqui" // Ajusta según el servicio
@@ -31,7 +94,6 @@
                 mensaje.classList.add("hidden");
 
                 // Realizar la solicitud al servicio
-                //const response = await fetch(`${url}?${params}`, {
                 const response = await fetch(`${url}`, {
                     method: "GET",
                     headers: headers
@@ -52,7 +114,7 @@
                     // Crear un enlace para la descarga
                     const enlace = document.createElement("a");
                     enlace.href = blobUrl;
-                    enlace.download = "file.mss.gz";
+                    enlace.download = `file_${ano}_${mes}.mss.gz`;
                     nuevaVentana.document.body.appendChild(enlace);
                     enlace.click();
 
@@ -76,7 +138,7 @@
                     console.error("No se pudo abrir la ventana. ¿Bloqueo de ventanas emergentes?");
                     const enlace = document.createElement("a");
                     enlace.href = blobUrl;
-                    enlace.download = "archivo_descargado.zip";
+                    enlace.download = `archivo_descargado_${ano}_${mes}.zip`;
                     document.body.appendChild(enlace);
                     enlace.click();
                     document.body.removeChild(enlace);
