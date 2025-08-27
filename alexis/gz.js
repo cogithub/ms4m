@@ -1,53 +1,50 @@
-const fs = require('fs');
-const zlib = require('zlib');
+const fs = require('fs'); // Importa el módulo 'fs' para manejar operaciones con el sistema de archivos
+const zlib = require('zlib'); // Importa el módulo 'zlib' para manejar compresión y descompresión de archivos
 
-const { exec } = require('child_process');
-const util = require('util');
-const execPromise = util.promisify(exec);
-
+const { exec } = require('child_process'); // Importa el método 'exec' del módulo 'child_process' para ejecutar comandos del sistema
+const util = require('util'); // Importa el módulo 'util' para usar utilidades como promisify
+const execPromise = util.promisify(exec); // Convierte la función 'exec' en una versión que usa promesas
 
 // Leer el archivo .gz
-const filePath = 'targets'+'.mss.gz';
-const outputPath =filePath.replace('.gz', '');
+const filePath = 'targets' + '.mss.gz'; // Define la ruta del archivo comprimido con extensión .gz
+const outputPath = filePath.replace('.gz', ''); // Crea la ruta del archivo de salida eliminando la extensión .gz
 
-async function openFile(filePath) {
-  try {
-    const command = `open "${filePath}"`; // Escapa el nombre del archivo
-    const { stdout, stderr } = await execPromise(command);
-    if (stderr) {
-      console.error('Error:', stderr);
-      return;
+async function openFile(filePath) { // Define una función asíncrona para abrir un archivo
+  try { // Inicia un bloque try para manejar errores
+    const command = `open "${filePath}"`; // Crea el comando para abrir el archivo, escapando el nombre del archivo
+    const { stdout, stderr } = await execPromise(command); // Ejecuta el comando usando promesas y captura la salida y errores
+    if (stderr) { // Verifica si hay errores en la ejecución del comando
+      console.error('Error:', stderr); // Muestra el error en la consola
+      return; // Termina la ejecución de la función
     }
-    console.log('Archivo abierto:', stdout);
-  } catch (error) {
-    console.error('Error al ejecutar el comando:', error.message);
+    console.log('Archivo abierto:', stdout); // Muestra un mensaje indicando que el archivo fue abierto
+  } catch (error) { // Captura cualquier error durante la ejecución del comando
+    console.error('Error al ejecutar el comando:', error.message); // Muestra el mensaje de error en la consola
   }
 }
 
-fs.readFile(filePath, (err, data) => {
-  if (err) {
-    console.error('Error al leer el archivo:', err);
-    return;
+fs.readFile(filePath, (err, data) => { // Lee el archivo comprimido de forma asíncrona
+  if (err) { // Verifica si hubo un error al leer el archivo
+    console.error('Error al leer el archivo:', err); // Muestra el error en la consola
+    return; // Termina la ejecución de la función
   }
 
   // Descomprimir el contenido
-  zlib.gunzip(data, (err, decompressed) => {
-    if (err) {
-      console.error('Error al descomprimir:', err);
-      return;
+  zlib.gunzip(data, (err, decompressed) => { // Descomprime el contenido del archivo usando gunzip
+    if (err) { // Verifica si hubo un error al descomprimir
+      console.error('Error al descomprimir:', err); // Muestra el error en la consola
+      return; // Termina la ejecución de la función
     }
 
     // Guardar el archivo descomprimido
-    fs.writeFile(outputPath, decompressed, (err) => {
-      if (err) {
-        console.error('Error al escribir el archivo:', err);
-        return;
+    fs.writeFile(outputPath, decompressed, (err) => { // Escribe el contenido descomprimido en un nuevo archivo
+      if (err) { // Verifica si hubo un error al escribir el archivo
+        console.error('Error al escribir el archivo:', err); // Muestra el error en la consola
+        return; // Termina la ejecución de la función
       }
-      console.log('Archivo descomprimido guardado en:', outputPath);
+      console.log('Archivo descomprimido guardado en:', outputPath); // Muestra un mensaje indicando que el archivo descomprimido fue guardado
       // Ejemplo: abrir un archivo descomprimido
-      openFile(outputPath);
+      openFile(outputPath); // Llama a la función para abrir el archivo descomprimido
     });
   });
 });
-
-

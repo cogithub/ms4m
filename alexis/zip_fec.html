@@ -1,16 +1,43 @@
 <!DOCTYPE html>
+<!-- Declara el tipo de documento como HTML5 -->
+
 <html lang="es">
+<!-- Define el elemento raíz HTML con el idioma español -->
+
 <head>
+    <script>
+        var archivo = "production";
+    </script>
+    <!-- Contiene metadatos y recursos para el documento -->
     <meta charset="UTF-8">
+    <!-- Especifica la codificación de caracteres como UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Configura el diseño responsivo -->
     <title>Descargar Archivo ZIP</title>
+    <!-- Título de la página -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Incluye Tailwind CSS -->
+    <style>
+        /* Estilo personalizado para el efecto hover con color inverso */
+        .boton-inverso:hover {
+            background-color: #ffffff; /* Fondo blanco al hacer hover */
+            color: #1e40af; /* Texto azul oscuro al hacer hover */
+            border-color: #1e40af; /* Borde azul oscuro al hacer hover para mantener coherencia */
+            transition: all 0.3s ease; /* Transición suave para todos los cambios */
+        }
+    </style>
 </head>
+
 <body class="bg-gray-100 flex items-center justify-center h-screen">
+    <!-- Cuerpo con fondo gris claro, contenido centrado -->
     <div class="bg-white p-6 rounded-lg shadow-lg text-center">
+        <!-- Contenedor blanco con padding, sombra y texto centrado -->
         <h1 class="text-2xl font-bold mb-4">Descargar Archivo ZIP</h1>
+        <!-- Encabezado -->
         <p class="text-gray-600 mb-4">Selecciona el mes y año para descargar el archivo ZIP.</p>
+        <!-- Texto descriptivo -->
         <div class="mb-4">
+            <!-- Agrupa selectores de mes y año -->
             <label for="mes" class="mr-2">Mes:</label>
             <select id="mes" class="border rounded p-1">
                 <option value="01">Enero</option>
@@ -35,78 +62,62 @@
         </div>
         <p class="text-gray-600 mb-4 text-left">
             URL:<br>
-            <textarea id="urlDisplay" class="w-[550px] h-16 overflow-x-auto overflow-y-auto bg-gray-100 py-2 px-6 rounded resize-none" readonly>http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/06&f=production</textarea>
+            <textarea id="urlDisplay" class="w-[550px] h-16 overflow-x-auto overflow-y-auto bg-gray-100 py-2 px-6 rounded resize-none" readonly>
+                `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/06&f=${archivo}`
+            </textarea>
         </p>
-        <button id="botonDescargar" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        <button id="botonDescargar" class="bg-blue-500 text-white font-bold py-2 px-4 rounded border-2 border-blue-700 boton-inverso">
+            <!-- Botón con borde azul (border-2 border-blue-700) y clase personalizada para hover -->
             Descargar ZIP
         </button>
         <p id="mensaje" class="text-red-500 mt-4 hidden">Error al descargar el archivo.</p>
+        <!-- Mensaje de error oculto -->
     </div>
+
+    <!-- El script JavaScript permanece sin cambios -->
     <script>
         function updateUrlDisplay() {
             const mes = document.getElementById("mes").value;
             const ano = document.getElementById("ano").value;
-            const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${ano}/${mes}&f=production`;
+            const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${ano}/${mes}&f=${archivo}`;
             document.getElementById("urlDisplay").value = url;
         }
 
         async function descargarZipEnVentanaNueva() {
             const mes = document.getElementById("mes").value;
             const ano = document.getElementById("ano").value;
-            const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${ano}/${mes}&f=production`;
-            
-            const headers = {
-                // "Authorization": "Bearer tu_token_aqui" // Ajusta según el servicio
-            };
-            // const params = new URLSearchParams({ file_id: "12345" }); // Ajusta parámetros si es necesario
-
+            const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${ano}/${mes}&f=${archivo}`;
+            const headers = {};
             try {
-                // Mostrar mensaje de carga
                 const mensaje = document.getElementById("mensaje");
                 mensaje.classList.add("hidden");
-
-                // Realizar la solicitud al servicio
                 const response = await fetch(`${url}`, {
                     method: "GET",
                     headers: headers
                 });
-
                 if (!response.ok) {
                     throw new Error(`Error: ${response.status}`);
                 }
-
-                // Convertir la respuesta en un blob
                 const blob = await response.blob();
                 const blobUrl = window.URL.createObjectURL(blob);
-
-                // Abrir una nueva ventana o pestaña
                 const nuevaVentana = window.open("", "_blank");
-
                 if (nuevaVentana) {
-                    // Crear un enlace para la descarga
                     const enlace = document.createElement("a");
                     enlace.href = blobUrl;
-                    enlace.download = `file_${ano}_${mes}.mss.gz`;
+                    enlace.download = `${archivo}_${ano}_${mes}.mss.gz`;
                     nuevaVentana.document.body.appendChild(enlace);
                     enlace.click();
-
-                    // Mostrar mensaje en la nueva ventana
                     nuevaVentana.document.write(`
                         <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
                             <h3>Descarga iniciada</h3>
                             <p>Puedes cerrar esta ventana.</p>
                         </div>
                     `);
-
-                    // Liberar el objeto URL
                     window.URL.revokeObjectURL(blobUrl);
-
-                    // Cerrar la ventana después de 3 segundos
                     setTimeout(() => {
                         nuevaVentana.close();
                     }, 3000);
                 } else {
-                    // Fallback si la ventana emergente es bloqueada
                     console.error("No se pudo abrir la ventana. ¿Bloqueo de ventanas emergentes?");
                     const enlace = document.createElement("a");
                     enlace.href = blobUrl;
@@ -124,14 +135,9 @@
             }
         }
 
-        // Vincular el botón
         document.getElementById("botonDescargar").addEventListener("click", descargarZipEnVentanaNueva);
-
-        // Actualizar la URL en el textarea cuando cambien los selectores
         document.getElementById("mes").addEventListener("change", updateUrlDisplay);
         document.getElementById("ano").addEventListener("change", updateUrlDisplay);
-
-        // Inicializar la URL en el textarea al cargar la página
         updateUrlDisplay();
     </script>
 </body>
