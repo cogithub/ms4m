@@ -17,4 +17,4 @@ async function openFile(filePath) {
 }
 
 // Ejemplo: abrir un archivo descomprimido
-openFile('targets.mss');
+openFile('production.mss');
