@@ -7,7 +7,7 @@ const execPromise = util.promisify(exec);
 
 
 // Leer el archivo .gz
-const filePath = 'production'+'.mss.gz';
+const filePath = 'targets'+'.mss.gz';
 const outputPath =filePath.replace('.gz', '');
 
 async function openFile(filePath) {
@@ -45,7 +45,7 @@ fs.readFile(filePath, (err, data) => {
       }
       console.log('Archivo descomprimido guardado en:', outputPath);
       // Ejemplo: abrir un archivo descomprimido
-      openFile('production.mss');
+      openFile(outputPath);
     });
   });
 });
