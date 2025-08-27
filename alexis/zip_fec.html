@@ -5,13 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Descargar Archivo ZIP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        textarea {
-            padding-left: 20px;
-            padding-right: 20px;
-        }
-    </style>
-    
 </head>
 <body class="bg-gray-100 flex items-center justify-center h-screen">
     <div class="bg-white p-6 rounded-lg shadow-lg text-center">
@@ -41,8 +34,8 @@
             </select>
         </div>
         <p class="text-gray-600 mb-4 text-left">
-            URL:<br/>
-            <textarea class="w-[650px] h-12 overflow-x-auto overflow-y-auto bg-gray-100 p-2 rounded resize-none" readonly>http://10.1.64.119:6060/api/v1/cube/get/zipfact/</textarea>
+            URL:<br>
+            <textarea id="urlDisplay" class="w-[550px] h-16 overflow-x-auto overflow-y-auto bg-gray-100 py-2 px-6 rounded resize-none" readonly>http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/06&f=production</textarea>
         </p>
         <button id="botonDescargar" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
             Descargar ZIP
@@ -50,12 +43,18 @@
         <p id="mensaje" class="text-red-500 mt-4 hidden">Error al descargar el archivo.</p>
     </div>
     <script>
+        function updateUrlDisplay() {
+            const mes = document.getElementById("mes").value;
+            const ano = document.getElementById("ano").value;
+            const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${ano}/${mes}&f=production`;
+            document.getElementById("urlDisplay").value = url;
+        }
+
         async function descargarZipEnVentanaNueva() {
             const mes = document.getElementById("mes").value;
             const ano = document.getElementById("ano").value;
             const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${ano}/${mes}&f=production`;
             
-
             const headers = {
                 // "Authorization": "Bearer tu_token_aqui" // Ajusta según el servicio
             };
@@ -127,6 +126,13 @@
 
         // Vincular el botón
         document.getElementById("botonDescargar").addEventListener("click", descargarZipEnVentanaNueva);
+
+        // Actualizar la URL en el textarea cuando cambien los selectores
+        document.getElementById("mes").addEventListener("change", updateUrlDisplay);
+        document.getElementById("ano").addEventListener("change", updateUrlDisplay);
+
+        // Inicializar la URL en el textarea al cargar la página
+        updateUrlDisplay();
     </script>
 </body>
 </html>
