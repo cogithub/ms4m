@@ -150,13 +150,17 @@
                 statusDiv.innerHTML = '<p class="error">Please select a CSV file.</p>';
                 return;
             }
+                    alert('here');
 
             statusDiv.textContent = 'Reading CSV...';
+
             Papa.parse(file, {
                 header: true,
                 complete: function(results) {
                     displayData(results.data);
+
                     statusDiv.textContent = 'CSV loaded successfully!';
+                    console.log(" por aquí pasé");
                 },
                 error: function(error) {
                     console.error('Error parsing CSV:', error);
