@@ -30,6 +30,9 @@
 <body>
     <h1>Descompresor de Archivo Gzip a Tabla</h1>
     <input type="text" id="urlInput" placeholder="Ingresa la URL del archivo .gz" style="width: 600px;">
+    <script>
+        document.getElementById('urlInput').value="http://"
+    </script>
     <div class="filter-container">
         <label for="yearFilter">Año:</label>
         <select id="yearFilter" onchange="fetchAndDecompress()">
@@ -157,6 +160,7 @@
         }
 
         async function fetchAndDecompress() {
+            document.getElementById('urlInput').value="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/07&f=statushistory";
             const url = document.getElementById('urlInput').value;
             const outputElement = document.getElementById('output');
 
