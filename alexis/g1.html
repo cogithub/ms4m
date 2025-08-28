@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descompresor Gzip a Tabla con Duración</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        pre {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Descompresor de Archivo Gzip a Tabla</h1>
+    <input type="text" id="urlInput" placeholder="Ingresa la URL del archivo .gz" style="width: 600px;">
+    <button onclick="fetchAndDecompress()">Obtener y Descomprimir</button>
+    <div id="output"></div>
+
+    <script>
+        function parseData(text) {
+            const lines = text.trim().split('\n');
+            const result = lines.map((line, index) => {
+                const cells = line.split(';').map(cell => cell.trim());
+                // Añadir duración solo a las filas de datos (no al encabezado)
+                if (index > 0) {
+                    // Generar duración aleatoria entre 1 y 10 horas con 2 decimales
+                    const duration = (Math.random() * 9 + 1).toFixed(2);
+                    cells.push(duration);
+                } else {
+                    // Añadir encabezado para la columna de duración
+                    cells.push('Duración Hr.');
+                }
+                return cells;
+            });
+            return result;
+        }
+
+        function createTable(data) {
+            if (!data || data.length === 0) return '<p>No hay datos para mostrar.</p>';
+
+            let html = '<table>';
+            // Encabezados
+            html += '<tr>';
+            data[0].forEach(header => {
+                html += `<th>${header}</th>`;
+            });
+            html += '</tr>';
+            // Filas de datos
+            for (let i = 1; i < data.length; i++) {
+                html += '<tr>';
+                data[i].forEach(cell => {
+                    html += `<td>${cell}</td>`;
+                });
+                html += '</tr>';
+            }
+            html += '</table>';
+            return html;
+        }
+
+        async function fetchAndDecompress() {
+            const url = document.getElementById('urlInput').value;
+            const outputElement = document.getElementById('output');
+
+            try {
+                // Obtener el archivo .gz
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+
+                // Convertir la respuesta a un ArrayBuffer
+                const arrayBuffer = await response.arrayBuffer();
+
+                // Descomprimir el contenido usando pako
+                const decompressed = pako.ungzip(new Uint8Array(arrayBuffer), { to: 'string' });
+
+                // Parsear el contenido con el delimitador ";" y añadir duración
+                try {
+                    const parsedData = parseData(decompressed);
+                    const tableHtml = createTable(parsedData);
+                    outputElement.innerHTML = tableHtml;
+                } catch (parseError) {
+                    outputElement.innerHTML = `<pre>Error al parsear el contenido: ${parseError.message}</pre>`;
+                }
+            } catch (error) {
+                outputElement.innerHTML = `<pre>Error: ${error.message}</pre>`;
+            }
+        }
+    </script>
+</body>
+</html>
