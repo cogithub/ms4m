@@ -31,6 +31,11 @@
     <div id="output"></div>
 
     <script>
+        var duracion1=0;
+        var duracion2=0;
+        var duracion3=0;
+        var duracion4=0;
+        var duracion5=0;
         function parseData(text) {
             const lines = text.trim().split('\n');
             const result = lines.map((line, index) => {
@@ -38,9 +43,24 @@
            if (index > 0) {
              alert(cells[2] + " - " + cells[10]);
              if (cells[2] ==1){
-                alert("se suma");
-             }else{
-               alert("no se suma");
+                alert("se suma1");
+                duracion1=duracion1+cells[10];
+             }
+             if (cells[2] ==2){
+                alert("se suma2");
+                duracion2=duracion2+cells[10];
+             }
+             if (cells[2] ==3){
+                alert("se suma3");
+                duracion3=duracion3+cells[10];
+             }
+              if (cells[2] ==4){
+                alert("se suma4");
+                duracion4=duracion4+cells[10];
+             }
+              if (cells[2] ==5){
+                alert("se suma5");
+                duracion5=duracion5+cells[10];
              }
            }  else {
                 alert(cells[10]);
