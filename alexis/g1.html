@@ -22,66 +22,115 @@
         pre {
             color: red;
         }
+        .filter-container {
+            margin: 10px 0;
+        }
     </style>
 </head>
 <body>
     <h1>Descompresor de Archivo Gzip a Tabla</h1>
     <input type="text" id="urlInput" placeholder="Ingresa la URL del archivo .gz" style="width: 600px;">
+    <div class="filter-container">
+        <label for="yearFilter">Año:</label>
+        <select id="yearFilter" onchange="fetchAndDecompress()">
+            <option value="">Todos</option>
+            <!-- Años generados dinámicamente -->
+        </select>
+        <label for="monthFilter">Mes:</label>
+        <select id="monthFilter" onchange="fetchAndDecompress()">
+            <option value="">Todos</option>
+            <option value="01">Enero</option>
+            <option value="02">Febrero</option>
+            <option value="03">Marzo</option>
+            <option value="04">Abril</option>
+            <option value="05">Mayo</option>
+            <option value="06">Junio</option>
+            <option value="07">Julio</option>
+            <option value="08">Agosto</option>
+            <option value="09">Septiembre</option>
+            <option value="10">Octubre</option>
+            <option value="11">Noviembre</option>
+            <option value="12">Diciembre</option>
+        </select>
+    </div>
     <button onclick="fetchAndDecompress()">Obtener y Descomprimir</button>
     <div id="output"></div>
 
     <script>
-        var duracion1=0;
-        var duracion2=0;
-        var duracion3=0;
-        var duracion4=0;
-        var duracion5=0;
+        var duracion1 = 0;
+        var duracion2 = 0;
+        var duracion3 = 0;
+        var duracion4 = 0;
+        var duracion5 = 0;
+
+        // Generar opciones de años dinámicamente (por ejemplo, desde 2000 hasta el año actual)
+        function populateYearFilter() {
+            const yearSelect = document.getElementById('yearFilter');
+            const currentYear = new Date().getFullYear();
+            for (let year = currentYear; year >= 2000; year--) {
+                const option = document.createElement('option');
+                option.value = year;
+                option.text = year;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        // Llamar a la función para poblar los años al cargar la página
+        window.onload = populateYearFilter;
+
         function parseData(text) {
+            const yearFilter = document.getElementById('yearFilter').value;
+            const monthFilter = document.getElementById('monthFilter').value;
             const lines = text.trim().split('\n');
-            const result = lines.map((line, index) => {
+            const result = [];
+            let headersAdded = false;
+
+            lines.forEach((line, index) => {
                 const cells = line.split(';').map(cell => cell.trim());
-           if (index > 0) {
-             alert(cells[2] + " - " + cells[10]);
-             if (cells[2] ==1){
-                alert("se suma1");
-                duracion1=duracion1+cells[10];
-             }
-             if (cells[2] ==2){
-                alert("se suma2");
-                duracion2=duracion2+cells[10];
-             }
-             if (cells[2] ==3){
-                alert("se suma3");
-                duracion3=duracion3+cells[10];
-             }
-              if (cells[2] ==4){
-                alert("se suma4");
-                duracion4=duracion4+cells[10];
-             }
-              if (cells[2] ==5){
-                alert("se suma5");
-                duracion5=duracion5+cells[10];
-             }
-           }  else {
-                alert(cells[10]);
-              }
-               
-                // Añadir duración solo a las filas de datos (no al encabezado)
-                // if (index > 0) {
-                //     // Generar duración aleatoria entre 1 y 10 horas con 2 decimales
-                //     const duration = (Math.random() * 9 + 1).toFixed(2);
-                //     cells.push(duration);
-                // } else {
-                //     // Añadir encabezado para la columna de duración
-                //     cells.push('Duración 22 Hr.');
-                // }
-                return cells;
+
+                // Asumimos que la fecha está en cells[0] con formato YYYY-MM-DD
+                const date = cells[0] || '';
+                const [year, month] = date.split('-');
+
+                // Filtrar por año y mes
+                const matchesYear = !yearFilter || (year && year === yearFilter);
+                const matchesMonth = !monthFilter || (month && month === monthFilter);
+
+                if (index === 0) {
+                    // Añadir encabezados
+                    result.push(cells);
+                    headersAdded = true;
+                } else if (matchesYear && matchesMonth) {
+                    // Procesar filas de datos que coincidan con los filtros
+                    if (cells[2] == 1) {
+                        duracion1 += parseFloat(cells[10]) || 0;
+                        alert("se suma1: " +cells[2]+"->"+ duracion1);
+                    }
+                    if (cells[2] == 2) {
+                        duracion2 += parseFloat(cells[10]) || 0;
+                        alert("se suma2: " +cells[2]+"->"+ duracion2);
+                    }
+                    if (cells[2] == 3) {
+                        duracion3 += parseFloat(cells[10]) || 0;
+                        alert("se suma3: " +cells[2]+"->"+  duracion3);
+                    }
+                    if (cells[2] == 4) {
+                        duracion4 += parseFloat(cells[10]) || 0;
+                        alert("se suma4: " +cells[2]+"->"+  duracion4);
+                    }
+                    if (cells[2] == 5) {
+                        duracion5 += parseFloat(cells[10]) || 0;
+                        alert("se suma5: " +cells[2]+"->"+  duracion5);
+                    }
+                    result.push(cells);
+                }
             });
+
             return result;
         }
 
         function createTable(data) {
-            if (!data || data.length === 0) return '<p>No hay datos para mostrar.</p>';
+            if (!data || data.length <= 1) return '<p>No hay datos para mostrar.</p>';
 
             let html = '<table>';
             // Encabezados
@@ -119,7 +168,7 @@
                 // Descomprimir el contenido usando pako
                 const decompressed = pako.ungzip(new Uint8Array(arrayBuffer), { to: 'string' });
 
-                // Parsear el contenido con el delimitador ";" y añadir duración
+                // Parsear el contenido con el delimitador ";" y aplicar filtros
                 try {
                     const parsedData = parseData(decompressed);
                     const tableHtml = createTable(parsedData);
