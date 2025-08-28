@@ -35,6 +35,13 @@
             const lines = text.trim().split('\n');
             const result = lines.map((line, index) => {
                 const cells = line.split(';').map(cell => cell.trim());
+           if (index > 0) {
+             alert(cells[2] + " - " + cells[10]);
+              }
+              else {
+                alert(cells[10]);
+              }
+               
                 // Añadir duración solo a las filas de datos (no al encabezado)
                 // if (index > 0) {
                 //     // Generar duración aleatoria entre 1 y 10 horas con 2 decimales
