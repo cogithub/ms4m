@@ -1,13 +1,3 @@
-const fs = require('fs'); // Importa el módulo 'fs' para manejar operaciones con el sistema de archivos
-const zlib = require('zlib'); // Importa el módulo 'zlib' para manejar compresión y descompresión de archivos
-
-const { exec } = require('child_process'); // Importa el método 'exec' del módulo 'child_process' para ejecutar comandos del sistema
-const util = require('util'); // Importa el módulo 'util' para usar utilidades como promisify
-const execPromise = util.promisify(exec); // Convierte la función 'exec' en una versión que usa promesas
-
-// Leer el archivo .gz
-const filePath = 'targets' + '.mss.gz'; // Define la ruta del archivo comprimido con extensión .gz
-const outputPath = filePath.replace('.gz', ''); // Crea la ruta del archivo de salida eliminando la extensión .gz
 
 async function openFile(filePath) { // Define una función asíncrona para abrir un archivo
   try { // Inicia un bloque try para manejar errores

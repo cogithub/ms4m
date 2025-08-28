@@ -36,14 +36,14 @@
             const result = lines.map((line, index) => {
                 const cells = line.split(';').map(cell => cell.trim());
                 // Añadir duración solo a las filas de datos (no al encabezado)
-                if (index > 0) {
-                    // Generar duración aleatoria entre 1 y 10 horas con 2 decimales
-                    const duration = (Math.random() * 9 + 1).toFixed(2);
-                    cells.push(duration);
-                } else {
-                    // Añadir encabezado para la columna de duración
-                    cells.push('Duración Hr.');
-                }
+                // if (index > 0) {
+                //     // Generar duración aleatoria entre 1 y 10 horas con 2 decimales
+                //     const duration = (Math.random() * 9 + 1).toFixed(2);
+                //     cells.push(duration);
+                // } else {
+                //     // Añadir encabezado para la columna de duración
+                //     cells.push('Duración 22 Hr.');
+                // }
                 return cells;
             });
             return result;
