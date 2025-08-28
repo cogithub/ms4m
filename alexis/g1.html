@@ -37,8 +37,12 @@
                 const cells = line.split(';').map(cell => cell.trim());
            if (index > 0) {
              alert(cells[2] + " - " + cells[10]);
-              }
-              else {
+             if (cells[2] ==1){
+                alert("se suma");
+             }else{
+               alert("no se suma");
+             }
+           }  else {
                 alert(cells[10]);
               }
                
