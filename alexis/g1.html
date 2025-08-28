@@ -219,9 +219,9 @@
 
         async function fetchAndDecompress() {
             // document.getElementById('urlInput').value="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d={{anio}}/{{mes}}&f=statushistory";
-            const url = document.getElementById('urlInput').value;
+            const url = document.getElementById('urlInput').value="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d={{anio}}/{{mes}}&f=statushistory" ;
             const outputElement = document.getElementById('output');
-
+            alert("url: "+url);
             try {
                 // Obtener el archivo .gz
                 const response = await fetch(url);
