@@ -63,18 +63,11 @@
 
 <script>
     var duracion1 = 0;
-        var duracion2 = 0;
-        var duracion3 = 0;
-        var duracion4 = 0;
-        var duracion5 = 0;
-    angular.module('myApp', [])
-      .controller('myCtrl', function($scope) {
-        $scope.duracion1 = 0;
-        $scope.duracion2 = 0;
-        $scope.duracion3 = 0;
-        $scope.duracion4 = 0;
-        $scope.duracion5 = 0;
-      });
+    var duracion2 = 0;
+    var duracion3 = 0;
+    var duracion4 = 0;
+    var duracion5 = 0;
+
   </script>
     
  
@@ -91,27 +84,27 @@
         <tr>
             <td>1</td>
             <td>READY</td>
-            <td>{{duracion1}}</td>
+            <td id="duracion1"></td>
         </tr>
         <tr>
             <td>2</td>
             <td>DELAY</td>
-            <td>{{duracion2}}</td>
+            <td id="duracion2"></td>
         </tr>
         <tr>
             <td>3</td>
             <td>STANDBY</td>
-            <td>{{duracion3}}</td>
+            <td id="duracion3></td>
         </tr>
         <tr>
             <td>4</td>
             <td>MAINT</td>
-            <td>{{duracion4}}</td>
+            <td id="duracion4></td>
         </tr>
         <tr>
             <td>5</td>
             <td>OUTOFPLAN</td>
-            <td>{{duracion5}}</td>
+            <td id="duracion5"></td>
         </tr>
     </tbody>
 </table>
@@ -164,28 +157,36 @@
                         // Procesar filas de datos que coincidan con los filtros
                         if (columns[2] == 1) {
                             duracion1 += parseFloat(columns[10]) || 0;
+                            document.getElementById("duracion1").textContent = duracion1;
                             console.log("se suma1: " + columns[2] + "->" + duracion1);
                             // alert("duracion1: -" + duracion1.toFixed(2));
                         }
                         // Descomentar y ajustar según sea necesario
                         
                         if (columns[2] == 2) {
-                            duracion2 += parseFloat(columns[10]) || 0;
+                            {{duracion2 += parseFloat(columns[10]) || 0}};
+                            document.getElementById("duracion2").textContent = duracion2;
                             console.log("se suma2: " + columns[2] + "->" + duracion2);
                             alert("duracion2: -" + duracion2.toFixed(2));
                         }
                         if (columns[2] == 3) {
                             duracion3 += parseFloat(columns[10]) || 0;
+                            document3.getElementById("duracion3").textContent = duracion3;
+
                             console.log("se suma3: " + columns[2] + "->" + duracion3);
                             alert("duracion3: -" + duracion3.toFixed(2));
                         }
                         if (columns[2] == 4) {
                             duracion4 += parseFloat(columns[10]) || 0;
+                            document4.getElementById("duracion4").textContent = duracion4;
+
                             console.log("se suma4: " + columns[2] + "->" + duracion4);
                             alert("duracion4: -" + duracion4.toFixed(2));
                         }
                         if (columns[2] == 5) {
                             duracion5 += parseFloat(columns[10]) || 0;
+                            document5.getElementById("duracion5").textContent = duracion5;
+
                             console.log("se suma5: " + columns[2] + "->" + duracion5);
                             alert("duracion5: -" + duracion5.toFixed(2));
                         }
@@ -198,14 +199,7 @@
                         tableContent += '</tr>';
                     }
 
-
-
-
-
-
                 } 
-                
-                
                 
                 else {
                     tableContent += '<tr><td>No hay datos para mostrar</td></tr>';
