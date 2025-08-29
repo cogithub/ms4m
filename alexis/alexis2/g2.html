@@ -64,6 +64,7 @@
                     tableContent += '</tr>';
 
                     // Procesar las filas de datos (omitir la primera línea si es encabezado)
+                    
                     for (let i = 1; i < lines.length; i++) {
                         const columns = lines[i].split(';').map(col => escapeHTML(col.trim()));
                         tableContent += '<tr>';
@@ -96,5 +97,6 @@
             }[match]));
         }
     </script>
+
 </body>
 </html>
