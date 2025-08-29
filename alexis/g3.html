@@ -1,9 +1,12 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" ng-app="myApp">
+
 <head>
     <meta charset="UTF-8">
     <title>Descompresor de Archivos Gzip en Tabla</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
     <style>
         table {
             border-collapse: collapse;
@@ -28,7 +31,7 @@
         }
     </style>
 </head>
-<body>
+<body ng-controller="myCtrl">
     <h1>Contenido del archivo Gzip en Tabla</h1>
     <div class="filter-container">
         <label for="year">Año:</label>
@@ -57,22 +60,22 @@
     </div>
     <div id="output"></div>
 
-    <script>
-        var duracion1 = 0;
+
+<script>
+    var duracion1 = 0;
         var duracion2 = 0;
         var duracion3 = 0;
         var duracion4 = 0;
         var duracion5 = 0;
-
-    let variable1 = duracion1.toFixed(2);
-    let duracion2 = duracion2.toFixed(2);
-    let duracion3 = duracion3.toFixed(2);
-    let duracion4 = duracion4.toFixed(2);
-    let duracion5 = duracion5.toFixed(2);
-    
-  const duracion1 = "3h 45min"; // Aquí defines el valor
-  document.getElementById("duracion-cell").textContent = duracion1;
-</script>
+    angular.module('myApp', [])
+      .controller('myCtrl', function($scope) {
+        $scope.duracion1 = 0;
+        $scope.duracion2 = 0;
+        $scope.duracion3 = 0;
+        $scope.duracion4 = 0;
+        $scope.duracion5 = 0;
+      });
+  </script>
     
  
 <table border="1">
@@ -84,30 +87,31 @@
         </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>1</td>
-        <td>READY</td>
-        <td> id="duracion-cell"</td>
-    </tr>
+
+        <tr>
+            <td>1</td>
+            <td>READY</td>
+            <td>{{duracion1}}</td>
+        </tr>
         <tr>
             <td>2</td>
             <td>DELAY</td>
-            <td>duracion2</td>
+            <td>{{duracion2}}</td>
         </tr>
         <tr>
             <td>3</td>
             <td>STANDBY</td>
-            <td>duracion3</td>
+            <td>{{duracion3}}</td>
         </tr>
         <tr>
             <td>4</td>
             <td>MAINT</td>
-            <td>duracion4</td>
+            <td>{{duracion4}}</td>
         </tr>
         <tr>
             <td>5</td>
             <td>OUTOFPLAN</td>
-            <td>duracion5</td>
+            <td>{{duracion5}}</td>
         </tr>
     </tbody>
 </table>
@@ -210,11 +214,7 @@
                 tableContent += '</table>';
                 
                 // Mostrar la tabla en el elemento de salida
-                outputElement.innerHTML = tableContent;
-
-
-
-
+                outputElement.innerHTML = tableContent
 
             } catch (error) {
                 outputElement.innerHTML = `<p>Error: ${escapeHTML(error.message)}</p>`;
@@ -232,6 +232,6 @@
             }[match]));
         }
     </script>
-   
+
 </body>
 </html>
