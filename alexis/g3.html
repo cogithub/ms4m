@@ -131,6 +131,8 @@
 
 
             try {
+            outputElement.innerHTML = '<p>Cargando...</p>';
+
                 
                 // Construir la URL con los valores de año y mes seleccionados
                 const response = await fetch(`http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${year}/${month}&f=statushistory`);
