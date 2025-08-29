@@ -122,7 +122,17 @@
             const month = document.getElementById('month').value;
             outputElement.innerHTML = '<p>Cargando...</p>';
 
+
+             duracion1 = 0;
+             duracion2 = 0;
+             duracion3 = 0;
+             duracion4 = 0;
+             duracion5 = 0;
+
+
             try {
+                
+                alert("Año: " + year + " Mes: " + month);
                 // Construir la URL con los valores de año y mes seleccionados
                 const response = await fetch(`http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${year}/${month}&f=statushistory`);
                 
