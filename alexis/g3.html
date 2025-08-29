@@ -144,11 +144,11 @@
                 
                 if (lines.length > 0) {
                     // Usar la primera línea como encabezados
-                    const headers = lines[0].split(';').map(header => escapeHTML(header.trim()));
-                    tableContent += '<tr>';
-                    headers.forEach(header => {
-                        tableContent += `<th>${header}</th>`;
-                    });
+                    // const headers = lines[0].split(';').map(header => escapeHTML(header.trim()));
+                    // tableContent += '<tr>';
+                    // headers.forEach(header => {
+                    //     tableContent += `<th>${header}</th>`;
+                    // });
                     tableContent += '</tr>';
 
                     // Procesar las filas de datos (omitir la primera línea si es encabezado)
@@ -159,7 +159,7 @@
                         // Procesar filas de datos que coincidan con los filtros
                         if (columns[2] == 1) {
                             duracion1 += parseFloat(columns[10]) || 0;
-                            document.getElementById("duracion1").textContent = duracion1;
+                            document.getElementById("duracion1").textContent = duracion1.toFixed(2);;
                             console.log("se suma1: " + columns[2] + "->" + duracion1);
                             // alert("duracion1: -" + duracion1.toFixed(2));
                         }
@@ -167,26 +167,26 @@
                         
                         if (columns[2] == 2) {
                             {{duracion2 += parseFloat(columns[10]) || 0}};
-                            document.getElementById("duracion2").textContent = duracion2;
+                            document.getElementById("duracion2").textContent = duracion2.toFixed(2);;
                             console.log("se suma2: " + columns[2] + "->" + duracion2);
                             // alert("duracion2: -" + duracion2.toFixed(2));
                         }
                         if (columns[2] == 3) {
                             duracion3 += parseFloat(columns[10]) || 0;
-                            document.getElementById("duracion3").textContent = duracion3;
+                            document.getElementById("duracion3").textContent = duracion3.toFixed(2);;
                             console.log("se suma3: " + columns[2] + "->" + duracion3);
                             // alert("duracion3: -" + duracion3.toFixed(2));
                         }
                         if (columns[2] == 4) {
                             duracion4 += parseFloat(columns[10]) || 0;
-                            document.getElementById("duracion4").textContent = duracion4;
+                            document.getElementById("duracion4").textContent = duracion4.toFixed(2);;
 
                             console.log("se suma4: " + columns[2] + "->" + duracion4);
                             // alert("duracion4: -" + duracion4.toFixed(2));
                         }
                         if (columns[2] == 5) {
                             duracion5 += parseFloat(columns[10]) || 0;
-                            document.getElementById("duracion5").textContent = duracion5;
+                            document.getElementById("duracion5").textContent = duracion5.toFixed(2);;
 
                             console.log("se suma5: " + columns[2] + "->" + duracion5);
                             // alert("duracion5: -" + duracion5.toFixed(2));
