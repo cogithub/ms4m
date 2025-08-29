@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
-<!-- <html ng-app="myApp"> -->
+<html ng-app="myApp">
 <head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Descompresor Gzip a Tabla con Duración</title>
-      <!-- <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script> -->
+      <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 
     <style>
@@ -31,8 +31,7 @@
         }
     </style>
 </head>
-<!-- <body ng-controller="myCtrl"> -->
-<body >
+<body ng-controller="myCtrl">
            <div class="filter-container">
         <label for="yearFilter">Año:</label>
       <select ng-model="anio" id="yearFilter" name="year" onchange="fetchAndDecompress()" >
@@ -266,11 +265,11 @@
             }
         }
     </script>
-      <!-- <script>
+      <script>
             angular.module('myApp', [])
             .controller('myCtrl', function($scope) {
                 // $scope.nombre = "Carlos";
             });
-  </script> -->
+  </script>
 </body>
 </html>
