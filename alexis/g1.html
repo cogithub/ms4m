@@ -6,8 +6,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Descompresor Gzip a Tabla con Duración</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+
     <style>
         table {
             border-collapse: collapse;
@@ -218,28 +219,42 @@
         }
 
         async function fetchAndDecompress() {
-            // document.getElementById('urlInput').value="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d={{anio}}/{{mes}}&f=statushistory";
-            const url = document.getElementById('urlInput').value="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d={{anio}}/{{mes}}&f=statushistory" ;
+            // document.getElementById('urlInput').value="";
+            // const url = "http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d={{anio}}/{{mes}}&f=statushistory" ;
+          
+            // const url = document.getElementById('urlInput').value;
+
             const outputElement = document.getElementById('output');
-            alert("url: "+url);
+
+            // alert("url: "+url);
+
             try {
+
                 // Obtener el archivo .gz
-                const response = await fetch(url);
+                const response = await fetch("http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d={{anio}}/{{mes}}&f=statushistory");
+               
+            alert("pasndo3")
                 if (!response.ok) {
                     throw new Error(`Error HTTP: ${response.status}`);
                 }
+            alert("pasndo33")
 
                 // Convertir la respuesta a un ArrayBuffer
                 const arrayBuffer = await response.arrayBuffer();
+            alert("pasndo134")
 
                 // Descomprimir el contenido usando pako
+                debugger
                 const decompressed = pako.ungzip(new Uint8Array(arrayBuffer), { to: 'string' });
+            alert("pasndo34")
 
                 // Parsear el contenido con el delimitador ";" y aplicar filtros
                 try {
+
                     const parsedData = parseData(decompressed);
                     const tableHtml = createTable(parsedData);
                     outputElement.innerHTML = tableHtml;
+
                 } catch (parseError) {
                     outputElement.innerHTML = `<pre>Error al parsear el contenido: ${parseError.message}</pre>`;
                 }
