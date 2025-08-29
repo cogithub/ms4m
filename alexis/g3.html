@@ -62,11 +62,13 @@
 
 
 <script>
+
     var duracion1 = 0;
     var duracion2 = 0;
     var duracion3 = 0;
     var duracion4 = 0;
     var duracion5 = 0;
+
 
   </script>
     
@@ -94,12 +96,12 @@
         <tr>
             <td>3</td>
             <td>STANDBY</td>
-            <td id="duracion3></td>
+            <td id="duracion3"></td>
         </tr>
         <tr>
             <td>4</td>
             <td>MAINT</td>
-            <td id="duracion4></td>
+            <td id="duracion4"></td>
         </tr>
         <tr>
             <td>5</td>
@@ -167,36 +169,35 @@
                             {{duracion2 += parseFloat(columns[10]) || 0}};
                             document.getElementById("duracion2").textContent = duracion2;
                             console.log("se suma2: " + columns[2] + "->" + duracion2);
-                            alert("duracion2: -" + duracion2.toFixed(2));
+                            // alert("duracion2: -" + duracion2.toFixed(2));
                         }
                         if (columns[2] == 3) {
                             duracion3 += parseFloat(columns[10]) || 0;
-                            document3.getElementById("duracion3").textContent = duracion3;
-
+                            document.getElementById("duracion3").textContent = duracion3;
                             console.log("se suma3: " + columns[2] + "->" + duracion3);
-                            alert("duracion3: -" + duracion3.toFixed(2));
+                            // alert("duracion3: -" + duracion3.toFixed(2));
                         }
                         if (columns[2] == 4) {
                             duracion4 += parseFloat(columns[10]) || 0;
-                            document4.getElementById("duracion4").textContent = duracion4;
+                            document.getElementById("duracion4").textContent = duracion4;
 
                             console.log("se suma4: " + columns[2] + "->" + duracion4);
-                            alert("duracion4: -" + duracion4.toFixed(2));
+                            // alert("duracion4: -" + duracion4.toFixed(2));
                         }
                         if (columns[2] == 5) {
                             duracion5 += parseFloat(columns[10]) || 0;
-                            document5.getElementById("duracion5").textContent = duracion5;
+                            document.getElementById("duracion5").textContent = duracion5;
 
                             console.log("se suma5: " + columns[2] + "->" + duracion5);
-                            alert("duracion5: -" + duracion5.toFixed(2));
+                            // alert("duracion5: -" + duracion5.toFixed(2));
                         }
                         
                         
-                        tableContent += '<tr>';
-                        columns.forEach(col => {
-                            tableContent += `<td>${col}</td>`;
-                        });
-                        tableContent += '</tr>';
+                        // tableContent += '<tr>';
+                        // columns.forEach(col => {
+                        //     tableContent += `<td>${col}</td>`;
+                        // });
+                        // tableContent += '</tr>';
                     }
 
                 } 
