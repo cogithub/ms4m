@@ -132,7 +132,6 @@
 
             try {
                 
-                // alert("Año: " + year + " Mes: " + month);
                 // Construir la URL con los valores de año y mes seleccionados
                 const response = await fetch(`http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${year}/${month}&f=statushistory`);
                 
@@ -153,12 +152,6 @@
                 let tableContent = '<table>';
                 
                 if (lines.length > 0) {
-                    // Usar la primera línea como encabezados
-                    // const headers = lines[0].split(';').map(header => escapeHTML(header.trim()));
-                    // tableContent += '<tr>';
-                    // headers.forEach(header => {
-                    //     tableContent += `<th>${header}</th>`;
-                    // });
                     tableContent += '</tr>';
 
                     // Procesar las filas de datos (omitir la primera línea si es encabezado)
@@ -199,15 +192,8 @@
                             document.getElementById("duracion5").textContent = duracion5.toFixed(2);;
 
                             console.log("se suma5: " + columns[2] + "->" + duracion5);
-                            // alert("duracion5: -" + duracion5.toFixed(2));
                         }
                         
-                        
-                        // tableContent += '<tr>';
-                        // columns.forEach(col => {
-                        //     tableContent += `<td>${col}</td>`;
-                        // });
-                        // tableContent += '</tr>';
                     }
 
                 } 
