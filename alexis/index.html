@@ -246,10 +246,10 @@
                             // const currentDate = new Date(recordYear, recordMonth - 1, recordDay);
                             const feccubo = new Date(columns[9]); 
 debugger
-                            let fec1=new Date(fromYear, fromMonth - 1, fromDay);
-                            let fec2=new Date(toYear, toMonth - 1, toDay);
+                            let fec1=new Date(fromYear, fromMonth, fromDay);
+                            let fec2=new Date(toYear, toMonth, toDay);
 
-                            if (feccubo >= fromDate && feccubo <= toDate) {
+                            if (feccubo >= fec1 && feccubo <= fec2) {
                     //    alert("entro2")
 
                                 if (columns[2] == 1) {
