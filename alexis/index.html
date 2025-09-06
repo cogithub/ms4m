@@ -141,6 +141,12 @@
         var duracion4 = 0;
         var duracion5 = 0;
 
+            function formatearFecha(fecha) {
+                const year = fecha.getFullYear();
+                const month = String(fecha.getMonth() + 1).padStart(2, '0'); // +1 porque los meses van de 0 a 11
+                const day = String(fecha.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;}
+
         // Function to update day options for "from" date
         function updateFromDayOptions() {
             const year = document.getElementById('fromYear').value;
@@ -244,38 +250,51 @@
 
                             const [recordYear, recordMonth, recordDay] = recordDate.split('-').map(Number);
                             // const currentDate = new Date(recordYear, recordMonth - 1, recordDay);
-                            const feccubo = new Date(columns[9]); 
-debugger
-                            let fec1=new Date(fromYear, fromMonth, fromDay);
-                            let fec2=new Date(toYear, toMonth, toDay);
+                           
+                            const feccubo = new Date(columns[9]) //.getTime(); 
+                            const feccubo2 = new Date(columns[9]); 
+                          
+                            let fec1=new Date(fromYear, fromMonth, fromDay) //.getTime();
+                            let fec2=new Date(toYear, toMonth, toDay) //.getTime();
+// debugger
+let a=formatearFecha(fec1) 
+let b=formatearFecha(feccubo2) 
+let c=formatearFecha(fec2) 
+  
+// let a=fec1
+// let b=feccubo
+// let c=fec2
 
-                            if (feccubo >= fec1 && feccubo <= fec2) {
-                    //    alert("entro2")
+let z=` ${a} >= ${b} && ${b}<=  ${c}`;
+let x=eval(z)
 
-                                if (columns[2] == 1) {
+                            if (a >=b  && b <= c) {
+  if (b.includes("2024")) {     //    alert(feccubo)
+    // console.log("*** ",b)
+}                                   if (columns[2] == 1) {
                                     duracion1 += parseFloat(columns[10]) || 0;
                                     document.getElementById('duracion1').textContent = duracion1.toFixed(2);
-                                    console.log(`Suma READY: ${columns[2]} -> ${duracion1}`);
+                                    // console.log(`Suma READY: ${columns[2]} -> ${duracion1}`);
                                 }
                                 if (columns[2] == 2) {
                                     duracion2 += parseFloat(columns[10]) || 0;
                                     document.getElementById('duracion2').textContent = duracion2.toFixed(2);
-                                    console.log(`Suma DELAY: ${columns[2]} -> ${duracion2}`);
+                                    // console.log(`Suma DELAY: ${columns[2]} -> ${duracion2}`);
                                 }
                                 if (columns[2] == 3) {
                                     duracion3 += parseFloat(columns[10]) || 0;
                                     document.getElementById('duracion3').textContent = duracion3.toFixed(2);
-                                    console.log(`Suma STANDBY: ${columns[2]} -> ${duracion3}`);
+                                    // console.log(`Suma STANDBY: ${columns[2]} -> ${duracion3}`);
                                 }
                                 if (columns[2] == 4) {
                                     duracion4 += parseFloat(columns[10]) || 0;
                                     document.getElementById('duracion4').textContent = duracion4.toFixed(2);
-                                    console.log(`Suma MAINT: ${columns[2]} -> ${duracion4}`);
+                                    // console.log(`Suma MAINT: ${columns[2]} -> ${duracion4}`);
                                 }
                                 if (columns[2] == 5) {
                                     duracion5 += parseFloat(columns[10]) || 0;
                                     document.getElementById('duracion5').textContent = duracion5.toFixed(2);
-                                    console.log(`Suma OUTOFPLAN: ${columns[2]} -> ${duracion5}`);
+                                    // console.log(`Suma OUTOFPLAN: ${columns[2]} -> ${duracion5}`);
                                 }
                             }
                         }
@@ -302,6 +321,9 @@ debugger
                 "'": '&#39;'
             }[match]));
         }
+
+
+
     </script>
 </body>
 </html>

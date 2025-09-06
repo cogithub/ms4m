@@ -1,0 +1,381 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Total Transcurrido en Hrs./Status</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f9fa;
+      color: #333;
+    }
+    h1 {
+      text-align: center;
+      padding: 20px;
+      background: #1f77b4;
+      color: white;
+      margin: 0;
+    }
+    .filter-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .filter-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .filter-section h3 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+      color: #555;
+    }
+    .filter-section input[type="date"] {
+      padding: 6px 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 15px;
+      border: none;
+      border-radius: 8px;
+      background: #28a745;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #218838;
+    }
+    #output {
+      text-align: center;
+      margin: 10px;
+      font-weight: bold;
+    }
+    table {
+      border-collapse: collapse;
+      width: 90%;
+      margin: 20px auto;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    th, td {
+      border: 1px solid #eee;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #1f77b4;
+      color: white;
+    }
+    .charts-wrapper {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 90%;
+      margin: 30px auto;
+    }
+    #chartContainer {
+      flex: 1;
+      min-width: 300px;
+      max-width: 600px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    #areaChartContainer, #pieChartContainer {
+      flex: 1;
+      min-width: 300px;
+      max-width: 600px;
+      background: #fff;
+      padding: 15px;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <h1>Total Transcurrido Hrs./Status</h1>
+
+  <div class="filter-container">
+    <div class="filter-section">
+      <h3>Fecha Desde</h3>
+      <input type="date" id="fromDate" value="2024-04-01">
+    </div>
+    <div class="filter-section">
+      <h3>Fecha Hasta</h3>
+      <input type="date" id="toDate" value="2025-08-30">
+    </div>
+    <div class="filter-section">
+      <h3>&nbsp;</h3>
+      <button onclick="fetchAndDecompress()">Obtener Datos</button>
+    </div>
+  </div>
+
+  <div id="output"></div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>ID Status</th>
+        <th>Status</th>
+        <th>Horas Transcurridas</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>READY</td><td id="duracion1">0.00</td></tr>
+      <tr><td>2</td><td>DELAY</td><td id="duracion2">0.00</td></tr>
+      <tr><td>3</td><td>STANDBY</td><td id="duracion3">0.00</td></tr>
+      <tr><td>4</td><td>MAINT</td><td id="duracion4">0.00</td></tr>
+      <tr><td>5</td><td>OUTOFPLAN</td><td id="duracion5">0.00</td></tr>
+    </tbody>
+  </table>
+
+  <div class="charts-wrapper">
+    <div id="chartContainer">
+      <canvas id="statusChart"></canvas>
+      <div id="pieChartContainer"><canvas id="pieStatusChart"></canvas></div>
+    </div>
+    <div id="areaChartContainer"><canvas id="areaStatusChart"></canvas></div>
+  </div>
+
+  <script>
+    let duraciones = [0,0,0,0,0];
+
+    // --- Función promedio ---
+    const calcularPromedio = (data) =>
+      data.reduce((a, b) => a + b, 0) / (data.length || 1);
+
+    // --- Configuración de gráficos ---
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    const statusChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['READY', 'DELAY', 'STANDBY', 'MAINT', 'OUTOFPLAN'],
+        datasets: [{
+          label: 'Horas Transcurridas',
+          data: duraciones,
+          backgroundColor: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'],
+          borderColor: '#fff',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true, title: { display: true, text: 'Horas Transcurridas' } },
+          x: { title: { display: true, text: 'Estado' } }
+        },
+        plugins: {
+          legend: { display: false },
+          title: { display: true, text: 'Horas Transcurridas por Estado' },
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            formatter: (v) => v.toFixed(2) + " hrs",
+            font: { weight: 'bold', size: 12 },
+            color: '#000'
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+
+    const areaCtx = document.getElementById('areaStatusChart').getContext('2d');
+    const areaStatusChart = new Chart(areaCtx, {
+      type: 'line',
+      data: {
+        labels: ['READY', 'DELAY', 'STANDBY', 'MAINT', 'OUTOFPLAN'],
+        datasets: [{
+          label: 'Horas Transcurridas',
+          data: duraciones,
+          backgroundColor: 'rgba(75,192,192,0.2)',
+          borderColor: 'rgba(75,192,192,1)',
+          borderWidth: 2,
+          fill: true,
+          tension: 0.4
+        },{
+          label: 'Promedio',
+          data: Array(duraciones.length).fill(0),
+          borderColor: 'rgba(255,99,132,1)',
+          borderWidth: 2,
+          borderDash: [6,6],
+          pointRadius: 0,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true, title: { display: true, text: 'Horas Transcurridas' } },
+          x: { title: { display: true, text: 'Estado' } }
+        },
+        plugins: {
+          legend: { display: true },
+          title: { display: true, text: 'Horas Transcurridas por Estado (con Promedio)' },
+          datalabels: {
+            anchor: 'end',
+            align: 'top',
+            formatter: (v, ctx) => ctx.dataset.label === 'Promedio' ? "" : v.toFixed(2) + " hrs",
+            font: { weight: 'bold', size: 12 },
+            color: '#000'
+          }
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+
+    // --- Configuración del gráfico de dona 3D ---
+    const pieCtx = document.getElementById('pieStatusChart').getContext('2d');
+    const pieStatusChart = new Chart(pieCtx, {
+      type: 'doughnut',
+      data: {
+        labels: ['READY', 'DELAY', 'STANDBY', 'MAINT', 'OUTOFPLAN'],
+        datasets: [{
+          label: 'Horas Transcurridas',
+          data: duraciones,
+          backgroundColor: ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd'],
+          borderColor: '#fff',
+          borderWidth: 3,
+          borderRadius: 8,
+          offset: 10,
+          hoverOffset: 20
+        }]
+      },
+      options: {
+        responsive: true,
+        cutout: '60%',
+        plugins: {
+          legend: { display: true, position: 'top' },
+          title: { display: true, text: 'Distribución de Horas por Estado (Dona 3D)' },
+          datalabels: {
+            formatter: (v) => v.toFixed(2) + " hrs",
+            font: { weight: 'bold', size: 12 },
+            color: '#000'
+          }
+        },
+        animation: {
+          animateRotate: true,
+          animateScale: true
+        }
+      },
+      plugins: [ChartDataLabels]
+    });
+
+    // --- Fetch y actualización de datos ---
+    async function fetchAndDecompress() {
+      const outputElement = document.getElementById('output');
+      const fromDate = new Date(document.getElementById('fromDate').value);
+      const toDate = new Date(document.getElementById('toDate').value);
+
+      if (toDate < fromDate) {
+        outputElement.innerHTML = '<p style="color:red">❌ Error: La fecha "Hasta" debe ser mayor o igual a la fecha "Desde".</p>';
+        return;
+      }
+
+      duraciones = [0,0,0,0,0];
+      document.querySelectorAll("td[id^='duracion']").forEach(td => td.textContent = "0.00");
+      outputElement.textContent = "⏳ Cargando...";
+      try {
+        let a=`${fromDate.getFullYear()}`;
+        const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${a}/&f=statushistory`;
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const buffer = await response.arrayBuffer();
+        const decompressed = pako.inflate(new Uint8Array(buffer), { to: 'string' });
+        const lines = decompressed.split('\n').filter(line => line.trim() !== '');
+
+        for (let i=1; i<lines.length; i++) {
+          const cols = lines[i].split(';').map(c => c.trim());
+          const fechaRegistro = new Date(cols[9]);
+          if (fechaRegistro >= fromDate && fechaRegistro <= toDate) {
+            const idx = parseInt(cols[2], 10)-1;
+            if (idx >= 0 && idx < duraciones.length) {
+              duraciones[idx] += parseFloat(cols[10]) || 0;
+              document.getElementById(`duracion${idx+1}`).textContent = duraciones[idx].toFixed(2);
+            }
+          }
+        }
+
+        // actualizar gráficos
+        const promedio = calcularPromedio(duraciones);
+        statusChart.data.datasets[0].data = duraciones;
+        areaStatusChart.data.datasets[0].data = duraciones;
+        areaStatusChart.data.datasets[1].data = Array(duraciones.length).fill(promedio);
+        pieStatusChart.data.datasets[0].data = duraciones;
+
+        statusChart.update();
+        areaStatusChart.update();
+        pieStatusChart.update();
+        outputElement.textContent = `✅ Datos cargados. Promedio: ${promedio.toFixed(2)} hrs`;
+
+      } catch (e) {
+        outputElement.innerHTML = `<p style="color:red">⚠️ Error: ${e.message}</p>`;
+      }
+    }
+  </script>
+  <!-- Code injected by live-server -->
+  <script>
+    // <![CDATA[  <-- For SVG support
+    if ('WebSocket' in window) {
+      (function () {
+        function refreshCSS() {
+          var sheets = [].slice.call(document.getElementsByTagName("link"));
+          var head = document.getElementsByTagName("head")[0];
+          for (var i = 0; i < sheets.length; ++i) {
+            var elem = sheets[i];
+            var parent = elem.parentElement || head;
+            parent.removeChild(elem);
+            var rel = elem.rel;
+            if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+              var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+              elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+            }
+            parent.appendChild(elem);
+          }
+        }
+        var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+        var address = protocol + window.location.host + window.location.pathname + '/ws';
+        var socket = new WebSocket(address);
+        socket.onmessage = function (msg) {
+          if (msg.data == 'reload') window.location.reload();
+          else if (msg.data == 'refreshcss') refreshCSS();
+        };
+        if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+          console.log('Live reload enabled.');
+          sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+        }
+      })();
+    }
+    else {
+      console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+    }
+    // ]]>
+  </script>
+</body>
+</html>
+```

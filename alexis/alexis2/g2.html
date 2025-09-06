@@ -36,7 +36,7 @@
 
             try {
                 // Reemplaza esta URL con la del servicio que retorna el archivo .gz
-                const response = await fetch('http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/07&f=statushistory');
+                const response = await fetch('http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/&f=statushistory');
                 
                 if (!response.ok) {
                     throw new Error(`Error HTTP: ${response.status}`);
