@@ -1,7 +1,7 @@
 const Papa = require('papaparse');
 const fs = require('fs');
 
-function combinarCSVs(rutaArchivoA, rutaArchivoB, col_index, col_insert, rutaSalida) {
+function combinarCSVs(rutaArchivoA, rutaArchivoB, rutaSalida) {
     // Leer archivos CSV
     const csv_a = fs.readFileSync(rutaArchivoA, 'utf8');
     const csv_b = fs.readFileSync(rutaArchivoB, 'utf8');
@@ -12,13 +12,13 @@ function combinarCSVs(rutaArchivoA, rutaArchivoB, col_index, col_insert, rutaSal
 
     // Crear un mapa para los datos de CSV B (búsqueda eficiente)
     const mapa_b = new Map(
-        datos_b.map(item => [item[col_index], item[col_insert]])
+        datos_b.map(item => [item["Id equipment"], item["Equipment - ID"]])
     );
 
     // Combinar datos
     const resultado = datos_a.map(item_a => ({
         ...item_a,
-        "Equipment - ID": mapa_b.get(item_a[col_insert ]) || null
+        "Equipment - ID": mapa_b.get(item_a["Id equipment"]) || null
     }));
 
     // Generar CSV de salida
@@ -31,4 +31,4 @@ function combinarCSVs(rutaArchivoA, rutaArchivoB, col_index, col_insert, rutaSal
 }
 
 // Llamada a la función con parámetros
-combinarCSVs('archivo_a.csv', 'archivo_b.csv', 'id equipment ','equipment ID', 'salida.csv');
+combinarCSVs('archivo_a.csv', 'archivo_b.csv', 'resultado.csv');
