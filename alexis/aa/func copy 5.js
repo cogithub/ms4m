@@ -49,7 +49,7 @@ function combinarCSVs(archivo_a
 combinarCSVs(
     'archivo_a.csv',           // Ruta del primer archivo CSV
     'archivo_b.csv',           // Ruta del segundo archivo CSV
-    'salida.csv',           // Ruta del archivo de salida
+    'resultado.csv',           // Ruta del archivo de salida
     'Id equipment',            // Nombre de la columna clave en el primer CSV
     'Id equipment',            // Nombre de la columna clave en el segundo CSV
     'Equipment - ID'           // Nombre de la columna a transferir del segundo CSV
