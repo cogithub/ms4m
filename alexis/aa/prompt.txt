@@ -1,0 +1,3 @@
+Necesito  y tomar una columna "Equipment - ID" de csv B, y colocarla en el
+ csv  a respetando la concordancia entre los dos csv  por una columna en común 
+llamada "Id equipment "
