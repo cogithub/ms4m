@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Función para combinar CSVs
-function combinarCSVs(rutaCsvA, rutaCsvB, rutaSalida) {
+function combinarCSVs(rutaCsvA, rutaCsvB, rutaSalida, col_index, col_insert) {
     try {
         // Verificar si los archivos existen
         if (!fs.existsSync(rutaCsvA)) {
@@ -29,7 +29,7 @@ function combinarCSVs(rutaCsvA, rutaCsvB, rutaSalida) {
         // Combinar datos
         const resultado = datos_a.map(item_a => ({
             ...item_a,
-            "Equipment - ID": mapa_b.get(item_a[col_index]) || null
+           "Equipment - ID": mapa_b.get(item_a["id equipment"]) || null
         }));
 
         // Generar CSV de salida
@@ -46,15 +46,15 @@ function combinarCSVs(rutaCsvA, rutaCsvB, rutaSalida) {
 
 // Ejemplo de llamada a la función
 try {
-    col_index = "id equipment"; // Columna a insertar desde CSV B
-    col_insert = "Equipment - ID"; // Columna para buscar en CSV A
+    col_index = "id equipment id";
+    col_insert = "Equipment - ID";
+
     combinarCSVs(
         path.resolve(__dirname, 'archivo_a.csv'), // Ruta al CSV A
         path.resolve(__dirname, 'archivo_b.csv'), // Ruta al CSV B
-        path.resolve(__dirname, 'resultado.csv'),
+        path.resolve(__dirname, 'resultado.csv'),  // Ruta al archivo de salida
         col_index,
         col_insert
-          // Ruta al archivo de salida
     );
 } catch (error) {
     console.error('Error en la ejecución:', error.message);
