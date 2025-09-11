@@ -1,0 +1,57 @@
+<input type="file" id="csv_a" accept=".csv">
+<input type="file" id="csv_b" accept=".csv">
+<button onclick="combinarCSVs()">Combinar</button>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script>
+function combinarCSVs() {
+    const file_a = document.getElementById('csv_a').files[0];
+    const file_b = document.getElementById('csv_b').files[0];
+
+    if (!file_a || !file_b) {
+        alert('Por favor, sube ambos archivos CSV');
+        return;
+    }
+
+    // Parsear CSV A
+    Papa.parse(file_a, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(resultado_a) {
+            const datos_a = resultado_a.data;
+
+            // Parsear CSV B
+            Papa.parse(file_b, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(resultado_b) {
+                    const datos_b = resultado_b.data;
+
+                    // Crear mapa para CSV B
+                    const mapa_b = new Map(
+                        datos_b.map(item => [item["Id equipment"], item["Equipment - ID"]])
+                    );
+
+                    // Combinar datos
+                    const resultado = datos_a.map(item_a => ({
+                        ...item_a,
+                        "equipment id": mapa_b.get(item_a["Id equipment"]) || null
+                    }));
+
+                    // Generar CSV
+                    const csv_resultado = Papa.unparse(resultado);
+
+                    // Descargar el archivo
+                    const blob = new Blob([csv_resultado], { type: 'text/csv' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'resultado.csv';
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }
+            });
+        }
+    });
+}
+</script>
