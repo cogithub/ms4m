@@ -1,3 +1,9 @@
+
+// copia con parametros
+// copia con parametros
+// copia con parametros
+// copia con parametros
+
 const Papa = require('papaparse');
 const fs = require('fs');
 
