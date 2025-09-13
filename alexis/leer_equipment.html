@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector de Archivos CSV</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="file"] {
+            display: block;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .message {
+            color: green;
+            text-align: center;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lector de Archivos CSV</h1>
+        <input type="file" id="csvFile" accept=".csv">
+        <div id="error" class="error"></div>
+        <div id="message" class="message"></div>
+        <table id="csvTable">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('csvFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const errorDiv = document.getElementById('error');
+            const messageDiv = document.getElementById('message');
+            const tableHead = document.getElementById('tableHead');
+            const tableBody = document.getElementById('tableBody');
+
+            // Limpiar mensajes y tabla
+            errorDiv.textContent = '';
+            messageDiv.textContent = '';
+            tableHead.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            if (!file) {
+                errorDiv.textContent = 'No se seleccionó ningún archivo';
+                return;
+            }
+
+            // Verificar que sea un archivo CSV
+            if (!file.name.endsWith('.csv')) {
+                errorDiv.textContent = 'Por favor, selecciona un archivo CSV';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const text = e.target.result;
+                const data = parseCSV(text);
+
+                if (data.length === 0) {
+                    errorDiv.textContent = 'El archivo CSV está vacío o tiene un formato incorrecto';
+                    return;
+                }
+
+                // Mostrar mensaje de éxito
+                messageDiv.textContent = `Archivo ${file.name} cargado correctamente. Mostrando ${data.length} filas.`;
+
+                // Crear encabezados de la tabla
+                const headers = Object.keys(data[0]);
+                const headerRow = document.createElement('tr');
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                tableHead.appendChild(headerRow);
+
+                // Crear filas de la tabla
+                data.forEach(row => {
+                    const tr = document.createElement('tr');
+                    headers.forEach(header => {
+                        const td = document.createElement('td');
+                        td.textContent = row[header];
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+            };
+
+            reader.onerror = function(e) {
+                errorDiv.textContent = 'Error al leer el archivo: ' + e;
+            };
+
+            reader.readAsText(file);
+        });
+
+        // Función para parsear el CSV
+        function parseCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const result = [];
+            const headers = lines[0].split(',').map(header => header.trim());
+
+            for (let i = 1; i < lines.length; i++) {
+                const obj = {};
+                const currentLine = lines[i].split(',').map(item => item.trim());
+
+                // Verificar que la línea tenga la misma cantidad de columnas que los encabezados
+                if (currentLine.length === headers.length) {
+                    headers.forEach((header, index) => {
+                        obj[header] = currentLine[index];
+                    });
+                    result.push(obj);
+                } else {
+                    console.warn(`Línea ${i + 1} ignorada: formato incorrecto`);
+                }
+            }
+
+            return result;
+        }
+    </script>
+</body>
+</html>

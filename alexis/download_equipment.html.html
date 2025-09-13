@@ -1,0 +1,114 @@
+<!DOCTYPE name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consumidor de API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            white-space: pre-wrap; /* Para mostrar JSON formateado */
+            background-color: #f9f9f9;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .success {
+            color: green;
+            text-align: center;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Consumidor de API</h1>
+        <p>URL: <code>http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment</code></p>
+        <button id="fetchBtn">Consumir API</button>
+        <div id="error" class="error"></div>
+        <div id="success" class="success"></div>
+        <div id="response"></div>
+    </div>
+
+    <script>
+        const url = 'http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment';
+        const fetchBtn = document.getElementById('fetchBtn');
+        const errorDiv = document.getElementById('error');
+        const successDiv = document.getElementById('success');
+        const responseDiv = document.getElementById('response');
+
+        fetchBtn.addEventListener('click', async function() {
+            // Limpiar mensajes anteriores
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+            responseDiv.textContent = '';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Si necesitas autenticación, agrega aquí: 'Authorization': 'Bearer tu-token'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json(); // Asume que la respuesta es JSON; si es texto plano, usa response.text()
+
+                // Mostrar éxito
+                successDiv.textContent = `Respuesta recibida correctamente (Status: ${response.status}).`;
+                
+                // Mostrar datos en formato JSON legible
+                responseDiv.textContent = JSON.stringify(data, null, 2);
+                
+                // También en consola para depuración
+                console.log('Datos de la API:', data);
+
+            } catch (error) {
+                // Manejo de errores (red, CORS, etc.)
+                errorDiv.textContent = `Error al consumir la API: ${error.message}. Verifica la conexión o CORS.`;
+                console.error('Error completo:', error);
+            }
+        });
+    </script>
+</body>
+</html>

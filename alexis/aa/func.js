@@ -1,7 +1,8 @@
-// funcion con parametros
-// funcion con parametros
-// funcion con parametros
-// funcion con parametros
+
+// copia con parametros
+// copia con parametros
+// copia con parametros
+// copia con parametros
 
 const Papa = require('papaparse');
 const fs = require('fs');
@@ -22,9 +23,13 @@ function combinarCSVs(archivo_a
 , clave_a
 , clave_b
 , columna_transferir) {
+    debugger
     // Leer archivos CSV
-    const csv_a = fs.readFileSync(archivo_a, 'utf8');
-    const csv_b = fs.readFileSync(archivo_b, 'utf8');
+    // const csv_a = fs.readFileSync(archivo_a, 'utf8');
+    // const csv_b = fs.readFileSync(archivo_b, 'utf8');
+
+     const csv_a =archivo_a;
+    const csv_b = archivo_b;
 
     // Parsear los CSVs a objetos
     const datos_a = Papa.parse(csv_a, { header: true, skipEmptyLines: true }).data;
@@ -54,7 +59,7 @@ function combinarCSVs(archivo_a
 combinarCSVs(
     'archivo_a.csv',           // Ruta del primer archivo CSV
     'archivo_b.csv',           // Ruta del segundo archivo CSV
-    'salida2.csv',           // Ruta del archivo de salida
+    'resultado.csv',           // Ruta del archivo de salida
     'Id equipment',            // Nombre de la columna clave en el primer CSV
     'Id equipment',            // Nombre de la columna clave en el segundo CSV
     'Equipment - ID'           // Nombre de la columna a transferir del segundo CSV

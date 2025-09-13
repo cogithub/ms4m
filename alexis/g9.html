@@ -110,11 +110,11 @@
   <div class="filter-container">
     <div class="filter-section">
       <h3>Fecha Desde</h3>
-      <input type="date" id="fromDate" value="2025-01-01">
+      <input type="date" id="fromDate" value="2025-09-01">
     </div>
     <div class="filter-section">
       <h3>Fecha Hasta</h3>
-      <input type="date" id="toDate" value="2025-01-30">
+      <input type="date" id="toDate" value="2025-09-04">
     </div>
     <div class="filter-section">
       <h3>&nbsp;</h3>
@@ -153,6 +153,55 @@
 
   <script>
 
+
+// condigo de ejemplo
+
+async function consumirApiGzip(url) {
+  try {
+    // Hacer la solicitud a la API
+    const response = await fetch(url, {
+      headers: {
+        'Accept-Encoding': 'gzip', // Indica que aceptamos gzip
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error HTTP: ${response.status}`);
+    }
+
+    // Obtener los datos como ArrayBuffer
+    const compressedData = await response.arrayBuffer();
+    const uint8Array = new Uint8Array(compressedData);
+
+    // Descomprimir con Pako
+    const decompressedData = pako.ungzip(uint8Array);
+
+    // Convertir a texto si es necesario (por ejemplo, si el contenido es JSON o texto)
+    const textoDescomprimido = new TextDecoder().decode(decompressedData);
+
+    // Guardar en una constante
+    const resultado = textoDescomprimido; // O usa `decompressedData` si quieres los datos binarios
+    console.log('Datos descomprimidos:', resultado);
+
+    return resultado;
+  } catch (err) {
+    console.error('Error al consumir o descomprimir:', err);
+    throw err;
+  }
+}
+debugger
+// Ejemplo de uso
+const url = 'http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/&f=statushistory';
+consumirApiGzip(url).then(data => {
+  // Usar la constante `data` aquí
+  console.log('Contenido en constante:', data);
+});
+
+
+// condigo de ejemplo
+
+
+
 function buscarPropiedad(arr, propiedadBusqueda, valorBusqueda, propiedadRetorno) {
   // Buscar el objeto que tenga el valor buscado en la propiedad indicada
   const objEncontrado = arr.find(obj => obj[propiedadBusqueda] === valorBusqueda);
@@ -163,7 +212,6 @@ function buscarPropiedad(arr, propiedadBusqueda, valorBusqueda, propiedadRetorno
     return `No se encontró ningún objeto con ${propiedadBusqueda} = ${valorBusqueda}`;
   }
 }
-
 
 
     let duraciones = [0, 0, 0, 0, 0];
@@ -360,126 +408,56 @@ function buscarPropiedad(arr, propiedadBusqueda, valorBusqueda, propiedadRetorno
         return;
       }
 
-      duraciones = [0, 0, 0, 0, 0];
+      let duraciones = [0, 0, 0, 0, 0];
       document.querySelectorAll("td[id^='duracion']").forEach(td => td.textContent = "0.00");
       outputElement.textContent = "⏳ Cargando...";
       highestStatusElement.textContent = "";
 
-      // fetch(`http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/&f=statushistory`)  // URL del servicio REST
-      // .then(response => response.json())       // Convertir la respuesta en JSON
-      // .then(data => {
-      //   console.log(data);                      // Usar la data recibida
-      // })
-      // .catch(error => {
-      //   console.error('Error:', error);         // Manejo de errores
-      // });
-
-      
-
-      // bloque
-
-function csvToJson(csvData) {
-  // Define the headers based on the provided data structure
-  const headers = [
-    'Status Id',
-    'Control Sense Id',
-    'Id status main',
-    'Id status type',
-    'Id status detail',
-    'Id equipment',
-    'Id employee',
-    'Inicio de estado',
-    'Fin de estado',
-    'Date cube',
-    'Duración Hr.',
-    'Hour'
-  ];
-
-  // Split the input data into lines and filter out empty lines
-  const lines = csvData.split('\n').filter(line => line.trim() !== '');
-
-  // Convert each line into a JSON object
-  const jsonResult = lines.map(line => {
-    const values = line.split(';').map(value => value.trim());
-
-    // Create an object by mapping headers to values
-    const obj = {};
-    headers.forEach((header, index) => {
-      // Convert numeric fields to numbers where appropriate
-      if (
-        header === 'Status Id' ||
-        header === 'Control Sense Id' ||
-        header === 'Id status main' ||
-        header === 'Id status type' ||
-        header === 'Id status detail' ||
-        header === 'Id equipment' ||
-        header === 'Id employee' ||
-        header === 'Duración Hr.' ||
-        header === 'Hour'
-      ) {
-        obj[header] = parseFloat(values[index]) || values[index];
-      } else {
-        obj[header] = values[index];
-      }
-    });
-
-    return obj;
-  });
-
-  return jsonResult;
-}
-
-
-
-      // bloque
-
-    
 
       try {
         let a = `${fromDate.year()}`; // Usar el año exacto de fromDate
         const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${a}/&f=statushistory`;
+        debugger
+        consumirApiGzip(url).then(data => {
+          // Usar la constante `data` aquí
+          console.log('Contenido en constante:', data);
+        });
+
+        
         const response = await fetch(url);
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
         const buffer = await response.arrayBuffer();
         const decompressed = pako.inflate(new Uint8Array(buffer), { to: 'string' });
         
-          // llamad
+         const datosDescomprimidos = decompressed;
 
-const jsonOutput = csvToJson(decompressed);
-console.log(jsonOutput)
-          // llamada
-debugger
+        // combinarCSVs(
+        //   'archivo_a.csv',           // Ruta del primer archivo CSV
+        //   'archivo_b.csv',           // Ruta del segundo archivo CSV
+        //   'resultado.csv',           // Ruta del archivo de salida
+        //   'Id equipment',            // Nombre de la columna clave en el primer CSV
+        //   'Id equipment',            // Nombre de la columna clave en el segundo CSV
+        //   'Equipment - ID')
 
-  //      function csvToJson(csvString) {
-  //         const filas = csvString.trim().split("\n"); // Separar líneas
-  //         const encabezados = filas[0].split(",");    // Primera línea = encabezados
-  //         const jsonData = filas.slice(1).map(fila => {
-  //           const valores = fila.split(",");
-  //           let obj = {};
-  //           encabezados.forEach((header, i) => {
-  //             obj[header.trim()] = valores[i].trim();
-  //           });
-            
-  //           return obj;
-  //         });
-
-  // return JSON.stringify(jsonData, null, 2); // Retorna JSON formateado como string
-//}
-
-        const lines = decompressed.split('\n').filter(line => line.trim() !== '');
+        const lines = datosDescomprimidos.split('\n').filter(line => line.trim() !== '');
 
         for (let i = 1; i < lines.length; i++) {
           const cols = lines[i].split(';').map(c => c.trim());
           const fechaRegistro = moment(cols[9], 'YYYY-MM-DD'); // Ajusta el formato según cols[9]
           //console.log('Fecha cruda:', cols[9], 'Fecha parseada:', fechaRegistro.format('YYYY-MM-DD')); // Depuración
           if ( fechaRegistro.isValid() && fechaRegistro.isSameOrAfter(fromDate) && fechaRegistro.isSameOrBefore(toDate)) {
-          const idx = parseInt(cols[2], 10) - 1;
+
+         if ( cols[2]==1){console.log("*** ", cols[4])}// --- IGNORE ---)
+
+            const idx = parseInt(cols[2], 10) - 1;
             if (idx >= 0 && idx < duraciones.length) {
               duraciones[idx] += parseFloat(cols[10]) || 0;
               document.getElementById(`duracion${idx + 1}`).textContent = duraciones[idx].toFixed(2);
             }
           }
         }
+
 
         // Find the status with the highest hours
         const maxHours = Math.max(...duraciones);
@@ -515,6 +493,8 @@ debugger
         highestStatusElement.textContent = "";
       }
     }
+
+    
   </script>
 </body>
 </html>
