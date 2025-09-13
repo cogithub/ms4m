@@ -134,7 +134,7 @@ const { parse } = require('csv-parse');
 // URL del servicio REST que devuelve el texto plano (supuesto CSV)
 const urlq = 'http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail';
 
-async function fetchAndParseCSV() {
+async function statushistory() {
   let result; // Variable para almacenar el texto plano
   try {
     // Hacer la solicitud al servicio REST
@@ -208,7 +208,7 @@ async function fetchAndParseCSV() {
 }
 
 // Ejecutar y usar el resultado
-// fetchAndParseCSV().then(({ result, csvData }) => {
+// statushistory().then(({ result, csvData }) => {
 //   if (csvData) {
 //     // Usar csvData (lista de filas) como necesites
 //     console.log('Contenido completo del CSV:', csvData);
@@ -225,7 +225,7 @@ async function fetchAndParseCSV() {
 statusdetail();
 
 // Ejecutar y usar el resultado statushistory
-fetchAndParseCSV().then(({ result, csvData }) => {
+statushistory().then(({ result, csvData }) => {
   if (csvData) {
     // Usar csvData (lista de filas) como necesites
     console.log('Contenido completo del CSV:', csvData);
