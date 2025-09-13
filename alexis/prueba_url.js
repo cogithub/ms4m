@@ -8,7 +8,7 @@ const gunzip = util.promisify(zlib.gunzip);
 // URL del servicio REST que devuelve el archivo GZ
 const url = 'http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/&f=statushistory'
 // debugger
-async function statusdetail() {
+async function fstatushistory() {
     try {
         // Hacer la solicitud al servicio REST
         const response = await axios.get(url, { responseType: 'arraybuffer' });
@@ -21,6 +21,7 @@ async function statusdetail() {
 
         // Imprimir o usar la variable
         console.log(result);
+        
 
     } catch (error) {
         if (error.response) {
@@ -134,7 +135,7 @@ const { parse } = require('csv-parse');
 // URL del servicio REST que devuelve el texto plano (supuesto CSV)
 const urlq = 'http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail';
 
-async function statushistory() {
+async function fstatusdetail() {
   let result; // Variable para almacenar el texto plano
   try {
     // Hacer la solicitud al servicio REST
@@ -207,8 +208,8 @@ async function statushistory() {
   }
 }
 
-// Ejecutar y usar el resultado
-// statushistory().then(({ result, csvData }) => {
+// // Ejecutar y usar el resultado
+// fetchAndParseCSV().then(({ result, csvData }) => {
 //   if (csvData) {
 //     // Usar csvData (lista de filas) como necesites
 //     console.log('Contenido completo del CSV:', csvData);
@@ -221,15 +222,16 @@ async function statushistory() {
 // codigo de prueba
 
 
-// Llamar al ejemplo statusdetail 
-statusdetail();
+// Llamar al ejemplo statushistory
+fstatushistory();
 
-// Ejecutar y usar el resultado statushistory
-statushistory().then(({ result, csvData }) => {
+// Ejecutar y usar el resultado statusdetail
+fstatusdetail().then(({ result, csvData }) => {
   if (csvData) {
     // Usar csvData (lista de filas) como necesites
     console.log('Contenido completo del CSV:', csvData);
-    // debugger
+    
+    debugger
   } else {
     // Usar result (texto plano) para inspección adicional
     console.log('No se pudo parsear como CSV. Texto plano:', result.slice(0, 500));
