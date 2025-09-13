@@ -2,6 +2,9 @@ const axios = require('axios');
 const zlib = require('zlib');
 const util = require('util');
 
+
+var v_statushistory;
+var v_statusdetail
 // Promisify para usar async/await con zlib
 const gunzip = util.promisify(zlib.gunzip);
 
@@ -21,6 +24,8 @@ async function fstatushistory() {
 
         // Imprimir o usar la variable
         console.log(result);
+        debugger
+        v_statushistory = result; // Guardar en variable global
         
 
     } catch (error) {
@@ -222,15 +227,13 @@ async function fstatusdetail() {
 // codigo de prueba
 
 
-
-
 // Ejecutar y usar el resultado statusdetail
 fstatusdetail().then(({ result, csvData }) => {
   if (csvData) {
     // Usar csvData (lista de filas) como necesites
     console.log('Contenido completo del CSV:', csvData);
-    
-    // debugger
+    v_statusdetail = csvData;
+    debugger
   } else {
     // Usar result (texto plano) para inspección adicional
     console.log('No se pudo parsear como CSV. Texto plano:', result.slice(0, 500));
