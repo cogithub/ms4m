@@ -222,8 +222,7 @@ async function fstatusdetail() {
 // codigo de prueba
 
 
-// Llamar al ejemplo statushistory
-fstatushistory();
+
 
 // Ejecutar y usar el resultado statusdetail
 fstatusdetail().then(({ result, csvData }) => {
@@ -231,9 +230,12 @@ fstatusdetail().then(({ result, csvData }) => {
     // Usar csvData (lista de filas) como necesites
     console.log('Contenido completo del CSV:', csvData);
     
-    debugger
+    // debugger
   } else {
     // Usar result (texto plano) para inspección adicional
     console.log('No se pudo parsear como CSV. Texto plano:', result.slice(0, 500));
   }
 });
+
+// Llamar al ejemplo statushistory
+fstatushistory();
