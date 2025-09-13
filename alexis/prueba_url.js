@@ -8,7 +8,7 @@ const gunzip = util.promisify(zlib.gunzip);
 // URL del servicio REST que devuelve el archivo GZ
 const url = 'http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/&f=statushistory'
 // debugger
-async function fetchAndDecompress() {
+async function statusdetail() {
     try {
         // Hacer la solicitud al servicio REST
         const response = await axios.get(url, { responseType: 'arraybuffer' });
@@ -208,21 +208,21 @@ async function fetchAndParseCSV() {
 }
 
 // Ejecutar y usar el resultado
-fetchAndParseCSV().then(({ result, csvData }) => {
-  if (csvData) {
-    // Usar csvData (lista de filas) como necesites
-    console.log('Contenido completo del CSV:', csvData);
-  } else {
-    // Usar result (texto plano) para inspección adicional
-    console.log('No se pudo parsear como CSV. Texto plano:', result.slice(0, 500));
-  }
-});
+// fetchAndParseCSV().then(({ result, csvData }) => {
+//   if (csvData) {
+//     // Usar csvData (lista de filas) como necesites
+//     console.log('Contenido completo del CSV:', csvData);
+//   } else {
+//     // Usar result (texto plano) para inspección adicional
+//     console.log('No se pudo parsear como CSV. Texto plano:', result.slice(0, 500));
+//   }
+// });
 
 // codigo de prueba
 
 
 // Llamar al ejemplo statusdetail 
-fetchAndDecompress();
+statusdetail();
 
 // Ejecutar y usar el resultado statushistory
 fetchAndParseCSV().then(({ result, csvData }) => {
