@@ -221,10 +221,10 @@ fetchAndParseCSV().then(({ result, csvData }) => {
 // codigo de prueba
 
 
-// Llamar al ejemplo statushistory
+// Llamar al ejemplo statusdetail 
 fetchAndDecompress();
 
-// Ejecutar y usar el resultado statusdetail
+// Ejecutar y usar el resultado statushistory
 fetchAndParseCSV().then(({ result, csvData }) => {
   if (csvData) {
     // Usar csvData (lista de filas) como necesites
