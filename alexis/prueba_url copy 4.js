@@ -2,16 +2,13 @@ const axios = require('axios');
 const zlib = require('zlib');
 const util = require('util');
 
-
-var v_statushistory;
-var v_statusdetail
 // Promisify para usar async/await con zlib
 const gunzip = util.promisify(zlib.gunzip);
 
 // URL del servicio REST que devuelve el archivo GZ
 const url = 'http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/&f=statushistory'
 // debugger
-async function fstatushistory() {
+async function f_fetchAndDecompress() {
     try {
         // Hacer la solicitud al servicio REST
         const response = await axios.get(url, { responseType: 'arraybuffer' });
@@ -24,8 +21,6 @@ async function fstatushistory() {
 
         // Imprimir o usar la variable
         console.log(result);
-        debugger
-        v_statushistory = result; // Guardar en variable global
         
 
     } catch (error) {
@@ -140,7 +135,7 @@ const { parse } = require('csv-parse');
 // URL del servicio REST que devuelve el texto plano (supuesto CSV)
 const urlq = 'http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail';
 
-async function fstatusdetail() {
+async function f_fetchAndParseCSV() {
   let result; // Variable para almacenar el texto plano
   try {
     // Hacer la solicitud al servicio REST
@@ -227,18 +222,17 @@ async function fstatusdetail() {
 // codigo de prueba
 
 
+// Llamar al ejemplo statushistory
+f_fetchAndDecompress();
+
 // Ejecutar y usar el resultado statusdetail
-fstatusdetail().then(({ result, csvData }) => {
+f_fetchAndParseCSV().then(({ result, csvData }) => {
   if (csvData) {
     // Usar csvData (lista de filas) como necesites
     console.log('Contenido completo del CSV:', csvData);
-    v_statusdetail = csvData;
-    debugger
+    // debugger
   } else {
     // Usar result (texto plano) para inspección adicional
     console.log('No se pudo parsear como CSV. Texto plano:', result.slice(0, 500));
   }
 });
-
-// Llamar al ejemplo statushistory
-fstatushistory();
