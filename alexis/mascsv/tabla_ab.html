@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tabla Historial</title>
+  <style>
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #e9ecef; }
+    h1 { color: #007bff; text-align: center; margin-bottom: 30px; }
+    .summary-container { width: 95%; max-width: 1300px; margin: auto; background-color: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+    .filters-group { display: flex; flex-direction: column; gap: 20px; padding: 15px; border: 1px solid #dee2e6; border-radius: 8px; background-color: #f8f9fa; margin-bottom: 20px; }
+    .filter-selectors { display: flex; flex-wrap: wrap; gap: 15px; }
+    .filter-selectors > div { flex: 1 1 250px; min-width: 150px; }
+    .filters label { font-weight: 600; display: block; margin-bottom: 5px; color: #495057; font-size: 0.95em; }
+    .filters select, .filters input[type="date"] {
+      padding: 10px 12px;
+      border-radius: 6px;
+      border: 1px solid #ced4da;
+      background-color: #fff;
+      width: 100%;
+      box-sizing: border-box;
+      font-family: inherit;
+      font-size: 1em;
+    }
+    #resetFiltersBtn { padding: 10px 18px; background-color: #ffc107; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; width: fit-content; }
+    #resetFiltersBtn:hover { background-color: #e0a800; }
+    .table-container { overflow-x: auto; max-width: 100%; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      min-width: 800px;
+    }
+    th, td {
+      border: 1px solid #e0e0e0;
+      padding: 12px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      background-color: #28a745;
+      color: white;
+      font-weight: bold;
+      text-align: center;
+    }
+    tr:nth-child(even) { background-color: #f7f7f7; }
+    .duration-col { text-align: right !important; font-weight: bold; color: #dc3545; }
+    .pagination-controls { display: flex; justify-content: flex-end; align-items: center; margin-top: 15px; gap: 10px; }
+    .pagination-controls button { padding: 8px 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; transition: background-color 0.2s; }
+    .pagination-controls button:hover:not(:disabled) { background-color: #0056b3; }
+    .pagination-controls button:disabled { background-color: #adb5bd; cursor: not-allowed; }
+    #pageInfo { font-weight: 600; padding: 0 10px; }
+    #loadingMessage { position: fixed; top: 10px; right: 10px; background: #ffc; padding: 10px 15px; border: 1px solid #ffcc00; border-radius: 6px; font-weight: bold; display: none; z-index: 9999; }
+    #totalDurationSummary { margin-top: 15px; padding: 10px 15px; background-color: #fef0db; color: #333; border-left: 5px solid #ffc107; font-size: 1.1em; font-weight: bold; text-align: right; border-radius: 4px; }
+    #totalDurationValue { color: #dc3545; font-size: 1.2em; }
+  </style>
+
+  <!-- Librerías necesarias -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/es.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+</head>
+<body>
+  <h1>Historial de Estado (20 Registros/Página)</h1>
+  <div id="loadingMessage">Espere, procesando...</div>
+  <div class="summary-container">
+    <div class="filters-group">
+      <button id="resetFiltersBtn">Reinicializar Filtros 🔄</button>
+      <div class="filter-selectors filters">
+        <div>
+          <label for="qvFilter">Filtro QV:</label>
+          <select id="qvFilter"><option value="">-- Todos --</option></select>
+        </div>
+        <div>
+          <label for="startDateFilter">Inicio de Estado:</label>
+          <input type="date" id="startDateFilter" />
+        </div>
+        <div>
+          <label for="endDateFilter">Fin de Estado:</label>
+          <input type="date" id="endDateFilter" />
+        </div>
+      </div>
+    </div>
+
+    <div id="totalDurationSummary">
+      Suma de Duración Filtrada: <span id="totalDurationValue">0.0000 Hr</span>
+    </div>
+
+    <div class="table-container">
+      <table id="fullDataTable">
+        <thead>
+          <tr>
+            <!-- Encabezados correspondientes a cada columna -->
+            <th>Status Id</th>
+            <th>Inicio de estado</th>
+            <th>Fin de estado</th>
+            <th>Duración Hr.</th>
+            <th>Main status</th>
+            <th>Type status</th>
+            <th>Id equipment</th>
+            <th>Fleet category</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="pagination-controls">
+      <button id="prevPage">Anterior</button>
+      <span id="pageInfo">Página 1 de 1</span>
+      <button id="nextPage">Siguiente</button>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+      moment.locale('es');
+
+      const tableBody = document.querySelector('#fullDataTable tbody');
+      const totalDurationValueSpan = document.getElementById('totalDurationValue');
+      const rowsPerPage = 20;
+      let currentPage = 1;
+      let filteredData = [];
+      const loadingMessage = document.getElementById('loadingMessage');
+
+      const qvFilter = document.getElementById('qvFilter');
+      const startDateFilter = document.getElementById('startDateFilter');
+      const endDateFilter = document.getElementById('endDateFilter');
+      const resetButton = document.getElementById('resetFiltersBtn');
+      const prevButton = document.getElementById('prevPage');
+      const nextButton = document.getElementById('nextPage');
+      const pageInfoSpan = document.getElementById('pageInfo');
+
+      const allFilters = [qvFilter, startDateFilter, endDateFilter];
+
+      // Asegúrate que estos índices coincidan con el orden de tus columnas en los datos
+      const colIndices = {
+        statusId: 0,
+        startDate: 1,
+        endDate: 2,
+        duration: 3,
+        mainStatus: 4,
+        typeStatus: 5,
+        idEquipment: 6,
+        fleetCategory: 7,
+        // Si tienes columna QV, define aquí qvColumnIndex
+      };
+
+      async function fetchCSV(url) {
+        loadingMessage.style.display = 'block';
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error(`HTTP error! status: ${resp.status}`);
+          const arrayBuffer = await resp.arrayBuffer();
+          const inflated = pako.inflate(new Uint8Array(arrayBuffer), { to: 'string' });
+          const delimiter = (inflated.includes(';') && !inflated.includes(',')) ? ';' : ',';
+          const rows = inflated.trim().split('\n').map(r => r.split(delimiter).map(c => c.trim()));
+          loadingMessage.style.display = 'none';
+          return { headers: rows[0], records: rows.slice(1) };
+        } catch (error) {
+          loadingMessage.textContent = 'Error al cargar los datos: ' + error.message;
+          console.error(error);
+          return { headers: [], records: [] };
+        }
+      }
+
+      const statusHistory = await fetchCSV('http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory');
+      const rawData = statusHistory.records;
+
+      function createRow(dataItem) {
+        const row = document.createElement('tr');
+        dataItem.forEach((v, i) => {
+          const cell = document.createElement('td');
+          if (i === colIndices.duration) {
+            // Calcula duración entre fechas usando moment
+            const inicio = moment(dataItem[colIndices.startDate]);
+            const fin = moment(dataItem[colIndices.endDate]);
+            let diffHoras = fin.diff(inicio, 'hours', true); // horas decimales
+            if (isNaN(diffHoras)) {
+              diffHoras = parseFloat(v) || 0;
+            }
+            cell.textContent = diffHoras.toFixed(4);
+            cell.classList.add('duration-col');
+          } else {
+            cell.textContent = v;
+          }
+          row.appendChild(cell);
+        });
+        return row;
+      }
+
+      function populateFilters() {
+        const sets = { qv: new Set() };
+        rawData.forEach(d => {
+          // Si tienes columna QV:
+          // sets.qv.add(d[colIndices.qvColumnIndex]);
+        });
+        function fillSelect(sel, set) {
+          Array.from(set).sort().forEach(v => {
+            if (v) {
+              const o = document.createElement('option');
+              o.value = v;
+              o.textContent = v;
+              sel.appendChild(o);
+            }
+          });
+        }
+        fillSelect(qvFilter, sets.qv);
+      }
+
+      function applyFilters() {
+        const sel = {
+          qv: qvFilter.value,
+          startDate: startDateFilter.value,
+          endDate: endDateFilter.value
+        };
+
+        filteredData = rawData.filter(d => {
+          let qvMatch = true;
+          if (sel.qv !== "" && typeof colIndices.qvColumnIndex !== 'undefined') {
+            qvMatch = (d[colIndices.qvColumnIndex] === sel.qv);
+          }
+
+          const mStart = moment(d[colIndices.startDate]);
+          const mEnd = moment(d[colIndices.endDate]);
+          const matchStart = sel.startDate === "" || mStart.isSameOrAfter(moment(sel.startDate));
+          const matchEnd = sel.endDate === "" || mEnd.isSameOrBefore(moment(sel.endDate));
+
+          return qvMatch && matchStart && matchEnd;
+        });
+
+        calculateTotalDuration();
+        displayPage(1);
+      }
+
+      function calculateTotalDuration() {
+        let total = 0;
+        filteredData.forEach(d => {
+          const mStart = moment(d[colIndices.startDate]);
+          const mEnd = moment(d[colIndices.endDate]);
+          const diff = mEnd.diff(mStart, 'hours', true);
+          if (!isNaN(diff)) total += diff;
+        });
+        totalDurationValueSpan.textContent = total.toFixed(4) + ' Hr';
+      }
+
+      function displayPage(page) {
+        tableBody.innerHTML = '';
+        if (filteredData.length === 0) {
+          pageInfoSpan.textContent = 'Sin resultados';
+          prevButton.disabled = true;
+          nextButton.disabled = true;
+          return;
+        }
+        const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+        currentPage = Math.max(1, Math.min(page, totalPages));
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+
+        filteredData.slice(start, end).forEach(d => {
+          tableBody.appendChild(createRow(d));
+        });
+
+        pageInfoSpan.textContent = `Página ${currentPage} de ${totalPages}`;
+        prevButton.disabled = (currentPage === 1);
+        nextButton.disabled = (currentPage === totalPages);
+      }
+
+      function resetFilters() {
+        allFilters.forEach(f => f.value = "");
+        applyFilters();
+      }
+
+      populateFilters();
+      allFilters.forEach(f => f.addEventListener('change', applyFilters));
+      resetButton.addEventListener('click', resetFilters);
+      prevButton.addEventListener('click', () => displayPage(currentPage - 1));
+      nextButton.addEventListener('click', () => displayPage(currentPage + 1));
+
+      applyFilters();
+    });
+  </script>
+</body>
+</html>

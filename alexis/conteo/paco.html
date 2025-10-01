@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Descomprimir con Pako</title>
+  <!-- Incluir Pako desde CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+</head>
+<body>
+  <script>
+    // Reemplaza con la fecha en el formato correcto (ejemplo: '2025-09-15')
+    const fecha = '2025-09-15';
+    const url = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=${fecha}/&f=statushistory`;
+
+    async function descomprimirConPako() {
+      try {
+        // Paso 1: Descargar el archivo
+        const respuesta = await fetch(url, {
+          method: 'GET',
+          headers: {
+            // Agrega headers si la API requiere autenticación
+            // 'Authorization': 'Bearer tu-token'
+          }
+        });
+
+        if (!respuesta.ok) {
+          throw new Error(`¡Error HTTP! Estado: ${respuesta.status}`);
+        }
+
+        // Paso 2: Obtener el contenido como ArrayBuffer
+        const arrayBuffer = await respuesta.arrayBuffer();
+
+        // Paso 3: Descomprimir con Pako
+        const datosDescomprimidos = pako.inflate(new Uint8Array(arrayBuffer), { to: 'string' });
+
+        // Paso 4: Mostrar o procesar los datos
+        console.log('Datos descomprimidos:', datosDescomprimidos);
+
+        // Opcional: Guardar como archivo
+        const blob = new Blob([datosDescomprimidos], { type: 'text/plain' });
+        const urlDescarga = window.URL.createObjectURL(blob);
+        const enlace = document.createElement('a');
+        enlace.href = urlDescarga;
+        enlace.download = `statushistory_${fecha}.txt`;
+        document.body.appendChild(enlace);
+        enlace.click();
+        document.body.removeChild(enlace);
+        window.URL.revokeObjectURL(urlDescarga);
+      } catch (error) {
+        console.error('Error al descargar o descomprimir:', error);
+      }
+    }
+
+    // Ejecutar la función
+    descomprimirConPako();
+  </script>
+</body>
+</html>

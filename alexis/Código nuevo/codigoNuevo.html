@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datos CSV en Tabla Interactiva</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans p-6">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-gray-800">Datos de la API (CSV)</h1>
+        
+        <!-- Contenedor de búsqueda global y botón de reinicio -->
+        <div class="mb-4 flex flex-col sm:flex-row gap-4">
+            <input type="text" id="globalSearch" placeholder="Buscar en toda la tabla..." 
+                   class="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button id="resetFilters" class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Reiniciar Filtros
+            </button>
+        </div>
+
+        <!-- Contenedor de filtros por columna -->
+        <div class="mb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="filterContainer"></div>
+
+        <!-- Tabla -->
+        <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+            <table id="dataTable" class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr id="tableHeader"></tr>
+                </thead>
+                <tbody id="tableBody" class="divide-y divide-gray-200"></tbody>
+            </table>
+        </div>
+        <div id="errorMessage" class="text-red-500 mt-4"></div>
+    </div>
+
+    <script>
+        // URL de la API
+        const apiUrl = 'http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail';
+        let originalData = [];
+        let headers = [];
+
+        // Función para obtener datos de la API
+        async function fetchData() {
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    headers: { 'Accept': 'text/csv' }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error en la solicitud: ${response.status}`);
+                }
+
+                const csvText = await response.text();
+                const parsed = Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    transform: value => value.trim()
+                });
+
+                headers = parsed.meta.fields;
+                originalData = parsed.data;
+                displayData(headers, originalData);
+                setupFilters(headers, originalData);
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = `Error al obtener los datos: ${error.message}`;
+            }
+        }
+
+        // Función para mostrar los datos en la tabla
+        function displayData(headers, data) {
+            const tableHeader = document.getElementById('tableHeader');
+            const tableBody = document.getElementById('tableBody');
+            tableHeader.innerHTML = '';
+            tableBody.innerHTML = '';
+
+            if (data.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="${headers.length}" class="p-4 text-center text-gray-500">No hay datos disponibles</td></tr>`;
+                return;
+            }
+
+            // Crear encabezados
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.className = 'p-4 text-left text-sm font-medium text-gray-900';
+                th.textContent = header;
+                tableHeader.appendChild(th);
+            });
+
+            // Crear filas
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                headers.forEach(header => {
+                    const cell = document.createElement('td');
+                    cell.className = 'p-4 text-sm text-gray-700';
+                    cell.textContent = item[header] ?? '';
+                    row.appendChild(cell);
+                });
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Función para configurar los filtros
+        function setupFilters(headers, data) {
+            const filterContainer = document.getElementById('filterContainer');
+            filterContainer.innerHTML = '';
+
+            headers.forEach(header => {
+                const uniqueValues = [...new Set(data.map(item => item[header]).filter(val => val !== '' && val !== null))];
+                if (uniqueValues.length === 0) return;
+
+                const filterDiv = document.createElement('div');
+                filterDiv.className = 'flex flex-col';
+                filterDiv.innerHTML = `
+                    <label class="text-sm font-medium text-gray-700">${header}</label>
+                    <select id="filter-${header}" class="mt-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">Todos</option>
+                        ${uniqueValues.map(val => `<option value="${val}">${val}</option>`).join('')}
+                    </select>
+                `;
+                filterContainer.appendChild(filterDiv);
+
+                document.getElementById(`filter-${header}`).addEventListener('change', applyFilters);
+            });
+
+            // Búsqueda global
+            document.getElementById('globalSearch').addEventListener('input', applyFilters);
+
+            // Botón de reinicio
+            document.getElementById('resetFilters').addEventListener('click', resetFilters);
+        }
+
+        // Función para aplicar filtros y búsqueda
+        function applyFilters() {
+            const searchTerm = document.getElementById('globalSearch').value.toLowerCase();
+            const filteredData = originalData.filter(item => {
+                // Filtro de búsqueda global
+                const matchesSearch = Object.values(item).some(value => 
+                    value && value.toString().toLowerCase().includes(searchTerm)
+                );
+
+                // Filtros por columna
+                return matchesSearch && headers.every(header => {
+                    const select = document.getElementById(`filter-${header}`);
+                    const selectedValue = select ? select.value : '';
+                    return !selectedValue || item[header] === selectedValue;
+                });
+            });
+
+            displayData(headers, filteredData);
+        }
+
+        // Función para reiniciar filtros
+        function resetFilters() {
+            // Limpiar búsqueda global
+            document.getElementById('globalSearch').value = '';
+
+            // Limpiar filtros de columnas
+            headers.forEach(header => {
+                const select = document.getElementById(`filter-${header}`);
+                if (select) select.value = '';
+            });
+
+            // Mostrar todos los datos
+            displayData(headers, originalData);
+        }
+
+        // Cargar datos al iniciar
+        fetchData();
+    </script>
+</body>
+</html>

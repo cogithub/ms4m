@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Python en la Web</title>
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+</head>
+<body>
+    <script>
+        alert("Hola desde PyScript!");
+    </script>
+    <h1>Ejecutando Python como JavaScript</h1>
+    <div id="output"></div>
+
+    <py-script>
+        from js import document
+        print("Hola Mundo desde Python en el navegador!")
+        # Escribir en el DOM, similar a JavaScript
+        document.getElementById("output").innerText = "Resultado desde Python: " + str(5 + 3)
+    </py-script>
+</body>
+</html>

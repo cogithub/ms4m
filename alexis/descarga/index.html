@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status History y Suma de Duración por Estado</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+<style>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:20px; background:#f0f2f5; color:#333;}
+h1,h2 { text-align:center; color:#1a73e8;}
+button { padding:8px 15px; margin:10px 5px; cursor:pointer; border:none; border-radius:6px; font-weight:bold; transition:0.3s;}
+button:hover{opacity:0.9;}
+#loadButton{background:#1a73e8;color:white;}
+#clearButton{background-color:#FFD700;color:black;}
+#processing{display:none;font-weight:bold;color:#1a73e8;margin-top:10px;}
+.table-container{overflow-x:auto; margin-top:20px; box-shadow:0 4px 6px rgba(0,0,0,0.1); border-radius:8px; background:white; padding:10px;}
+table{width:100%; border-collapse:collapse; min-width:600px; margin-bottom:30px;}
+th,td{padding:10px; text-align:left; border-bottom:1px solid #ddd;}
+th{background:#1a73e8;color:white;}
+tr:nth-child(even){background:#f9f9f9;}
+tr:hover{background:#e0e7ff;}
+.pagination{ text-align:center; margin-top:15px;}
+.pagination button{ margin:0 5px; padding:6px 12px; border-radius:6px; border:1px solid #1a73e8; background:white; color:#1a73e8; font-weight:bold; transition:0.3s;}
+.pagination button:hover{ background:#1a73e8; color:white;}
+#pageInfo{ font-weight:bold; margin:0 10px; color:#1a73e8;}
+</style>
+</head>
+<body>
+
+<h1>Status History con filtros</h1>
+<button id="loadButton" onclick="loadData()">Cargar Datos</button>
+<button id="clearButton" onclick="clearFilters()">Limpiar filtros</button>
+<div id="processing">Espere, procesando...</div>
+
+<div class="table-container">
+  <table id="dataTable">
+    <thead id="theadContainer"></thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+</div>
+
+<div class="pagination">
+  <button onclick="prevPage()">Anterior</button>
+  <span id="pageInfo"></span>
+  <button onclick="nextPage()">Siguiente</button>
+</div>
+
+<h2>Duración Total por Estado</h2>
+<div class="table-container">
+  <table id="durationTable">
+    <thead>
+      <tr><th>Id Status</th><th>Duración Total</th></tr>
+    </thead>
+    <tbody id="durationBody"></tbody>
+  </table>
+</div>
+
+<script>
+let allRows=[], filteredRows=[];
+let currentPage=1, rowsPerPage=20;
+let columnFilters={};
+
+function showProcessing(show){ document.getElementById('processing').style.display = show?'block':'none'; }
+
+function parseCSV(text){
+  let delimiter = text.includes(";") && !text.includes(",") ? ";" : ",";
+  return text.trim().split("\n").map(r=>r.split(delimiter).map(c=>c.trim()));
+}
+
+async function loadData(){
+  try{
+    showProcessing(true);
+
+    // --- Tabla secundaria: equipment ---
+    const equipResp = await fetch("http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment");
+    const equipRows = parseCSV(await equipResp.text());
+    const equipHeaders = equipRows[0].map(h=>h.trim());
+    const idEqIdxEquip = equipHeaders.findIndex(h=>h.toLowerCase()==="id_equipment");
+    const equipmentMap = {};
+    for(let i=1;i<equipRows.length;i++){ equipmentMap[equipRows[i][idEqIdxEquip]] = equipRows[i]; }
+
+    // --- Tabla secundaria: statusdetail ---
+    const statusDetailResp = await fetch("http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail");
+    const statusDetailRows = parseCSV(await statusDetailResp.text());
+    const statusDetailHeaders = statusDetailRows[0].map(h=>h.trim());
+    const idStatusIdxDetail = statusDetailHeaders.findIndex(h=>h.toLowerCase()==="id_status");
+    const statusDetailMap = {};
+    for(let i=1;i<statusDetailRows.length;i++){ statusDetailMap[statusDetailRows[i][idStatusIdxDetail]] = statusDetailRows[i]; }
+
+    // --- Tabla primaria: statushistory ---
+    const response = await fetch("http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory");
+    const data = new Uint8Array(await response.arrayBuffer());
+    const statusRows = parseCSV(pako.inflate(data,{to:'string'}));
+
+    const headers = statusRows[0].map(h=>h.trim());
+    const idEqIdxMain = headers.findIndex(h=>h.toLowerCase()==="id_equipment");
+    const idStatusIdxMain = headers.findIndex(h=>h.toLowerCase()==="id_status");
+    const durationIdx = headers.findIndex(h=>h.toLowerCase()==="duration");
+
+    // Combinar equipment y statusdetail
+    equipHeaders.forEach((col,idx)=>{ if(idx!==idEqIdxEquip) headers.push(col); });
+    statusDetailHeaders.forEach((col,idx)=>{ if(idx!==idStatusIdxDetail) headers.push(col); });
+    statusRows[0] = headers;
+
+    for(let i=1;i<statusRows.length;i++){
+      const eqId = statusRows[i][idEqIdxMain];
+      const equipData = equipmentMap[eqId] || [];
+      const rowToAddEquip = equipData.filter((_,idx)=> idx!==idEqIdxEquip);
+      const stId = statusRows[i][idStatusIdxMain];
+      const statusDetailData = statusDetailMap[stId] || [];
+      const rowToAddStatusDetail = statusDetailData.filter((_,idx)=> idx!==idStatusIdxDetail);
+      statusRows[i] = statusRows[i].concat(rowToAddEquip,rowToAddStatusDetail);
+    }
+
+    allRows=statusRows;
+    filteredRows=statusRows;
+    currentPage=1;
+
+    renderTableHeaders(headers);
+    renderTable();
+    renderDurationByStatus(durationIdx,idStatusIdxMain);
+
+  }catch(err){ alert("Error: "+err.message); }
+  finally{ showProcessing(false); }
+}
+
+function renderTableHeaders(headers){
+  const thead=document.getElementById("theadContainer");
+  thead.innerHTML="";
+  const filterRow=document.createElement("tr");
+  filterRow.className="filter-row";
+  headers.forEach((col,idx)=>{
+    const th=document.createElement("th");
+    const select=document.createElement("select");
+    select.onchange=()=>{ columnFilters[idx]=select.value; applyFilters(); };
+    select.innerHTML="<option value='all'>Todos</option>";
+    const uniqueVals=[...new Set(allRows.slice(1).map(r=>r[idx]))].sort();
+    uniqueVals.forEach(v=>{ const opt=document.createElement("option"); opt.value=v; opt.textContent=v; select.appendChild(opt); });
+    th.appendChild(select); filterRow.appendChild(th);
+  });
+  thead.appendChild(filterRow);
+
+  const headerRow=document.createElement("tr");
+  headers.forEach(col=>{ const th=document.createElement("th"); th.textContent=col; headerRow.appendChild(th); });
+  thead.appendChild(headerRow);
+}
+
+function applyFilters(){
+  showProcessing(true);
+  filteredRows=[allRows[0]];
+  for(let i=1;i<allRows.length;i++){
+    let include=true;
+    for(const idx in columnFilters){ if(columnFilters[idx]!=="all" && allRows[i][idx]!==columnFilters[idx]){ include=false; break; } }
+    if(include) filteredRows.push(allRows[i]);
+  }
+  currentPage=1;
+  renderTable();
+  renderDurationByStatusFiltered();
+  showProcessing(false);
+}
+
+function renderTable(){
+  const tbody=document.getElementById("tableBody");
+  tbody.innerHTML="";
+  if(filteredRows.length<=1){ tbody.innerHTML="<tr><td colspan='100%'>No hay datos</td></tr>"; return; }
+  const start=(currentPage-1)*rowsPerPage +1;
+  const end=Math.min(start+rowsPerPage,filteredRows.length);
+  for(let i=start;i<end;i++){
+    const tr=document.createElement("tr");
+    filteredRows[i].forEach(c=>{ const td=document.createElement("td"); td.textContent=c; tr.appendChild(td); });
+    tbody.appendChild(tr);
+  }
+  document.getElementById("pageInfo").textContent=`Página ${currentPage} de ${Math.ceil((filteredRows.length-1)/rowsPerPage)}`;
+}
+
+function renderDurationByStatus(durationIdx,idStatusIdx){
+  const tbody=document.getElementById("durationBody");
+  tbody.innerHTML="";
+  const sums={};
+  for(let i=1;i<allRows.length;i++){
+    const status=allRows[i][idStatusIdx];
+    const dur=parseFloat(allRows[i][durationIdx]) || 0;
+    sums[status] = (sums[status] || 0) + dur;
+  }
+  Object.keys(sums).sort().forEach(status=>{
+    const tr=document.createElement("tr");
+    const tdStatus=document.createElement("td"); tdStatus.textContent=status; tr.appendChild(tdStatus);
+    const tdDur=document.createElement("td"); tdDur.textContent=sums[status].toFixed(2); tr.appendChild(tdDur);
+    tbody.appendChild(tr);
+  });
+}
+
+// Actualizar tabla de duración con filtros aplicados
+function renderDurationByStatusFiltered(){
+  const tbody=document.getElementById("durationBody");
+  tbody.innerHTML="";
+  const durationIdx = allRows[0].findIndex(h=>h.toLowerCase()==="duration");
+  const idStatusIdx = allRows[0].findIndex(h=>h.toLowerCase()==="id_status");
+  const sums={};
+  for(let i=1;i<filteredRows.length;i++){
+    const status = filteredRows[i][idStatusIdx];
+    const dur = parseFloat(filteredRows[i][durationIdx]) || 0;
+    sums[status] = (sums[status] || 0) + dur;
+  }
+  Object.keys(sums).sort().forEach(status=>{
+    const tr=document.createElement("tr");
+    const tdStatus=document.createElement("td"); tdStatus.textContent=status; tr.appendChild(tdStatus);
+    const tdDur=document.createElement("td"); tdDur.textContent=sums[status].toFixed(2); tr.appendChild(tdDur);
+    tbody.appendChild(tr);
+  });
+}
+
+function prevPage(){ if(currentPage>1){ currentPage--; renderTable(); } }
+function nextPage(){ if(currentPage<Math.ceil((filteredRows.length-1)/rowsPerPage)){ currentPage++; renderTable(); } }
+function clearFilters(){
+  columnFilters={};
+  document.querySelectorAll('.filter-row select').forEach(select=>select.value='all');
+  filteredRows=allRows;
+  currentPage=1;
+  renderTable();
+  renderDurationByStatusFiltered();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StatusHistory Detallado con Total Duración y EsNumérico</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
+        h2 { text-align: center; color: #1a73e8; margin-top: 30px; }
+        .container { width: 95%; margin: 20px auto; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow-x: auto; padding: 20px; }
+        table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+        th, td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; font-size: 14px; }
+        th { background: #1a73e8; color: white; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        tr:nth-child(even) { background: #f8f9fa; }
+        .controls { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 10px; flex-wrap: wrap; }
+        .controls input { max-width: 300px; }
+        .controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+        .controls button:hover:not(:disabled) { background: #1557b0; transform: translateY(-2px); }
+        .export-btn { background: #28a745; }
+        .pagination button { margin: 2px; padding: 5px 10px; }
+        .total-header { background: #28a745; color: white; font-weight: bold; }
+        #loadingMessage {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #1a73e8;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            padding: 15px;
+            margin-bottom: 15px;
+            display: none;
+            border-radius: 6px;
+            background: #fff176; /* Amarillo */
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+</head>
+<body>
+    <h2>Tabla Detallada de StatusHistory</h2>
+    <div id="loadingMessage">Espere, procesando datos...</div>
+
+    <div class="container">
+        <div class="controls">
+            <input type="text" id="globalSearch" placeholder="Buscar en todas las columnas..." aria-label="Buscar en la tabla">
+            <div>
+                <button onclick="limpiarFiltros()">Limpiar Filtros</button>
+                <button class="export-btn" onclick="exportToCSV()">Exportar a CSV</button>
+            </div>
+        </div>
+
+        <table id="statusHistory" role="grid">
+            <thead>
+                <tr id="total-row"></tr>
+                <tr id="header-row"></tr>
+                <tr id="filter-row"></tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <div id="pagination" class="pagination"></div>
+    </div>
+
+    <script>
+        let headers = [], dataRows = [], currentPage = 1, rowsPerPage = 20;
+        const apiUrl = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory`;
+
+        function escapeHTML(str) { 
+            return String(str).replace(/[&<>"']/g, m => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[m])); 
+        }
+        function parseToSeconds(v) { 
+            if (!v || !v.match(/^\d{2}:\d{2}:\d{2}$/)) return 0; 
+            const p = v.split(":").map(Number); 
+            return p[0] * 3600 + p[1] * 60 + p[2]; 
+        }
+        function formatHours(s) { 
+            return (s / 3600).toFixed(4); 
+        }
+
+        async function cargarStatusHistory() {
+            const loading = document.getElementById("loadingMessage");
+            loading.style.display = "block";
+            try {
+                const resp = await fetch(apiUrl);
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const arrayBuffer = await resp.arrayBuffer();
+                const data = new Uint8Array(arrayBuffer);
+                const decompressed = pako.inflate(data);
+                const csvData = new TextDecoder("utf-8").decode(decompressed);
+
+                const rows = csvData.trim().split("\n").map(r => r.split(";"));
+                
+                // Modificar filas: convertir Duración (índice 10) a numérico y añadir EsNumérico
+               
+             /*  debugger
+               
+               for (let i = 0; i < rows.length; i++) {
+                  rows[i][10]=parseFloat(rows[i][10]);
+
+               }*/
+                headers = ["Nº Línea", ...rows[0], "EsNumérico"];
+                
+                renderTotalHeader();
+                construirCabecera();
+                renderTable();
+                renderPagination();
+            } catch (err) {
+                console.error(err);
+                const tbody = document.querySelector("#statusHistory tbody");
+                tbody.innerHTML = `<tr><td colspan="${headers.length}" class="no-data">Error al cargar datos: ${escapeHTML(err.message)}</td></tr>`;
+            } 
+        }
+
+        function renderTotalHeader() {
+            const totalRow = document.getElementById("total-row");
+            totalRow.innerHTML = "";
+            const totalDurIndex = headers.indexOf("Duracion");
+            headers.forEach((h, i) => {
+                const th = document.createElement("th");
+                if (i === totalDurIndex) {
+                    const totalDuracion = dataRows.reduce((acc, r) => {
+                        const duracion = parseFloat(r[i - 1]); // Duración está en r[i-1] porque "Nº Línea" es el primer elemento
+                        return acc + (duracion && !isNaN(duracion) ? duracion : 0);
+                    }, 0);
+                    th.textContent = `Total HR: ${totalDuracion.toFixed(4)}`;
+                    th.classList.add("total-header");
+                }
+                totalRow.appendChild(th);
+            });
+        }
+
+        function construirCabecera() {
+            const headerRow = document.getElementById("header-row");
+            const filterRow = document.getElementById("filter-row");
+            headerRow.innerHTML = "";
+            filterRow.innerHTML = "";
+            headers.forEach((h, i) => {
+                const th = document.createElement("th");
+                th.textContent = escapeHTML(h);
+                headerRow.appendChild(th);
+                const thF = document.createElement("th");
+                const sel = document.createElement("select");
+                sel.innerHTML = `<option value="">Todos</option>`;
+                sel.addEventListener("change", () => { currentPage = 1; renderTable(); renderPagination(); });
+                thF.appendChild(sel);
+                filterRow.appendChild(thF);
+            });
+
+            headers.forEach((h, i) => {
+                const sel = filterRow.children[i].querySelector("select");
+                const colIndex = i - 1; // Ajustar por "Nº Línea"
+                const vals = [...new Set(dataRows.map(r => r[colIndex]))].filter(v => v !== null && v !== undefined).sort();
+                vals.forEach(v => {
+                    const opt = document.createElement("option");
+                    opt.value = v;
+                    opt.textContent = v;
+                    sel.appendChild(opt);
+                });
+            });
+        }
+
+        function getFilteredData() {
+            const selects = document.querySelectorAll("#filter-row select");
+            const searchInput = document.getElementById("globalSearch").value.toLowerCase();
+            return dataRows.filter(r => {
+                const matchFilters = [...selects].every((sel, i) => !sel || sel.value === "" || r[i] === sel.value);
+                const matchSearch = !searchInput || r.some(v => String(v).toLowerCase().includes(searchInput));
+                return matchFilters && matchSearch;
+            });
+        }
+
+        function renderTable() {
+            const tbody = document.querySelector("#statusHistory tbody");
+            tbody.innerHTML = "";
+            const filtered = getFilteredData();
+            const start = (currentPage - 1) * rowsPerPage;
+            const end = start + rowsPerPage;
+            const pageRows = filtered.slice(start, end);
+            const fragment = document.createDocumentFragment();
+            if (pageRows.length === 0) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `<td colspan="${headers.length}" class="no-data">No hay datos que coincidan con los filtros</td>`;
+                fragment.appendChild(tr);
+            } else {
+                pageRows.forEach(r => {
+                    const tr = document.createElement("tr");
+                    r.forEach(v => {
+                        const td = document.createElement("td");
+                        td.textContent = escapeHTML(v);
+                        tr.appendChild(td);
+                    });
+                    fragment.appendChild(tr);
+                });
+            }
+            tbody.appendChild(fragment);
+        }
+
+        function limpiarFiltros() {
+            document.querySelectorAll("#filter-row select").forEach(sel => sel.value = "");
+            document.getElementById("globalSearch").value = "";
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        function exportToCSV() {
+            const filtered = getFilteredData();
+            const csvRows = filtered.map(r => r.map(escapeHTML).join(";"));
+            const csvContent = [headers.map(escapeHTML).join(";"), ...csvRows].join("\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", `statusHistory_${new Date().toISOString().split('T')[0]}.csv`);
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function renderPagination() {
+            const pagination = document.getElementById("pagination");
+            pagination.innerHTML = "";
+            const filtered = getFilteredData();
+            const totalPages = Math.ceil(filtered.length / rowsPerPage);
+            const fragment = document.createDocumentFragment();
+
+            const firstBtn = document.createElement("button");
+            firstBtn.textContent = "Primero";
+            firstBtn.disabled = currentPage === 1;
+            firstBtn.addEventListener("click", () => { currentPage = 1; renderTable(); renderPagination(); });
+            fragment.appendChild(firstBtn);
+
+            const prevBtn = document.createElement("button");
+            prevBtn.textContent = "◄ Anterior";
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener("click", () => { if (currentPage > 1) { currentPage--; renderTable(); renderPagination(); } });
+            fragment.appendChild(prevBtn);
+
+            const pageAndTotal = document.createElement("span");
+            pageAndTotal.textContent = `Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`;
+            fragment.appendChild(pageAndTotal);
+
+            const nextBtn = document.createElement("button");
+            nextBtn.textContent = "Siguiente ►";
+            nextBtn.disabled = currentPage >= totalPages;
+            nextBtn.addEventListener("click", () => { if (currentPage < totalPages) { currentPage++; renderTable(); renderPagination(); } });
+            fragment.appendChild(nextBtn);
+
+            const lastBtn = document.createElement("button");
+            lastBtn.textContent = "Último";
+            lastBtn.disabled = currentPage >= totalPages;
+            lastBtn.addEventListener("click", () => { currentPage = totalPages; renderTable(); renderPagination(); });
+            fragment.appendChild(lastBtn);
+
+            pagination.appendChild(fragment);
+        }
+
+        document.getElementById("globalSearch").addEventListener("input", () => {
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        });
+
+        // Cargar datos al inicio
+        cargarStatusHistory();
+    </script>
+</body>
+</html>

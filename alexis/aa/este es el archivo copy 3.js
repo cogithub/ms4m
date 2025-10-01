@@ -5,6 +5,9 @@ const util = require('util');
 // Promisify para usar async/await con zlib
 const gunzip = util.promisify(zlib.gunzip);
 
+var v_statushistory;
+var v_statusdetail;
+
 // URL del servicio REST que devuelve el archivo GZ
 const url = 'http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025/&f=statushistory'
 // debugger
@@ -20,8 +23,9 @@ async function f_fetchAndDecompress() {
         const result = decompressedData.toString('utf-8'); // Ajusta la codificación si es necesario
 
         // Imprimir o usar la variable
-        console.log(result);
         
+        // v_statushistory = result;
+        return result;
 
     } catch (error) {
         if (error.response) {
@@ -223,14 +227,28 @@ async function f_fetchAndParseCSV() {
 
 
 // Llamar al ejemplo statushistory
-f_fetchAndDecompress();
 
 // Ejecutar y usar el resultado statusdetail
 f_fetchAndParseCSV().then(({ result, csvData }) => {
   if (csvData) {
     // Usar csvData (lista de filas) como necesites
-    console.log('Contenido completo del CSV:', csvData);
-    // debugger
+
+    v_statusdetail = csvData;
+   
+   f_fetchAndDecompress()
+    .then((resultado) => {
+        v_statushistory = resultado; // Asigna el resultado a la variable
+        
+
+console.log(v_statushistory); // Usa los datos aquí
+console.log(v_statusdetail);
+
+    })
+    .catch((error) => {
+        console.error("Error al obtener datos:", error);
+    });
+   
+      // debugger
   } else {
     // Usar result (texto plano) para inspección adicional
     console.log('No se pudo parsear como CSV. Texto plano:', result.slice(0, 500));

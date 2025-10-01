@@ -1,0 +1,5 @@
+http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment
+
+http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory
+
+http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail
