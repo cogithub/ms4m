@@ -3,42 +3,32 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StatusHistory Detallado con Total Duración</title>
+<title>StatusHistory + Equipment + StatusDetail con Resumen por Id status main</title>
 <style>
-  body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
-  h2 { text-align: center; color: #1a73e8; margin-top: 30px; }
-  .container { width: 95%; margin: 20px auto; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow-x: auto; padding: 20px; }
-  table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-  th, td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; font-size: 14px; }
-  th { background: #1a73e8; color: white; font-weight: 600; cursor: pointer; white-space: nowrap; }
-  tr:nth-child(even) { background: #f8f9fa; }
-  .controls { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 10px; flex-wrap: wrap; }
-  .controls input { max-width: 300px; }
-  .controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
-  .controls button:hover:not(:disabled) { background: #1557b0; transform: translateY(-2px); }
-  .export-btn { background: #28a745; }
-  .pagination button { margin: 2px; padding: 5px 10px; }
-  .total-header { background:#28a745; color:white; font-weight:bold; }
-  /* Estilo SCS para el mensaje de carga con fondo amarillo */
-  #loadingMessage {
-    text-align: center;
-    font-weight: bold;
-    font-size: 1.2em;
-    color: #1a73e8;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    padding: 15px;
-    margin-bottom: 15px;
-    display: none;
-    border-radius: 6px;
-    background: #fff176; /* Amarillo */
-  }
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
+h2 { text-align: center; color: #1a73e8; margin-top: 30px; }
+.container { width: 95%; margin: 20px auto; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow-x: auto; padding: 20px; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th, td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; font-size: 14px; }
+th { background: #1a73e8; color: white; font-weight: 600; cursor: pointer; white-space: nowrap; }
+tr:nth-child(even) { background: #f8f9fa; }
+th.sorted-asc::after { content: " ▲"; }
+th.sorted-desc::after { content: " ▼"; }
+.controls { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 10px; flex-wrap: wrap; }
+.controls input, .summary-controls select { max-width: 300px; padding: 5px; }
+.controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+.controls button:hover:not(:disabled) { background: #1557b0; transform: translateY(-2px); }
+.export-btn { background: #28a745; }
+.pagination button { margin: 2px; padding: 5px 10px; }
+#loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #fff176; }
+.summary-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
 
-<h2>Tabla Detallada de StatusHistory</h2>
-<div id="loadingMessage">Espere, procesando datos...</div>
+<h2>StatusHistory + Equipment + StatusDetail</h2>
+<div id="loadingMessage">Espere, cargando datos...</div>
 
 <div class="container">
   <div class="controls">
@@ -49,9 +39,28 @@
     </div>
   </div>
 
-  <table id="statusHistory" role="grid">
+  <!-- Tabla resumen con filtro Select para Status main -->
+  <h2>Resumen por ID Status Main</h2>
+  <div class="summary-controls">
+    <label for="statusFilter">Filtrar por Status main:</label>
+    <select id="statusFilter">
+      <option value="">Todos</option>
+    </select>
+  </div>
+  <table id="summaryTable">
     <thead>
-      <tr id="total-row"></tr>
+      <tr>
+        <th>ID Status main</th>
+        <th>Status main</th>
+        <th>Transcurrido Hr.</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Tabla principal -->
+  <table id="combinedTable" role="grid">
+    <thead>
       <tr id="header-row"></tr>
       <tr id="filter-row"></tr>
     </thead>
@@ -62,105 +71,226 @@
 </div>
 
 <script>
-let headers = [], dataRows = [], currentPage = 1, rowsPerPage = 20;
-const apiUrl = `http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory`;
+const summaryData = [
+  { id: 1, status: 'READY', hours: 0.00 },
+  { id: 2, status: 'DELAY', hours: 0.00 },
+  { id: 3, status: 'STANDBY', hours: 0.00 },
+  { id: 4, status: 'MAINT', hours: 0.00 },
+  { id: 5, status: 'OUTOFPLAN', hours: 0.00 }
+];
 
-function escapeHTML(str) { return String(str).replace(/[&<>"']/g, m => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
-function parseToSeconds(v){ if(!v || !v.match(/^\d{2}:\d{2}:\d{2}$/)) return 0; const p=v.split(":").map(Number); return p[0]*3600+p[1]*60+p[2]; }
-function formatHours(s){ return (s/3600).toFixed(4); }
+function renderSummaryTable() {
+  const tbody = document.querySelector("#summaryTable tbody");
+  const select = document.getElementById("statusFilter");
+  const filterValue = select.value;
+  tbody.innerHTML = "";
+  const filteredData = filterValue ? summaryData.filter(row => row.status === filterValue) : summaryData;
+  filteredData.forEach(row => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${row.id}</td><td>${escapeHTML(row.status)}</td><td>${row.hours.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
 
-async function cargarStatusHistory() {
-  const loading = document.getElementById("loadingMessage");
-  loading.style.display = "block";
-  try {
-    const resp = await fetch(apiUrl);
-    if(!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const arrayBuffer = await resp.arrayBuffer();
-    const data = new Uint8Array(arrayBuffer);
-    const decompressed = pako.inflate(data);
-    const csvData = new TextDecoder("utf-8").decode(decompressed);
+function populateStatusFilter() {
+  const select = document.getElementById("statusFilter");
+  const uniqueStatuses = [...new Set(summaryData.map(row => row.status))].sort();
+  uniqueStatuses.forEach(status => {
+    const opt = document.createElement("option");
+    opt.value = status;
+    opt.textContent = status;
+    select.appendChild(opt);
+  });
+  select.addEventListener("change", renderSummaryTable);
+}
 
-    const rows = csvData.trim().split("\n").map(r=>r.split(";"));
-    headers = ["Nº Línea", ...rows[0]];
-    dataRows = rows.slice(1);
+function parseFload(value) {
+    if (!value) return 0;                  
+    const str = String(value).trim().replace(",", ".");
+    const num = parseFloat(str);
+    return isNaN(num) ? 0 : num;
+}
 
-    renderTotalHeader();
-    construirCabecera();
-    renderTable();
-    renderPagination();
-  } catch(err) {
-    console.error(err);
-    const tbody = document.querySelector("#statusHistory tbody");
-    tbody.innerHTML=`<tr><td colspan="20" class="no-data">Error al cargar datos: ${escapeHTML(err.message)}</td></tr>`;
-  } finally {
-    loading.style.display = "none";
+function normalize(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function findHeaderIndex(headers, search) {
+    const normSearch = normalize(search);
+    return headers.findIndex(h => normalize(h) === normSearch);
+}
+
+let headers=[], dataRows=[], currentPage=1, rowsPerPage=20;
+let sortColumn = -1, sortDirection = 'asc';
+const statusUrl="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
+const equipmentUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
+const detailUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
+
+function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+
+function sortByColumn(col) {
+  if (sortColumn === col) {
+    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortColumn = col;
+    sortDirection = 'asc';
+  }
+  updateHeaderSortIndicators();
+  currentPage = 1;
+  renderTable();
+  renderPagination();
+}
+
+function updateHeaderSortIndicators() {
+  const ths = document.querySelectorAll('#header-row th');
+  ths.forEach((th, i) => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+  });
+  if (sortColumn !== -1) {
+    ths[sortColumn].classList.add(`sorted-${sortDirection}`);
   }
 }
 
-function renderTotalHeader(){
-  const totalRow = document.getElementById("total-row");
-  totalRow.innerHTML="";
-  const totalDurIndex = headers.indexOf("Duracion");
-  headers.forEach((h,i)=>{
-    const th = document.createElement("th");
-    if(i === totalDurIndex){
-      const totalSeconds = dataRows.reduce((acc,r)=>acc + parseToSeconds(r[i-1]),0);
-      th.textContent = `Total HR: ${formatHours(totalSeconds)}`;
-      th.classList.add("total-header");
+async function cargarDatos(){
+  const loading=document.getElementById("loadingMessage");
+  loading.style.display="block";
+  populateStatusFilter(); // Renderizar tabla resumen primero
+  renderSummaryTable();
+  try {
+    const respEq=await fetch(equipmentUrl);
+    const eqCsv=await respEq.text();
+    const eqRows=eqCsv.trim().split("\n").map(r=>r.split(";"));
+    const eqData=eqRows.slice(1);
+    const equipmentMap={}; eqData.forEach(r=>{ equipmentMap[r[0]]=r[1] || "Desconocido"; });
+
+    const respDet=await fetch(detailUrl);
+    const detCsv=await respDet.text();
+    const detRows=detCsv.trim().split("\n").map(r=>r.split(";"));
+    const detHeaders=detRows[0];
+    const detData=detRows.slice(1);
+    const detailMap={}; detData.forEach(r=>{ detailMap[r[0]]=r.slice(1); });
+
+    const respSt=await fetch(statusUrl);
+    const arrayBuffer = await respSt.arrayBuffer();
+    const data = new Uint8Array(arrayBuffer);
+    const decompressed = pako.inflate(data);
+    const stCsv = new TextDecoder("utf-8").decode(decompressed);
+    const stRows=stCsv.trim().split("\n").map(r=>r.split(";"));
+
+    const stHeaders=stRows[0];
+    console.log("stHeaders:", stHeaders); // Para debug
+    let stData=stRows.slice(1);
+
+    const idxStatusMain=findHeaderIndex(stHeaders, "Id status main");
+    const idxEquipment=findHeaderIndex(stHeaders, "Id equipment");
+    const idxDuracion=findHeaderIndex(stHeaders, "Duracion");
+    console.log("Indices encontrados:", {idxStatusMain, idxEquipment, idxDuracion}); // Para debug
+
+    const newHeaders=[...stHeaders];
+    if (idxEquipment !== -1) {
+        newHeaders.splice(idxEquipment+1,0,"equipment");
     }
-    totalRow.appendChild(th);
-  });
+    if (idxDuracion !== -1) {
+        newHeaders.splice(idxDuracion+1,0,"Duración ParseFload");
+    }
+    newHeaders.push(...detHeaders.slice(1));
+
+    stData=stData.map(r=>{
+      const idEquip=r[idxEquipment];
+      const idStatus=r[idxStatusMain];
+      const equipName=equipmentMap[idEquip] || "Desconocido";
+      const statusDetails=detailMap[idStatus] || detHeaders.slice(1).map(()=> "Desconocido");
+
+      const newRow=[...r];
+      if (idxEquipment !== -1) {
+          newRow.splice(idxEquipment+1,0,equipName);
+      }
+
+      const durParsed = parseFload(r[idxDuracion]);
+      if (idxDuracion !== -1) {
+          newRow.splice(idxDuracion+1,0,durParsed);
+      }
+
+      newRow.push(...statusDetails);
+      return newRow;
+    });
+
+    headers=newHeaders; // Incluir la primera columna
+    dataRows=stData.map(r=>r); // Incluir la primera columna
+
+    construirCabecera();
+    renderTable();
+    renderPagination();
+  } catch(err){
+    console.error(err);
+  } finally{ loading.style.display="none"; }
 }
 
 function construirCabecera(){
-  const headerRow = document.getElementById("header-row");
-  const filterRow = document.getElementById("filter-row");
+  const headerRow=document.getElementById("header-row");
+  const filterRow=document.getElementById("filter-row");
   headerRow.innerHTML=""; filterRow.innerHTML="";
   headers.forEach((h,i)=>{
-    const th = document.createElement("th"); th.textContent=escapeHTML(h);
+    const th=document.createElement("th"); 
+    th.textContent=escapeHTML(h); 
+    th.addEventListener('click', () => sortByColumn(i));
     headerRow.appendChild(th);
-    const thF = document.createElement("th");
-    const sel = document.createElement("select");
-    sel.innerHTML=`<option value="">Todos</option>`;
-    sel.addEventListener("change", ()=>{ currentPage=1; renderTable(); renderPagination(); });
-    thF.appendChild(sel);
-    filterRow.appendChild(thF);
+    const thF=document.createElement("th");
+    const sel=document.createElement("select");
+    sel.innerHTML="<option value=''>Todos</option>";
+    sel.addEventListener("change",()=>{ currentPage=1; renderTable(); renderPagination(); });
+    thF.appendChild(sel); filterRow.appendChild(thF);
   });
-
   headers.forEach((h,i)=>{
     const sel=filterRow.children[i].querySelector("select");
-    const colIndex=i-1;
-    const vals=[...new Set(dataRows.map(r=>r[colIndex]))].sort();
+    const vals=[...new Set(dataRows.map(r=>r[i]))].sort();
     vals.forEach(v=>{ const opt=document.createElement("option"); opt.value=v; opt.textContent=v; sel.appendChild(opt); });
   });
+  updateHeaderSortIndicators();
 }
 
-function getFilteredData() {
+function getFilteredData(){
   const selects=document.querySelectorAll("#filter-row select");
   const searchInput=document.getElementById("globalSearch").value.toLowerCase();
   return dataRows.filter(r=>{
-    const matchFilters=[...selects].every((sel,i)=>!sel || sel.value==="" || r[i-1]===sel.value);
-    const matchSearch=!searchInput || r.some(v=>String(v).toLowerCase().includes(searchInput));
-    return matchFilters && matchSearch;
+    const matchFilters=[...selects].every((sel,i)=>!sel||sel.value===""||r[i]===sel.value);
+    const matchSearch=!searchInput||r.some(v=>String(v).toLowerCase().includes(searchInput));
+    return matchFilters&&matchSearch;
   });
 }
 
 function renderTable(){
-  const tbody=document.querySelector("#statusHistory tbody");
+  const tbody=document.querySelector("#combinedTable tbody");
   tbody.innerHTML="";
-  const filtered=getFilteredData();
+  let filtered = getFilteredData().slice();
+  if (sortColumn !== -1) {
+    const durIdx = headers.findIndex(h => normalize(h) === normalize("Duración ParseFload"));
+    filtered.sort((a, b) => {
+      let valA = a[sortColumn];
+      let valB = b[sortColumn];
+      if (sortColumn === durIdx) {
+        valA = parseFloat(valA) || 0;
+        valB = parseFloat(valB) || 0;
+      } else {
+        valA = String(valA).toLowerCase();
+        valB = String(valB).toLowerCase();
+      }
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
   const start=(currentPage-1)*rowsPerPage;
   const end=start+rowsPerPage;
   const pageRows=filtered.slice(start,end);
   const fragment=document.createDocumentFragment();
-  if (pageRows.length===0){
+  if(pageRows.length===0){
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td colspan="${headers.length}" class="no-data">No hay datos que coincidan con los filtros</td>`;
+    tr.innerHTML=`<td colspan="${headers.length}">No hay datos que coincidan con los filtros</td>`;
     fragment.appendChild(tr);
   } else {
-    pageRows.forEach((r,idx)=>{
+    pageRows.forEach((r)=>{
       const tr=document.createElement("tr");
-      const tdNum=document.createElement("td"); tdNum.textContent=start+idx+1; tr.appendChild(tdNum);
       r.forEach(v=>{ const td=document.createElement("td"); td.textContent=escapeHTML(v); tr.appendChild(td); });
       fragment.appendChild(tr);
     });
@@ -171,18 +301,22 @@ function renderTable(){
 function limpiarFiltros(){
   document.querySelectorAll("#filter-row select").forEach(sel=>sel.value="");
   document.getElementById("globalSearch").value="";
-  currentPage=1; renderTable(); renderPagination();
+  document.getElementById("statusFilter").value = ""; // Limpiar filtro de resumen
+  currentPage=1; 
+  renderTable(); 
+  renderPagination();
+  renderSummaryTable(); // Re-render resumen
 }
 
 function exportToCSV(){
   const filtered=getFilteredData();
-  const csvRows=filtered.map((r,i)=>[i+1,...r].map(escapeHTML).join(";"));
-  const csvContent=[headers.map(escapeHTML).join(";"),...csvRows].join("\n");
+  const csvRows=filtered.map(r=>r.map(v=>String(v)).join(";"));
+  const csvContent=[headers.join(";"),...csvRows].join("\n");
   const blob=new Blob([csvContent],{type:"text/csv;charset=utf-8;"});
   const url=URL.createObjectURL(blob);
   const link=document.createElement("a");
-  link.setAttribute("href",url);
-  link.setAttribute("download",`statusHistory_${new Date().toISOString().split('T')[0]}.csv`);
+  link.href=url;
+  link.download=`statushistory_equipment_statusdetail_${new Date().toISOString().split("T")[0]}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -216,8 +350,7 @@ document.getElementById("globalSearch").addEventListener("input",()=>{
   currentPage=1; renderTable(); renderPagination();
 });
 
-// Cargar datos al inicio
-cargarStatusHistory();
+cargarDatos();
 </script>
 </body>
 </html>

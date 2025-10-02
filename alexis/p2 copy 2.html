@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StatusHistory + Equipment + StatusDetail</title>
+<title>StatusHistory + Equipment + StatusDetail con Resumen por Id status main</title>
 <style>
 body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
 h2 { text-align: center; color: #1a73e8; margin-top: 30px; }
@@ -12,6 +12,8 @@ table { border-collapse: collapse; width: 100%; margin: 10px 0; }
 th, td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; font-size: 14px; }
 th { background: #1a73e8; color: white; font-weight: 600; cursor: pointer; white-space: nowrap; }
 tr:nth-child(even) { background: #f8f9fa; }
+th.sorted-asc::after { content: " ▲"; }
+th.sorted-desc::after { content: " ▼"; }
 .controls { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 10px; flex-wrap: wrap; }
 .controls input { max-width: 300px; }
 .controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
@@ -36,6 +38,7 @@ tr:nth-child(even) { background: #f8f9fa; }
     </div>
   </div>
 
+  <!-- Tabla principal -->
   <table id="combinedTable" role="grid">
     <thead>
       <tr id="header-row"></tr>
@@ -48,76 +51,123 @@ tr:nth-child(even) { background: #f8f9fa; }
 </div>
 
 <script>
+function parseFload(value) {
+    if (!value) return 0;                  
+    const str = String(value).trim().replace(",", ".");
+    const num = parseFloat(str);
+    return isNaN(num) ? 0 : num;
+}
+
+function normalize(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function findHeaderIndex(headers, search) {
+    const normSearch = normalize(search);
+    return headers.findIndex(h => normalize(h) === normSearch);
+}
+
 let headers=[], dataRows=[], currentPage=1, rowsPerPage=20;
+let sortColumn = -1, sortDirection = 'asc';
 const statusUrl="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
 const equipmentUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
 const detailUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
 
 function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
 
+function sortByColumn(col) {
+  if (sortColumn === col) {
+    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortColumn = col;
+    sortDirection = 'asc';
+  }
+  updateHeaderSortIndicators();
+  currentPage = 1;
+  renderTable();
+  renderPagination();
+}
+
+function updateHeaderSortIndicators() {
+  const ths = document.querySelectorAll('#header-row th');
+  ths.forEach((th, i) => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+  });
+  if (sortColumn !== -1) {
+    ths[sortColumn].classList.add(`sorted-${sortDirection}`);
+  }
+}
+
 async function cargarDatos(){
   const loading=document.getElementById("loadingMessage");
   loading.style.display="block";
   try {
-    // Cargar equipment
     const respEq=await fetch(equipmentUrl);
     const eqCsv=await respEq.text();
     const eqRows=eqCsv.trim().split("\n").map(r=>r.split(";"));
-    const eqHeaders=eqRows[0];
     const eqData=eqRows.slice(1);
-    const equipmentMap={}; 
-    eqData.forEach(r=>{ equipmentMap[r[0]]=r[1] || "Desconocido"; }); // id equipment -> nombre
+    const equipmentMap={}; eqData.forEach(r=>{ equipmentMap[r[0]]=r[1] || "Desconocido"; });
 
-    // Cargar statusdetail
     const respDet=await fetch(detailUrl);
     const detCsv=await respDet.text();
     const detRows=detCsv.trim().split("\n").map(r=>r.split(";"));
     const detHeaders=detRows[0];
     const detData=detRows.slice(1);
-    const detailMap={};
-    detData.forEach(r=>{ detailMap[r[0]]=r.slice(1); }); // id status main -> resto
+    const detailMap={}; detData.forEach(r=>{ detailMap[r[0]]=r.slice(1); });
 
-    // Cargar statushistory
     const respSt=await fetch(statusUrl);
     const arrayBuffer = await respSt.arrayBuffer();
     const data = new Uint8Array(arrayBuffer);
     const decompressed = pako.inflate(data);
     const stCsv = new TextDecoder("utf-8").decode(decompressed);
     const stRows=stCsv.trim().split("\n").map(r=>r.split(";"));
+
     const stHeaders=stRows[0];
+    console.log("stHeaders:", stHeaders); // Para debug
     let stData=stRows.slice(1);
 
-    // Columnas de referencia
-    const idxStatusMain=stHeaders.indexOf("Id status main");
-    const idxEquipment=stHeaders.indexOf("Id equipment");
+    const idxStatusMain=findHeaderIndex(stHeaders, "Id status main");
+    const idxEquipment=findHeaderIndex(stHeaders, "Id equipment");
+    const idxDuracion=findHeaderIndex(stHeaders, "Duracion");
+    console.log("Indices encontrados:", {idxStatusMain, idxEquipment, idxDuracion}); // Para debug
 
-    // Construir nueva cabecera
     const newHeaders=[...stHeaders];
-    newHeaders.splice(idxEquipment+1,0,"equipment"); // agregar nombre de equipo después de Id equipment
-    newHeaders.push(...detHeaders.slice(1)); // agregar columnas de statusdetail
+    if (idxEquipment !== -1) {
+        newHeaders.splice(idxEquipment+1,0,"equipment");
+    }
+    if (idxDuracion !== -1) {
+        newHeaders.splice(idxDuracion+1,0,"Duración ParseFload");
+    }
+    newHeaders.push(...detHeaders.slice(1));
 
-    // Combinar datos
     stData=stData.map(r=>{
       const idEquip=r[idxEquipment];
       const idStatus=r[idxStatusMain];
       const equipName=equipmentMap[idEquip] || "Desconocido";
       const statusDetails=detailMap[idStatus] || detHeaders.slice(1).map(()=> "Desconocido");
+
       const newRow=[...r];
-      newRow.splice(idxEquipment+1,0,equipName);
+      if (idxEquipment !== -1) {
+          newRow.splice(idxEquipment+1,0,equipName);
+      }
+
+      const durParsed = parseFload(r[idxDuracion]);
+      if (idxDuracion !== -1) {
+          newRow.splice(idxDuracion+1,0,durParsed);
+      }
+
       newRow.push(...statusDetails);
       return newRow;
     });
 
-    headers=newHeaders;
-    dataRows=stData;
+    headers=newHeaders; // Incluir la primera columna
+    dataRows=stData.map(r=>r); // Incluir la primera columna
 
     construirCabecera();
     renderTable();
     renderPagination();
   } catch(err){
     console.error(err);
-    const tbody=document.querySelector("#combinedTable tbody");
-    tbody.innerHTML=`<tr><td colspan="20">Error al cargar datos: ${escapeHTML(err.message)}</td></tr>`;
   } finally{ loading.style.display="none"; }
 }
 
@@ -126,7 +176,10 @@ function construirCabecera(){
   const filterRow=document.getElementById("filter-row");
   headerRow.innerHTML=""; filterRow.innerHTML="";
   headers.forEach((h,i)=>{
-    const th=document.createElement("th"); th.textContent=escapeHTML(h); headerRow.appendChild(th);
+    const th=document.createElement("th"); 
+    th.textContent=escapeHTML(h); 
+    th.addEventListener('click', () => sortByColumn(i));
+    headerRow.appendChild(th);
     const thF=document.createElement("th");
     const sel=document.createElement("select");
     sel.innerHTML="<option value=''>Todos</option>";
@@ -138,6 +191,7 @@ function construirCabecera(){
     const vals=[...new Set(dataRows.map(r=>r[i]))].sort();
     vals.forEach(v=>{ const opt=document.createElement("option"); opt.value=v; opt.textContent=v; sel.appendChild(opt); });
   });
+  updateHeaderSortIndicators();
 }
 
 function getFilteredData(){
@@ -153,7 +207,24 @@ function getFilteredData(){
 function renderTable(){
   const tbody=document.querySelector("#combinedTable tbody");
   tbody.innerHTML="";
-  const filtered=getFilteredData();
+  let filtered = getFilteredData().slice();
+  if (sortColumn !== -1) {
+    const durIdx = headers.findIndex(h => normalize(h) === normalize("Duración ParseFload"));
+    filtered.sort((a, b) => {
+      let valA = a[sortColumn];
+      let valB = b[sortColumn];
+      if (sortColumn === durIdx) {
+        valA = parseFloat(valA) || 0;
+        valB = parseFloat(valB) || 0;
+      } else {
+        valA = String(valA).toLowerCase();
+        valB = String(valB).toLowerCase();
+      }
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
   const start=(currentPage-1)*rowsPerPage;
   const end=start+rowsPerPage;
   const pageRows=filtered.slice(start,end);
@@ -180,8 +251,8 @@ function limpiarFiltros(){
 
 function exportToCSV(){
   const filtered=getFilteredData();
-  const csvRows=filtered.map(r=>r.map(escapeHTML).join(";"));
-  const csvContent=[headers.map(escapeHTML).join(";"),...csvRows].join("\n");
+  const csvRows=filtered.map(r=>r.map(v=>String(v)).join(";"));
+  const csvContent=[headers.join(";"),...csvRows].join("\n");
   const blob=new Blob([csvContent],{type:"text/csv;charset=utf-8;"});
   const url=URL.createObjectURL(blob);
   const link=document.createElement("a");
