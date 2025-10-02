@@ -16,12 +16,13 @@ th.sorted-asc::after { content: " ▲"; }
 th.sorted-desc::after { content: " ▼"; }
 .controls { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 10px; flex-wrap: wrap; }
 .controls input, .summary-controls select { max-width: 300px; padding: 5px; }
-.controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
-.controls button:hover:not(:disabled) { background: #1557b0; transform: translateY(-2px); }
+.controls button, .history-controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+.controls button:hover:not(:disabled), .history-controls button:hover:not(:disabled) { background: #1557b0; transform: translateY(-2px); }
 .export-btn { background: #28a745; }
 .pagination button { margin: 2px; padding: 5px 10px; }
 #loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #fff176; }
 .summary-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
+.history-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
@@ -58,7 +59,12 @@ th.sorted-desc::after { content: " ▼"; }
     <tbody></tbody>
   </table>
 
-  <!-- Tabla principal -->
+  <!-- Controles específicos para tabla History -->
+  <div class="history-controls">
+    <button onclick="limpiarFiltrosHistory()">Limpiar Filtros History</button>
+  </div>
+
+  <!-- Tabla principal (History) -->
   <table id="combinedTable" role="grid">
     <thead>
       <tr id="header-row"></tr>
@@ -127,6 +133,14 @@ function populateStatusFilter() {
     renderTable();
     renderPagination();
   });
+}
+
+function limpiarFiltrosHistory() {
+  document.querySelectorAll("#filter-row select").forEach(sel=>sel.value="");
+  document.getElementById("globalSearch").value="";
+  currentPage=1; 
+  renderTable(); 
+  renderPagination();
 }
 
 function parseFload(value) {
@@ -264,7 +278,6 @@ function construirCabecera(){
     const sel=document.createElement("select");
     sel.innerHTML="<option value=''>Todos</option>";
     sel.addEventListener("change",()=>{ 
-      // Opcional: Si quieres que filtrar en main actualice summary, agrega aquí
       currentPage=1; renderTable(); renderPagination(); 
     });
     thF.appendChild(sel); filterRow.appendChild(thF);
