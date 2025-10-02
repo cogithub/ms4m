@@ -213,7 +213,7 @@ function exportToCSV(){
   const a=document.createElement("a"); a.href=url; a.download=`statushistory_${new Date().toISOString().split("T")[0]}.csv`; a.click(); URL.revokeObjectURL(url);
 }
 
-// ================== CARGA DATOS REALES ==================
+// ================== CARGA DATOS REALES ================
 async function cargarDatos(){
   const loading=document.getElementById("loadingMessage"); loading.style.display="block";
   populateStatusFilter(); renderSummaryTable();
