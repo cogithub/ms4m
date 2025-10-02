@@ -79,6 +79,14 @@ const summaryData = [
   { id: 5, status: 'OUTOFPLAN', hours: 0.00 }
 ];
 
+const statusMap = {
+  'READY': '1',
+  'DELAY': '2',
+  'STANDBY': '3',
+  'MAINT': '4',
+  'OUTOFPLAN': '5'
+};
+
 function renderSummaryTable() {
   const tbody = document.querySelector("#summaryTable tbody");
   const select = document.getElementById("statusFilter");
@@ -101,7 +109,24 @@ function populateStatusFilter() {
     opt.textContent = status;
     select.appendChild(opt);
   });
-  select.addEventListener("change", renderSummaryTable);
+  select.addEventListener("change", (e) => {
+    renderSummaryTable();
+    const selectedStatus = e.target.value;
+    const idxStatusMain = headers.findIndex(h => normalize(h) === normalize("Id status main"));
+    if (idxStatusMain !== -1) {
+      const selects = document.querySelectorAll("#filter-row select");
+      const mainSelect = selects[idxStatusMain];
+      if (selectedStatus) {
+        const id = statusMap[selectedStatus];
+        mainSelect.value = id;
+      } else {
+        mainSelect.value = "";
+      }
+    }
+    currentPage = 1;
+    renderTable();
+    renderPagination();
+  });
 }
 
 function parseFload(value) {
@@ -238,7 +263,10 @@ function construirCabecera(){
     const thF=document.createElement("th");
     const sel=document.createElement("select");
     sel.innerHTML="<option value=''>Todos</option>";
-    sel.addEventListener("change",()=>{ currentPage=1; renderTable(); renderPagination(); });
+    sel.addEventListener("change",()=>{ 
+      // Opcional: Si quieres que filtrar en main actualice summary, agrega aquí
+      currentPage=1; renderTable(); renderPagination(); 
+    });
     thF.appendChild(sel); filterRow.appendChild(thF);
   });
   headers.forEach((h,i)=>{
