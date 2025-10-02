@@ -52,7 +52,7 @@ th.sorted-desc::after { content: " ▼"; }
       <tr>
         <th>ID Status main</th>
         <th>Status main</th>
-        <th>Transcurrido Hr.</th>
+        <th>Duración HDR</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -72,11 +72,11 @@ th.sorted-desc::after { content: " ▼"; }
 
 <script>
 const summaryData = [
-  { id: 1, status: 'READY', hours: 0.00 },
-  { id: 2, status: 'DELAY', hours: 0.00 },
-  { id: 3, status: 'STANDBY', hours: 0.00 },
-  { id: 4, status: 'MAINT', hours: 0.00 },
-  { id: 5, status: 'OUTOFPLAN', hours: 0.00 }
+  { id: 1, status: 'READY', hdr: 58.9 },
+  { id: 2, status: 'DELAY', hdr: 27.5 },
+  { id: 3, status: 'STANDBY', hdr: 12.6 },
+  { id: 4, status: 'MAINT', hdr: 38.6 },
+  { id: 5, status: 'OUTOFPLAN', hdr: 10.39 }
 ];
 
 const statusMap = {
@@ -95,7 +95,7 @@ function renderSummaryTable() {
   const filteredData = filterValue ? summaryData.filter(row => row.status === filterValue) : summaryData;
   filteredData.forEach(row => {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${row.id}</td><td>${escapeHTML(row.status)}</td><td>${row.hours.toFixed(2)}</td>`;
+    tr.innerHTML = `<td>${row.id}</td><td>${escapeHTML(row.status)}</td><td>${row.hdr.toFixed(2)}</td>`;
     tbody.appendChild(tr);
   });
 }

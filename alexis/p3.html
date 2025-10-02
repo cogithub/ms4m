@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Historial de Estado y Duración Calculada (Segundos)</title>
+<title>StatusHistory + Equipment + StatusDetail con Resumen por Id status main</title>
 <style>
 body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
 h2 { text-align: center; color: #1a73e8; margin-top: 30px; }
@@ -12,20 +12,23 @@ table { border-collapse: collapse; width: 100%; margin: 10px 0; }
 th, td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; font-size: 14px; }
 th { background: #1a73e8; color: white; font-weight: 600; cursor: pointer; white-space: nowrap; }
 tr:nth-child(even) { background: #f8f9fa; }
+th.sorted-asc::after { content: " ▲"; }
+th.sorted-desc::after { content: " ▼"; }
 .controls { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 10px; flex-wrap: wrap; }
-.controls input { max-width: 300px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-.controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s; }
-.controls button:hover:not(:disabled) { background: #1557b0; }
+.controls input, .summary-controls select { max-width: 300px; padding: 5px; }
+.controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+.controls button:hover:not(:disabled) { background: #1557b0; transform: translateY(-2px); }
 .export-btn { background: #28a745; }
-.pagination button { margin: 2px; padding: 5px 10px; border: 1px solid #ccc; background: #fff; border-radius: 4px; }
-#loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #e3f2fd; }
+.pagination button { margin: 2px; padding: 5px 10px; }
+#loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #fff176; }
+.summary-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
 
 <h2>StatusHistory + Equipment + StatusDetail</h2>
-<div id="loadingMessage">Espere, cargando y procesando datos...</div>
+<div id="loadingMessage">Espere, cargando datos...</div>
 
 <div class="container">
   <div class="controls">
@@ -36,6 +39,26 @@ tr:nth-child(even) { background: #f8f9fa; }
     </div>
   </div>
 
+  <!-- Tabla resumen con filtro Select para Status main -->
+  <h2>Resumen por ID Status Main</h2>
+  <div class="summary-controls">
+    <label for="statusFilter">Filtrar por Status main:</label>
+    <select id="statusFilter">
+      <option value="">Todos</option>
+    </select>
+  </div>
+  <table id="summaryTable">
+    <thead>
+      <tr>
+        <th>ID Status main</th>
+        <th>Status main</th>
+        <th>Duración HDR</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <!-- Tabla principal -->
   <table id="combinedTable" role="grid">
     <thead>
       <tr id="header-row"></tr>
@@ -44,222 +67,222 @@ tr:nth-child(even) { background: #f8f9fa; }
     <tbody></tbody>
   </table>
 
-  <h2>Resumen de Duración por Id Status Main</h2>
-  <table id="summaryTable">
-    <thead>
-      <tr>
-        <th>Id status main</th>
-        <th>Duración Total (Horas Decimales)</th>
-        <th>Duración Total (Segundos)</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
   <div id="pagination" class="pagination"></div>
 </div>
 
 <script>
-// URL de las APIs
+const summaryData = [
+  { id: 1, status: 'READY', hdr: 58.9 },
+  { id: 2, status: 'DELAY', hdr: 27.5 },
+  { id: 3, status: 'STANDBY', hdr: 12.6 },
+  { id: 4, status: 'MAINT', hdr: 38.6 },
+  { id: 5, status: 'OUTOFPLAN', hdr: 10.39 }
+];
+
+const statusMap = {
+  'READY': '1',
+  'DELAY': '2',
+  'STANDBY': '3',
+  'MAINT': '4',
+  'OUTOFPLAN': '5'
+};
+
+function renderSummaryTable() {
+  const tbody = document.querySelector("#summaryTable tbody");
+  const select = document.getElementById("statusFilter");
+  const filterValue = select.value;
+  tbody.innerHTML = "";
+  const filteredData = filterValue ? summaryData.filter(row => row.status === filterValue) : summaryData;
+  filteredData.forEach(row => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${row.id}</td><td>${escapeHTML(row.status)}</td><td>${row.hdr.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function populateStatusFilter() {
+  const select = document.getElementById("statusFilter");
+  const uniqueStatuses = [...new Set(summaryData.map(row => row.status))].sort();
+  uniqueStatuses.forEach(status => {
+    const opt = document.createElement("option");
+    opt.value = status;
+    opt.textContent = status;
+    select.appendChild(opt);
+  });
+  select.addEventListener("change", (e) => {
+    renderSummaryTable();
+    const selectedStatus = e.target.value;
+    const idxStatusMain = headers.findIndex(h => normalize(h) === normalize("Id status main"));
+    if (idxStatusMain !== -1) {
+      const selects = document.querySelectorAll("#filter-row select");
+      const mainSelect = selects[idxStatusMain];
+      if (selectedStatus) {
+        const id = statusMap[selectedStatus];
+        mainSelect.value = id;
+      } else {
+        mainSelect.value = "";
+      }
+    }
+    currentPage = 1;
+    renderTable();
+    renderPagination();
+  });
+}
+
+function parseFload(value) {
+    if (!value) return 0;                  
+    const str = String(value).trim().replace(",", ".");
+    const num = parseFloat(str);
+    return isNaN(num) ? 0 : num;
+}
+
+function normalize(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function findHeaderIndex(headers, search) {
+    const normSearch = normalize(search);
+    return headers.findIndex(h => normalize(h) === normSearch);
+}
+
+let headers=[], dataRows=[], currentPage=1, rowsPerPage=20;
+let sortColumn = -1, sortDirection = 'asc';
 const statusUrl="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
 const equipmentUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
 const detailUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
 
-// Estado Global
-let headers=[], dataRows=[], currentPage=1, rowsPerPage=20;
-let idxStatusMainSummary=-1, idxDuracionHoursSummary=-1, idxDuracionSecondsSummary=-1;
-let columnFilters = [];
-
-// --- Funciones de Cálculo de Duración ---
-
-/**
- * Convierte duración timestamp "inicio - fin" a horas decimales (Alta precisión).
- * @param {string} durationStr - Duración en formato "YYYY-MM-DD HH:MM:SS.sss - YYYY-MM-DD HH:MM:SS.sss".
- * @returns {number} Horas totales con decimales.
- */
-function parseDurationToHours(durationStr){
-    if(!durationStr) return 0;
-    const parts = durationStr.split(" - ");
-    if(parts.length !== 2) return 0;
-    const start = new Date(parts[0]);
-    const end = new Date(parts[1]);
-    if(isNaN(start) || isNaN(end) || end <= start) return 0;
-    const diffMs = end - start; 
-    return diffMs / (1000 * 3600); // Milisegundos a horas
-}
-
-/**
- * Convierte duración timestamp "inicio - fin" a HH:MM:SS.
- * @param {string} durationStr - Duración en formato "YYYY-MM-DD HH:MM:SS.sss - YYYY-MM-DD HH:MM:SS.sss".
- * @returns {string} Duración en formato "HH:MM:SS".
- */
-function parseDurationToHHMMSS(durationStr){
-    if(!durationStr) return "00:00:00";
-    const parts = durationStr.split(" - ");
-    if(parts.length !== 2) return "00:00:00";
-    const start = new Date(parts[0]);
-    const end = new Date(parts[1]);
-    if(isNaN(start) || isNaN(end) || end <= start) return "00:00:00";
-    let diffSec = Math.floor((end - start)/1000);
-    const hours = String(Math.floor(diffSec/3600)).padStart(2,'0');
-    diffSec %= 3600;
-    const minutes = String(Math.floor(diffSec/60)).padStart(2,'0');
-    const seconds = String(diffSec%60).padStart(2,'0');
-    return `${hours}:${minutes}:${seconds}`;
-}
-
-/**
- * Convierte una duración en formato HH:MM:SS a segundos totales.
- * @param {string} hhmmss - Duración en formato "HH:MM:SS".
- * @returns {number} Segundos totales (entero).
- */
-function durationToSeconds(hhmmss) {
-    if (!hhmmss) return 0;
-    
-    // Asume que hhmmss es un string "HH:MM:SS"
-    const parts = hhmmss.split(':').map(p => parseInt(p, 10));
-
-    if (parts.length !== 3) return 0;
-
-    const hours = parts[0] || 0;
-    const minutes = parts[1] || 0;
-    const seconds = parts[2] || 0;
-
-    return (hours * 3600) + (minutes * 60) + seconds;
-}
-
-
 function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+
+function sortByColumn(col) {
+  if (sortColumn === col) {
+    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortColumn = col;
+    sortDirection = 'asc';
+  }
+  updateHeaderSortIndicators();
+  currentPage = 1;
+  renderTable();
+  renderPagination();
+}
+
+function updateHeaderSortIndicators() {
+  const ths = document.querySelectorAll('#header-row th');
+  ths.forEach((th, i) => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
+  });
+  if (sortColumn !== -1) {
+    ths[sortColumn].classList.add(`sorted-${sortDirection}`);
+  }
+}
 
 async function cargarDatos(){
   const loading=document.getElementById("loadingMessage");
   loading.style.display="block";
+  populateStatusFilter(); // Renderizar tabla resumen primero
+  renderSummaryTable();
   try {
-    // 1. Cargar Dimensiones
-    const [respEq, respDet, respSt] = await Promise.all([
-      fetch(equipmentUrl).then(r => r.text()),
-      fetch(detailUrl).then(r => r.text()),
-      fetch(statusUrl).then(r => r.arrayBuffer())
-    ]);
+    const respEq=await fetch(equipmentUrl);
+    const eqCsv=await respEq.text();
+    const eqRows=eqCsv.trim().split("\n").map(r=>r.split(";"));
+    const eqData=eqRows.slice(1);
+    const equipmentMap={}; eqData.forEach(r=>{ equipmentMap[r[0]]=r[1] || "Desconocido"; });
 
-    // Procesar Equipment
-    const eqRows=respEq.trim().split("\n").map(r=>r.split(";"));
-    const equipmentMap={}; 
-    eqRows.slice(1).forEach(r=>{ equipmentMap[r[0]]=r[1]||"Desconocido"; });
-
-    // Procesar StatusDetail
-    const detRows=respDet.trim().split("\n").map(r=>r.split(";"));
+    const respDet=await fetch(detailUrl);
+    const detCsv=await respDet.text();
+    const detRows=detCsv.trim().split("\n").map(r=>r.split(";"));
     const detHeaders=detRows[0];
-    const detailMap={}; 
-    detRows.slice(1).forEach(r=>{ detailMap[r[0]]=r.slice(1); });
+    const detData=detRows.slice(1);
+    const detailMap={}; detData.forEach(r=>{ detailMap[r[0]]=r.slice(1); });
 
-    // Procesar StatusHistory (descomprimir pako)
-    const decompressed = pako.inflate(new Uint8Array(respSt));
+    const respSt=await fetch(statusUrl);
+    const arrayBuffer = await respSt.arrayBuffer();
+    const data = new Uint8Array(arrayBuffer);
+    const decompressed = pako.inflate(data);
     const stCsv = new TextDecoder("utf-8").decode(decompressed);
     const stRows=stCsv.trim().split("\n").map(r=>r.split(";"));
 
     const stHeaders=stRows[0];
+    console.log("stHeaders:", stHeaders); // Para debug
     let stData=stRows.slice(1);
 
-    // Índices de columnas clave
-    const idxStatusMain=stHeaders.indexOf("Id status main");
-    const idxEquipment=stHeaders.indexOf("Id equipment");
-    const idxDuracionOriginal=stHeaders.indexOf("Duracion"); 
+    const idxStatusMain=findHeaderIndex(stHeaders, "Id status main");
+    const idxEquipment=findHeaderIndex(stHeaders, "Id equipment");
+    const idxDuracion=findHeaderIndex(stHeaders, "Duracion");
+    console.log("Indices encontrados:", {idxStatusMain, idxEquipment, idxDuracion}); // Para debug
 
-    // 2. Definir Nuevas Cabeceras
     const newHeaders=[...stHeaders];
-    newHeaders.splice(idxEquipment+1,0,"equipment"); 
-    newHeaders.splice(idxDuracionOriginal+1,0,"Duración Decimal"); 
-    newHeaders.splice(idxDuracionOriginal+2,0,"Duración HH:MM:SS");
-    newHeaders.splice(idxDuracionOriginal+3,0,"Duración en Segundos"); // ¡Nueva Columna!
-    newHeaders.push(...detHeaders.slice(1)); 
+    if (idxEquipment !== -1) {
+        newHeaders.splice(idxEquipment+1,0,"equipment");
+    }
+    if (idxDuracion !== -1) {
+        newHeaders.splice(idxDuracion+1,0,"Duración ParseFload");
+    }
+    newHeaders.push(...detHeaders.slice(1));
 
-    // 3. Procesar Filas de Datos
     stData=stData.map(r=>{
       const idEquip=r[idxEquipment];
       const idStatus=r[idxStatusMain];
-      const duracionStr=r[idxDuracionOriginal];
-
-      const equipName=equipmentMap[idEquip]||"Desconocido";
-      const statusDetails=detailMap[idStatus]||detHeaders.slice(1).map(()=> "Desconocido");
-      
-      const durHours=parseDurationToHours(duracionStr);
-      const durHHMMSS=parseDurationToHHMMSS(duracionStr);
-      const durSeconds=durationToSeconds(durHHMMSS); // Calcular segundos
+      const equipName=equipmentMap[idEquip] || "Desconocido";
+      const statusDetails=detailMap[idStatus] || detHeaders.slice(1).map(()=> "Desconocido");
 
       const newRow=[...r];
-      newRow.splice(idxEquipment+1,0,equipName);
-      newRow.splice(idxDuracionOriginal+1,0,durHours.toFixed(6)); 
-      newRow.splice(idxDuracionOriginal+2,0,durHHMMSS);
-      newRow.splice(idxDuracionOriginal+3,0,durSeconds); // Insertar segundos
+      if (idxEquipment !== -1) {
+          newRow.splice(idxEquipment+1,0,equipName);
+      }
+
+      const durParsed = parseFload(r[idxDuracion]);
+      if (idxDuracion !== -1) {
+          newRow.splice(idxDuracion+1,0,durParsed);
+      }
+
       newRow.push(...statusDetails);
       return newRow;
     });
 
-    headers=newHeaders.slice(1); 
-    dataRows=stData.map(r=>r.slice(1));
-    
-    // Asignar índices para el resumen
-    idxStatusMainSummary=headers.indexOf("Id status main");
-    idxDuracionHoursSummary=headers.indexOf("Duración Decimal"); 
-    idxDuracionSecondsSummary=headers.indexOf("Duración en Segundos"); 
+    headers=newHeaders; // Incluir la primera columna
+    dataRows=stData.map(r=>r); // Incluir la primera columna
 
     construirCabecera();
     renderTable();
     renderPagination();
-    renderSummary();
   } catch(err){
-    console.error("Error al cargar o procesar datos:", err);
-    loading.textContent = "Error al cargar datos. Verifique las URLs y la consola.";
-    loading.style.background = "#ffdddd";
+    console.error(err);
   } finally{ loading.style.display="none"; }
 }
-
-// --- Funciones de Renderizado, Filtros y Paginación ---
 
 function construirCabecera(){
   const headerRow=document.getElementById("header-row");
   const filterRow=document.getElementById("filter-row");
   headerRow.innerHTML=""; filterRow.innerHTML="";
-  columnFilters = []; 
-
   headers.forEach((h,i)=>{
-    const th=document.createElement("th"); th.textContent=escapeHTML(h); headerRow.appendChild(th);
-    
+    const th=document.createElement("th"); 
+    th.textContent=escapeHTML(h); 
+    th.addEventListener('click', () => sortByColumn(i));
+    headerRow.appendChild(th);
     const thF=document.createElement("th");
     const sel=document.createElement("select");
     sel.innerHTML="<option value=''>Todos</option>";
-    sel.addEventListener("change",(e)=>{ 
-        columnFilters[i] = e.target.value;
-        currentPage=1; 
-        renderTable(); 
-        renderPagination(); 
-        renderSummary(); 
+    sel.addEventListener("change",()=>{ 
+      // Opcional: Si quieres que filtrar en main actualice summary, agrega aquí
+      currentPage=1; renderTable(); renderPagination(); 
     });
     thF.appendChild(sel); filterRow.appendChild(thF);
   });
-  
   headers.forEach((h,i)=>{
     const sel=filterRow.children[i].querySelector("select");
-    const vals=[...new Set(dataRows.map(r=>r[i]))].sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }));
-    vals.forEach(v=>{ 
-        if (v !== null && v !== undefined && String(v).trim() !== "") {
-            const opt=document.createElement("option"); 
-            opt.value=v; 
-            opt.textContent=v; 
-            sel.appendChild(opt); 
-        }
-    });
+    const vals=[...new Set(dataRows.map(r=>r[i]))].sort();
+    vals.forEach(v=>{ const opt=document.createElement("option"); opt.value=v; opt.textContent=v; sel.appendChild(opt); });
   });
+  updateHeaderSortIndicators();
 }
 
 function getFilteredData(){
+  const selects=document.querySelectorAll("#filter-row select");
   const searchInput=document.getElementById("globalSearch").value.toLowerCase();
-  
   return dataRows.filter(r=>{
-    const matchFilters=columnFilters.every((filterValue,i)=>!filterValue||filterValue===""||r[i]===filterValue);
+    const matchFilters=[...selects].every((sel,i)=>!sel||sel.value===""||r[i]===sel.value);
     const matchSearch=!searchInput||r.some(v=>String(v).toLowerCase().includes(searchInput));
-    
     return matchFilters&&matchSearch;
   });
 }
@@ -267,115 +290,61 @@ function getFilteredData(){
 function renderTable(){
   const tbody=document.querySelector("#combinedTable tbody");
   tbody.innerHTML="";
-  const filtered=getFilteredData();
+  let filtered = getFilteredData().slice();
+  if (sortColumn !== -1) {
+    const durIdx = headers.findIndex(h => normalize(h) === normalize("Duración ParseFload"));
+    filtered.sort((a, b) => {
+      let valA = a[sortColumn];
+      let valB = b[sortColumn];
+      if (sortColumn === durIdx) {
+        valA = parseFloat(valA) || 0;
+        valB = parseFloat(valB) || 0;
+      } else {
+        valA = String(valA).toLowerCase();
+        valB = String(valB).toLowerCase();
+      }
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
   const start=(currentPage-1)*rowsPerPage;
   const end=start+rowsPerPage;
   const pageRows=filtered.slice(start,end);
   const fragment=document.createDocumentFragment();
-
   if(pageRows.length===0){
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td colspan="${headers.length}">No hay datos que coincidan con los filtros o búsqueda.</td>`;
+    tr.innerHTML=`<td colspan="${headers.length}">No hay datos que coincidan con los filtros</td>`;
     fragment.appendChild(tr);
   } else {
     pageRows.forEach((r)=>{
       const tr=document.createElement("tr");
-      r.forEach((v, i)=>{ 
-        const td=document.createElement("td"); 
-        
-        // Formatear Duración Decimal
-        if(headers[i] === "Duración Decimal") {
-             td.textContent = parseFloat(v).toFixed(6); 
-        // Formatear Duración en Segundos
-        } else if (headers[i] === "Duración en Segundos") {
-             td.textContent = parseInt(v, 10).toLocaleString('es-CL'); // Formato de miles
-        } else {
-             td.textContent=escapeHTML(v); 
-        }
-        tr.appendChild(td); 
-      });
+      r.forEach(v=>{ const td=document.createElement("td"); td.textContent=escapeHTML(v); tr.appendChild(td); });
       fragment.appendChild(tr);
     });
   }
   tbody.appendChild(fragment);
 }
 
-function renderSummary(){
-  const summaryBody=document.querySelector("#summaryTable tbody");
-  summaryBody.innerHTML="";
-  if(idxStatusMainSummary===-1||idxDuracionHoursSummary===-1||idxDuracionSecondsSummary===-1) return;
-  
-  const summaryMapHours={};
-  const summaryMapSeconds={};
-  
-  getFilteredData().forEach(r=>{
-    const status=r[idxStatusMainSummary]||"Desconocido";
-    const durHours=parseFloat(r[idxDuracionHoursSummary])||0; 
-    const durSeconds=parseInt(r[idxDuracionSecondsSummary])||0;
-    
-    if(!summaryMapHours[status]) summaryMapHours[status]=0;
-    summaryMapHours[status]+=durHours;
-
-    if(!summaryMapSeconds[status]) summaryMapSeconds[status]=0;
-    summaryMapSeconds[status]+=durSeconds;
-  });
-  
-  Object.keys(summaryMapHours).sort().forEach(status=>{
-    const tr=document.createElement("tr");
-    const tdStatus=document.createElement("td"); tdStatus.textContent=status; tr.appendChild(tdStatus);
-    
-    // Suma total en horas decimales (4 decimales)
-    const tdDurHours=document.createElement("td"); tdDurHours.textContent=summaryMapHours[status].toFixed(4); tr.appendChild(tdDurHours);
-    
-    // Suma total en segundos (entero con formato de miles)
-    const tdDurSeconds=document.createElement("td"); tdDurSeconds.textContent=summaryMapSeconds[status].toLocaleString('es-CL'); tr.appendChild(tdDurSeconds);
-    
-    summaryBody.appendChild(tr);
-  });
-}
-
 function limpiarFiltros(){
   document.querySelectorAll("#filter-row select").forEach(sel=>sel.value="");
   document.getElementById("globalSearch").value="";
-  columnFilters = []; 
+  document.getElementById("statusFilter").value = ""; // Limpiar filtro de resumen
   currentPage=1; 
   renderTable(); 
-  renderPagination(); 
-  renderSummary();
+  renderPagination();
+  renderSummaryTable(); // Re-render resumen
 }
 
 function exportToCSV(){
   const filtered=getFilteredData();
-  const csvRows=filtered.map(r=>{
-    return r.map((v, i) => {
-        let value = String(v);
-        if (headers[i] === "Duración Decimal") {
-            value = parseFloat(v).toFixed(6).replace('.', ','); 
-        } else if (headers[i] === "Duración en Segundos") {
-            value = parseInt(v, 10).toString(); // Asegurar exportación como número limpio
-        }
-        value = value.replace(/"/g, '""');
-        if (value.includes(';') || value.includes('\n') || value.includes('"')) {
-            value = `"${value}"`;
-        }
-        return value;
-    }).join(";");
-  });
-  
-  const headerRow = headers.map(h => {
-    let value = h.replace(/"/g, '""');
-    if (value.includes(';') || value.includes('\n') || value.includes('"')) {
-        value = `"${value}"`;
-    }
-    return value;
-  }).join(";");
-  
-  const csvContent=[headerRow, ...csvRows].join("\n");
-  const blob=new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent],{type:"text/csv;charset=utf-8;"});
+  const csvRows=filtered.map(r=>r.map(v=>String(v)).join(";"));
+  const csvContent=[headers.join(";"),...csvRows].join("\n");
+  const blob=new Blob([csvContent],{type:"text/csv;charset=utf-8;"});
   const url=URL.createObjectURL(blob);
   const link=document.createElement("a");
   link.href=url;
-  link.download=`statushistory_equipment_statusdetail_segundos_${new Date().toISOString().split("T")[0]}.csv`;
+  link.download=`statushistory_equipment_statusdetail_${new Date().toISOString().split("T")[0]}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -386,8 +355,6 @@ function renderPagination(){
   const filtered=getFilteredData();
   const totalPages=Math.ceil(filtered.length/rowsPerPage);
   const fragment=document.createDocumentFragment();
-
-  if (totalPages <= 1) return; 
 
   const firstBtn=document.createElement("button"); firstBtn.textContent="Primero"; firstBtn.disabled=currentPage===1;
   firstBtn.addEventListener("click",()=>{currentPage=1; renderTable(); renderPagination();}); fragment.appendChild(firstBtn);
@@ -408,13 +375,9 @@ function renderPagination(){
 }
 
 document.getElementById("globalSearch").addEventListener("input",()=>{
-  currentPage=1; 
-  renderTable(); 
-  renderPagination(); 
-  renderSummary();
+  currentPage=1; renderTable(); renderPagination();
 });
 
-// Iniciar la carga de datos al cargar la página
 cargarDatos();
 </script>
 </body>
