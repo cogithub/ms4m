@@ -223,12 +223,41 @@ async function cargarDatos(){
   const loading=document.getElementById("loadingMessage"); loading.style.display="block";
   populateStatusFilter(); renderSummaryTable();
   try{
-    const respEq=await fetch(equipmentUrl); const eqCsv=await respEq.text();
-    const eqData=eqCsv.trim().split("\n").slice(1).map(r=>r.split(";")); const equipmentMap={}; eqData.forEach(r=>{ equipmentMap[r[0]]=r[1]||"Desconocido"; });
-    const respDet=await fetch(detailUrl); const detCsv=await respDet.text();
-    const detRows=detCsv.trim().split("\n").map(r=>r.split(";")); const detHeaders=detRows[0]; const detailMap={}; detRows.slice(1).forEach(r=>{ detailMap[r[0]]=r.slice(1); });
-    const respSt=await fetch(statusUrl); const arrayBuffer=await respSt.arrayBuffer(); const decompressed=pako.inflate(new Uint8Array(arrayBuffer)); const stCsv=new TextDecoder("utf-8").decode(decompressed);
-    const stRows=stCsv.trim().split("\n").map(r=>r.split(";")); const stHeaders=stRows[0]; let stData=stRows.slice(1);
+    const respEq=await fetch(equipmentUrl);
+     const eqCsv=await respEq.text();
+
+    const eqData=eqCsv.trim().split("\n").slice(1).map(r=>r.split(";"));
+     const equipmentMap={}; eqData.forEach(r=>{ equipmentMap[r[0]]=r[1]||"Desconocido"; });
+
+    const respDet=await fetch(detailUrl);
+     const detCsv=await respDet.text();
+
+    const detRows=detCsv.trim().split("\n").map(r=>r.split(";"));
+     const detHeaders=detRows[0]; const detailMap={}; detRows.slice(1).forEach(r=>{ detailMap[r[0]]=r.slice(1);
+
+     });
+
+    const respSt=await fetch(statusUrl);
+     const arrayBuffer=await respSt.arrayBuffer();
+     const decompressed=pako.inflate(new Uint8Array(arrayBuffer));
+     const stCsv=new TextDecoder("utf-8").decode(decompressed);
+
+    const stRows=stCsv.trim().split("\n").map(r=>r.split(";"));
+
+debugger
+
+for (let i = 1; i < stRows.length; i++) {
+if (!stRows[i][10] || stRows[i][10].trim() === "") {
+  console.log(stRows[i]);
+  stRows[i][10] = 0;
+  console.log(stRows[i][10]);
+
+}
+
+  
+}
+
+     const stHeaders=stRows[0]; let stData=stRows.slice(1);
 
     const idxStatusMain=findHeaderIndex(stHeaders,"Id status main");
     const idxEquipment=findHeaderIndex(stHeaders,"Id equipment");
