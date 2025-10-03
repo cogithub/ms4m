@@ -23,6 +23,7 @@ th.sorted-desc::after { content: " ▼"; }
 #loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #fff176; }
 .summary-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
 .history-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
+#totalDuracion { font-weight: bold; text-align: right; margin-top: 5px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
@@ -58,6 +59,7 @@ th.sorted-desc::after { content: " ▼"; }
     </thead>
     <tbody></tbody>
   </table>
+  <div id="totalDuracion">Total Duración HDR: 0</div>
 
   <!-- Controles específicos para tabla History -->
   <div class="history-controls">
@@ -118,6 +120,7 @@ function renderSummaryTable() {
   tbody.innerHTML = "";
   const filteredMainData = getFilteredData();
   let summaryData = computeSummaryData(filteredMainData);
+  let totalDuracion = 0;
   if (filterValue) {
     summaryData = summaryData.filter(row => row.status === filterValue);
   }
@@ -130,8 +133,10 @@ function renderSummaryTable() {
       const tr = document.createElement("tr");
       tr.innerHTML = `<td>${row.id}</td><td>${escapeHTML(row.status)}</td><td>${row.hdr.toFixed(2)}</td>`;
       tbody.appendChild(tr);
+      totalDuracion += row.hdr;
     });
   }
+  document.getElementById("totalDuracion").textContent = `Total Duración HDR: ${totalDuracion.toFixed(2)}`;
 }
 
 function populateStatusFilter() {
@@ -370,14 +375,14 @@ async function cargarDatos(){
     const stCsv = new TextDecoder("utf-8").decode(decompressed);
     const stRows=stCsv.trim().split("\n").map(r=>r.split(";"));
 
-
-    // Volviendo en cero. Las valores vacío.
+   // Volviendo en cero. Las valores vacío.
     for (let i = 1; i < stRows.length; i++) {
       if (!stRows[i][10][10] || stRows[i][10].trim() === "") {
           stRows[i][10] = 0;
         }  
     }
- 
+
+
     const stHeaders=stRows[0];
     let stData=stRows.slice(1);
 
@@ -398,7 +403,7 @@ async function cargarDatos(){
       const idEquip=r[idxEquipment];
       const idStatus=r[idxStatusMain];
       const equipName=equipmentMap[idEquip] || "Desconocido";
-      const statusDetails=detailMap[idStatus] || detHeaders.slice(1).map(()=> "Desconocido");
+      const statusDetails=detailMap[idStatus] || detHeaders.slice(1).map(() => "Desconocido");
 
       const newRow=[...r];
       if (idxEquipment !== -1) {
