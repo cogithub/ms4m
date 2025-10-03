@@ -23,7 +23,6 @@ th.sorted-desc::after { content: " ▼"; }
 #loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #fff176; }
 .summary-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
 .history-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
-#totalResumen { font-weight: bold; text-align: right; margin-top: 5px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
@@ -41,10 +40,13 @@ th.sorted-desc::after { content: " ▼"; }
     </div>
   </div>
 
+  <!-- Tabla resumen con filtro Select para Status main -->
   <h2>Resumen por ID Status Main</h2>
   <div class="summary-controls">
     <label for="statusFilter">Filtrar por Status main:</label>
-    <select id="statusFilter"><option value="">Todos</option></select>
+    <select id="statusFilter">
+      <option value="">Todos</option>
+    </select>
   </div>
   <table id="summaryTable">
     <thead>
@@ -56,8 +58,13 @@ th.sorted-desc::after { content: " ▼"; }
     </thead>
     <tbody></tbody>
   </table>
-  <div id="totalResumen">Suma Duración HDR: 0</div>
 
+  <!-- Controles específicos para tabla History -->
+  <div class="history-controls">
+    <button onclick="limpiarFiltrosHistory()">Limpiar Filtros History</button>
+  </div>
+
+  <!-- Tabla principal (History) -->
   <table id="combinedTable" role="grid">
     <thead>
       <tr id="header-row"></tr>
@@ -65,85 +72,151 @@ th.sorted-desc::after { content: " ▼"; }
     </thead>
     <tbody></tbody>
   </table>
+
   <div id="pagination" class="pagination"></div>
 </div>
 
 <script>
-function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
-function parseFload(value){ 
-  const str=value==null?"0":String(value).trim().replace(",","."); 
-  const num=parseFloat(str); 
-  return isNaN(num)?0:num; 
+const statusLabels = {
+  1: 'READY',
+  2: 'DELAY',
+  3: 'STANDBY',
+  4: 'MAINT',
+  5: 'OUTOFPLAN'
+};
+
+const statusMap = {
+  'READY': '1',
+  'DELAY': '2',
+  'STANDBY': '3',
+  'MAINT': '4',
+  'OUTOFPLAN': '5'
+};
+
+function computeSummaryData(filteredData) {
+  const summaryMap = {};
+  const idxStatusMain = headers.findIndex(h => normalize(h) === normalize("Id status main"));
+  const idxDuracion = headers.findIndex(h => normalize(h) === normalize("Duración ParseFload"));
+  if (idxStatusMain === -1 || idxDuracion === -1) return [];
+  filteredData.forEach(r => {
+    const statusId = parseInt(r[idxStatusMain]);
+    if (statusId >= 1 && statusId <= 5) {
+      const dur = parseFloat(r[idxDuracion]) || 0;
+      if (!summaryMap[statusId]) {
+        summaryMap[statusId] = { id: statusId, status: statusLabels[statusId] || `Estado ${statusId}`, hdr: 0 };
+      }
+      summaryMap[statusId].hdr += dur;
+    }
+  });
+  return Object.values(summaryMap).sort((a, b) => a.id - b.id);
 }
 
-const summaryData = [
-  // Se usa parseFload para asegurar que 'hdr' sea numérico (0 si no se puede convertir)
-  { id: 1, status: 'READY', hdr: parseFload('58.9') },
-  { id: 2, status: 'DELAY', hdr: parseFload('27.5') },
-  { id: 3, status: 'STANDBY', hdr: parseFload('12.6') },
-  { id: 4, status: 'MAINT', hdr: parseFload('38.6') },
-  // Se ha cambiado a un string no numérico para demostrar que se convierte a 0
-  { id: 5, status: 'OUTOFPLAN', hdr: parseFload('NO_NUM') } 
-];
+function renderSummaryTable() {
+  const tbody = document.querySelector("#summaryTable tbody");
+  const select = document.getElementById("statusFilter");
+  const filterValue = select.value;
+  tbody.innerHTML = "";
+  const filteredMainData = getFilteredData();
+  let summaryData = computeSummaryData(filteredMainData);
+  if (filterValue) {
+    summaryData = summaryData.filter(row => row.status === filterValue);
+  }
+  if (summaryData.length === 0) {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td colspan="3">No hay datos para mostrar en el resumen</td>`;
+    tbody.appendChild(tr);
+  } else {
+    summaryData.forEach(row => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${row.id}</td><td>${escapeHTML(row.status)}</td><td>${row.hdr.toFixed(2)}</td>`;
+      tbody.appendChild(tr);
+    });
+  }
+}
 
-const statusMap = { 'READY': '1', 'DELAY': '2', 'STANDBY': '3', 'MAINT': '4', 'OUTOFPLAN': '5' };
+function populateStatusFilter() {
+  const select = document.getElementById("statusFilter");
+  const uniqueStatuses = Object.values(statusLabels).sort();
+  uniqueStatuses.forEach(status => {
+    const opt = document.createElement("option");
+    opt.value = status;
+    opt.textContent = status;
+    select.appendChild(opt);
+  });
+  select.addEventListener("change", (e) => {
+    renderSummaryTable();
+    const selectedStatus = e.target.value;
+    const idxStatusMain = headers.findIndex(h => normalize(h) === normalize("Id status main"));
+    if (idxStatusMain !== -1) {
+      const selects = document.querySelectorAll("#filter-row select");
+      const mainSelect = selects[idxStatusMain];
+      if (selectedStatus) {
+        const id = statusMap[selectedStatus];
+        mainSelect.value = id;
+      } else {
+        mainSelect.value = "";
+      }
+    }
+    currentPage = 1;
+    renderTable();
+    renderPagination();
+  });
+}
+
+function limpiarFiltrosHistory() {
+  document.querySelectorAll("#filter-row select").forEach(sel=>sel.value="");
+  document.getElementById("globalSearch").value="";
+  currentPage=1; 
+  renderTable(); 
+  renderPagination();
+  renderSummaryTable(); // Actualizar resumen
+}
+
+function parseFload(value) {
+    if (!value || value === '') return 0;                  
+    const str = String(value).trim().replace(",", ".");
+    const num = parseFloat(str);
+    return isNaN(num) ? 0 : num;
+}
+
+function normalize(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+}
+
+function findHeaderIndex(headers, search) {
+    const normSearch = normalize(search);
+    return headers.findIndex(h => normalize(h) === normSearch);
+}
 
 let headers=[], dataRows=[], currentPage=1, rowsPerPage=20;
-let sortColumn=-1, sortDirection='asc';
-
+let sortColumn = -1, sortDirection = 'asc';
 const statusUrl="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
 const equipmentUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
 const detailUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
 
-function normalize(str){ return str.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
-function findHeaderIndex(headers, search){ return headers.findIndex(h=>normalize(h)===normalize(search)); }
+function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
 
-function renderSummaryTable(){
-  const tbody=document.querySelector("#summaryTable tbody");
-  const filterValue=document.getElementById("statusFilter").value;
-  tbody.innerHTML="";
-  let suma=0;
-  const filtered=filterValue?summaryData.filter(r=>r.status===filterValue):summaryData;
-  filtered.forEach(r=>{
-    const tr=document.createElement("tr");
-    // Se usa toFixed(2) para asegurar el formato numérico con dos decimales en la tabla
-    tr.innerHTML=`<td>${r.id}</td><td>${escapeHTML(r.status)}</td><td>${r.hdr.toFixed(2)}</td>`; 
-    tbody.appendChild(tr);
-    suma+=r.hdr;
-  });
-  document.getElementById("totalResumen").textContent=`Suma Duración HDR: ${suma.toFixed(2)}`;
-
-  // Aplicar filtro en tabla principal
-  const idxStatusMain=findHeaderIndex(headers,"Id status main");
-  if(idxStatusMain!==-1){
-    const selects=document.querySelectorAll("#filter-row select");
-    selects[idxStatusMain].value = filterValue ? statusMap[filterValue] : "";
-    currentPage=1;
-    renderTable();
-    renderPagination();
+function sortByColumn(col) {
+  if (sortColumn === col) {
+    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortColumn = col;
+    sortDirection = 'asc';
   }
+  updateHeaderSortIndicators();
+  currentPage = 1;
+  renderTable();
+  renderPagination();
 }
 
-function populateStatusFilter(){
-  const select=document.getElementById("statusFilter");
-  [...new Set(summaryData.map(r=>r.status))].sort().forEach(s=>{
-    const opt=document.createElement("option"); opt.value=s; opt.textContent=s; select.appendChild(opt);
+function updateHeaderSortIndicators() {
+  const ths = document.querySelectorAll('#header-row th');
+  ths.forEach((th, i) => {
+    th.classList.remove('sorted-asc', 'sorted-desc');
   });
-  select.addEventListener("change", renderSummaryTable);
-}
-
-function limpiarFiltrosHistory(){ document.querySelectorAll("#filter-row select").forEach(s=>s.value=""); document.getElementById("globalSearch").value=""; currentPage=1; renderTable(); renderPagination(); }
-function limpiarFiltros(){ limpiarFiltrosHistory(); document.getElementById("statusFilter").value=""; renderSummaryTable(); }
-
-function sortByColumn(col){
-  if(sortColumn===col) sortDirection=sortDirection==='asc'?'desc':'asc';
-  else { sortColumn=col; sortDirection='asc'; sortColumn=col; }
-  updateHeaderSortIndicators(); currentPage=1; renderTable(); renderPagination();
-}
-
-function updateHeaderSortIndicators(){
-  document.querySelectorAll('#header-row th').forEach((th,i)=>th.classList.remove('sorted-asc','sorted-desc'));
-  if(sortColumn!==-1) document.querySelectorAll('#header-row th')[sortColumn].classList.add(`sorted-${sortDirection}`);
+  if (sortColumn !== -1) {
+    ths[sortColumn].classList.add(`sorted-${sortDirection}`);
+  }
 }
 
 function construirCabecera(){
@@ -151,134 +224,205 @@ function construirCabecera(){
   const filterRow=document.getElementById("filter-row");
   headerRow.innerHTML=""; filterRow.innerHTML="";
   headers.forEach((h,i)=>{
-    const th=document.createElement("th"); th.textContent=escapeHTML(h); th.addEventListener("click",()=>sortByColumn(i)); headerRow.appendChild(th);
-    const thF=document.createElement("th"); const sel=document.createElement("select"); sel.innerHTML="<option value=''>Todos</option>";
-    sel.addEventListener("change",()=>{ currentPage=1; renderTable(); renderPagination(); });
+    const th=document.createElement("th"); 
+    th.textContent=escapeHTML(h); 
+    th.addEventListener('click', () => sortByColumn(i));
+    headerRow.appendChild(th);
+    const thF=document.createElement("th");
+    const sel=document.createElement("select");
+    sel.innerHTML="<option value=''>Todos</option>";
+    sel.addEventListener("change",()=>{ 
+      currentPage=1; renderTable(); renderPagination(); 
+    });
     thF.appendChild(sel); filterRow.appendChild(thF);
   });
   headers.forEach((h,i)=>{
     const sel=filterRow.children[i].querySelector("select");
-    [...new Set(dataRows.map(r=>r[i]))].sort().forEach(v=>{ const opt=document.createElement("option"); opt.value=v; opt.textContent=v; sel.appendChild(opt); });
+    const vals=[...new Set(dataRows.map(r=>r[i]))].sort();
+    vals.forEach(v=>{ const opt=document.createElement("option"); opt.value=v; opt.textContent=v; sel.appendChild(opt); });
   });
   updateHeaderSortIndicators();
 }
 
 function getFilteredData(){
   const selects=document.querySelectorAll("#filter-row select");
-  const search=document.getElementById("globalSearch").value.toLowerCase();
+  const searchInput=document.getElementById("globalSearch").value.toLowerCase();
   return dataRows.filter(r=>{
-    return [...selects].every((sel,i)=>!sel||sel.value===""||r[i]===sel.value) &&
-           (!search || r.some(v=>String(v).toLowerCase().includes(search)));
+    const matchFilters=[...selects].every((sel,i)=>!sel||sel.value===""||r[i]===sel.value);
+    const matchSearch=!searchInput||r.some(v=>String(v).toLowerCase().includes(searchInput));
+    return matchFilters&&matchSearch;
   });
 }
 
 function renderTable(){
-  const tbody=document.querySelector("#combinedTable tbody"); tbody.innerHTML="";
-  let filtered=getFilteredData();
-  if(sortColumn!==-1){
-    const durIdx=findHeaderIndex(headers,"Duración ParseFload");
-    filtered.sort((a,b)=>{
-      let va=a[sortColumn], vb=b[sortColumn];
-      // Si la columna es la de Duración ParseFload, usamos parseFload para el sorting
-      if(sortColumn===durIdx){ va=parseFload(va); vb=parseFload(vb); } else { va=String(va).toLowerCase(); vb=String(vb).toLowerCase(); }
-      if(va<vb) return sortDirection==='asc'?-1:1;
-      if(va>vb) return sortDirection==='asc'?1:-1;
+  const tbody=document.querySelector("#combinedTable tbody");
+  tbody.innerHTML="";
+  let filtered = getFilteredData().slice();
+  if (sortColumn !== -1) {
+    const durIdx = headers.findIndex(h => normalize(h) === normalize("Duración ParseFload"));
+    filtered.sort((a, b) => {
+      let valA = a[sortColumn];
+      let valB = b[sortColumn];
+      if (sortColumn === durIdx) {
+        valA = parseFload(valA);
+        valB = parseFload(valB);
+      } else {
+        valA = String(valA).toLowerCase();
+        valB = String(valB).toLowerCase();
+      }
+      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
   }
-  const start=(currentPage-1)*rowsPerPage, end=start+rowsPerPage;
+  const start=(currentPage-1)*rowsPerPage;
+  const end=start+rowsPerPage;
   const pageRows=filtered.slice(start,end);
   const fragment=document.createDocumentFragment();
-  if(pageRows.length===0){ const tr=document.createElement("tr"); tr.innerHTML=`<td colspan="${headers.length}">No hay datos que coincidan con los filtros</td>`; fragment.appendChild(tr); }
-  else pageRows.forEach(r=>{ const tr=document.createElement("tr"); r.forEach(v=>{ const td=document.createElement("td"); td.textContent=escapeHTML(v); tr.appendChild(td); }); fragment.appendChild(tr); });
+  if(pageRows.length===0){
+    const tr=document.createElement("tr");
+    tr.innerHTML=`<td colspan="${headers.length}">No hay datos que coincidan con los filtros</td>`;
+    fragment.appendChild(tr);
+  } else {
+    pageRows.forEach((r)=>{
+      const tr=document.createElement("tr");
+      r.forEach(v=>{ const td=document.createElement("td"); td.textContent=escapeHTML(v); tr.appendChild(td); });
+      fragment.appendChild(tr);
+    });
+  }
   tbody.appendChild(fragment);
 }
 
 function renderPagination(){
-  const pagination=document.getElementById("pagination"); pagination.innerHTML="";
-  const filtered=getFilteredData(); const totalPages=Math.ceil(filtered.length/rowsPerPage);
+  const pagination=document.getElementById("pagination");
+  pagination.innerHTML="";
+  const filtered=getFilteredData();
+  const totalPages=Math.ceil(filtered.length/rowsPerPage);
   const fragment=document.createDocumentFragment();
 
-  const btnFirst=document.createElement("button"); btnFirst.textContent="Primero"; btnFirst.disabled=currentPage===1; btnFirst.onclick=()=>{currentPage=1; renderTable(); renderPagination();}; fragment.appendChild(btnFirst);
-  const btnPrev=document.createElement("button"); btnPrev.textContent="◄ Anterior"; btnPrev.disabled=currentPage===1; btnPrev.onclick=()=>{if(currentPage>1){currentPage--; renderTable(); renderPagination();}}; fragment.appendChild(btnPrev);
-  const pageInfo=document.createElement("span"); pageInfo.textContent=`Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`; fragment.appendChild(pageInfo);
-  const btnNext=document.createElement("button"); btnNext.textContent="Siguiente ►"; btnNext.disabled=currentPage>=totalPages; btnNext.onclick=()=>{if(currentPage<totalPages){currentPage++; renderTable(); renderPagination();}}; fragment.appendChild(btnNext);
-  const btnLast=document.createElement("button"); btnLast.textContent="Último"; btnLast.disabled=currentPage>=totalPages; btnLast.onclick=()=>{currentPage=totalPages; renderTable(); renderPagination();}; fragment.appendChild(btnLast);
+  const firstBtn=document.createElement("button"); firstBtn.textContent="Primero"; firstBtn.disabled=currentPage===1;
+  firstBtn.addEventListener("click",()=>{currentPage=1; renderTable(); renderPagination();}); fragment.appendChild(firstBtn);
+
+  const prevBtn=document.createElement("button"); prevBtn.textContent="◄ Anterior"; prevBtn.disabled=currentPage===1;
+  prevBtn.addEventListener("click",()=>{if(currentPage>1){currentPage--; renderTable(); renderPagination();}}); fragment.appendChild(prevBtn);
+
+  const pageAndTotal=document.createElement("span"); pageAndTotal.textContent=`Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`;
+  fragment.appendChild(pageAndTotal);
+
+  const nextBtn=document.createElement("button"); nextBtn.textContent="Siguiente ►"; nextBtn.disabled=currentPage>=totalPages;
+  nextBtn.addEventListener("click",()=>{if(currentPage<totalPages){currentPage++; renderTable(); renderPagination();}}); fragment.appendChild(nextBtn);
+
+  const lastBtn=document.createElement("button"); lastBtn.textContent="Último"; lastBtn.disabled=currentPage>=totalPages;
+  lastBtn.addEventListener("click",()=>{currentPage=totalPages; renderTable(); renderPagination();}); fragment.appendChild(lastBtn);
 
   pagination.appendChild(fragment);
 }
 
-document.getElementById("globalSearch").addEventListener("input",()=>{ currentPage=1; renderTable(); renderPagination(); });
+function limpiarFiltros(){
+  document.querySelectorAll("#filter-row select").forEach(sel=>sel.value="");
+  document.getElementById("globalSearch").value="";
+  document.getElementById("statusFilter").value = ""; // Limpiar filtro de resumen
+  currentPage=1; 
+  renderTable(); 
+  renderPagination();
+  renderSummaryTable(); // Re-render resumen
+}
 
 function exportToCSV(){
   const filtered=getFilteredData();
-  const csvRows=[headers.join(";"),...filtered.map(r=>r.join(";"))].join("\n");
-  const blob=new Blob([csvRows],{type:"text/csv;charset=utf-8;"}); 
+  const csvRows=filtered.map(r=>r.map(v=>String(v)).join(";"));
+  const csvContent=[headers.join(";"),...csvRows].join("\n");
+  const blob=new Blob([csvContent],{type:"text/csv;charset=utf-8;"});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement("a"); a.href=url; a.download=`statushistory_${new Date().toISOString().split("T")[0]}.csv`; a.click();
+  const link=document.createElement("a");
+  link.href=url;
+  link.download=`statushistory_equipment_statusdetail_${new Date().toISOString().split("T")[0]}.csv`;
+  link.click();
   URL.revokeObjectURL(url);
 }
 
-async function cargarDatos(){
-  const loading=document.getElementById("loadingMessage"); loading.style.display="block";
-  populateStatusFilter(); renderSummaryTable();
-  try{
-    const respEq=await fetch(equipmentUrl);
-     const eqCsv=await respEq.text();
+document.getElementById("globalSearch").addEventListener("input",()=>{
+  currentPage=1; renderTable(); renderPagination();
+});
 
-    const eqData=eqCsv.trim().split("\n").slice(1).map(r=>r.split(";"));
-     const equipmentMap={}; eqData.forEach(r=>{ equipmentMap[r[0]]=r[1]||"Desconocido"; });
+async function cargarDatos(){
+  const loading=document.getElementById("loadingMessage");
+  loading.style.display="block";
+  populateStatusFilter(); // Renderizar tabla resumen primero (inicial vacío hasta datos)
+  try {
+    const respEq=await fetch(equipmentUrl);
+    const eqCsv=await respEq.text();
+    const eqRows=eqCsv.trim().split("\n").map(r=>r.split(";"));
+    const eqData=eqRows.slice(1);
+    const equipmentMap={}; eqData.forEach(r=>{ equipmentMap[r[0]]=r[1] || "Desconocido"; });
 
     const respDet=await fetch(detailUrl);
-     const detCsv=await respDet.text();
-
+    const detCsv=await respDet.text();
     const detRows=detCsv.trim().split("\n").map(r=>r.split(";"));
-     const detHeaders=detRows[0]; const detailMap={}; detRows.slice(1).forEach(r=>{ detailMap[r[0]]=r.slice(1);
-
-     });
+    const detHeaders=detRows[0];
+    const detData=detRows.slice(1);
+    const detailMap={}; detData.forEach(r=>{ detailMap[r[0]]=r.slice(1); });
 
     const respSt=await fetch(statusUrl);
-     const arrayBuffer=await respSt.arrayBuffer();
-     const decompressed=pako.inflate(new Uint8Array(arrayBuffer));
-     const stCsv=new TextDecoder("utf-8").decode(decompressed);
-
+    const arrayBuffer = await respSt.arrayBuffer();
+    const data = new Uint8Array(arrayBuffer);
+    const decompressed = pako.inflate(data);
+    const stCsv = new TextDecoder("utf-8").decode(decompressed);
     const stRows=stCsv.trim().split("\n").map(r=>r.split(";"));
 
-debugger
 
-for (let i = 1; i < stRows.length; i++) {
-if (!stRows[i][10] || stRows[i][10].trim() === "") {
-  console.log(stRows[i]);
-  stRows[i][10] = 0;
-  console.log(stRows[i][10]);
+    // Volviendo en cero. Las valores vacío.
+    for (let i = 1; i < stRows.length; i++) {
+      if (!stRows[i][10][10] || stRows[i][10].trim() === "") {
+          stRows[i][10] = 0;
+        }  
+    }
+ 
+    const stHeaders=stRows[0];
+    let stData=stRows.slice(1);
 
-}
-
-  
-}
-
-     const stHeaders=stRows[0]; let stData=stRows.slice(1);
-
-    const idxStatusMain=findHeaderIndex(stHeaders,"Id status main");
-    const idxEquipment=findHeaderIndex(stHeaders,"Id equipment");
-    const idxDuracion=findHeaderIndex(stHeaders,"Duracion");
+    const idxStatusMain=findHeaderIndex(stHeaders, "Id status main");
+    const idxEquipment=findHeaderIndex(stHeaders, "Id equipment");
+    const idxDuracion=findHeaderIndex(stHeaders, "Duracion");
 
     const newHeaders=[...stHeaders];
-    if(idxEquipment!==-1) newHeaders.splice(idxEquipment+1,0,"Equipo");
-    if(idxDuracion!==-1) newHeaders.splice(idxDuracion+1,0,"Duración ParseFload");
+    if (idxEquipment !== -1) {
+        newHeaders.splice(idxEquipment+1,0,"Equipo");
+    }
+    if (idxDuracion !== -1) {
+        newHeaders.splice(idxDuracion+1,0,"Duración ParseFload");
+    }
     newHeaders.push(...detHeaders.slice(1));
 
     stData=stData.map(r=>{
+      const idEquip=r[idxEquipment];
+      const idStatus=r[idxStatusMain];
+      const equipName=equipmentMap[idEquip] || "Desconocido";
+      const statusDetails=detailMap[idStatus] || detHeaders.slice(1).map(()=> "Desconocido");
+
       const newRow=[...r];
-      if(idxEquipment!==-1) newRow.splice(idxEquipment+1,0,equipmentMap[r[idxEquipment]]||"Desconocido");
-      if(idxDuracion!==-1) newRow.splice(idxDuracion+1,0,parseFload(r[idxDuracion]));
-      newRow.push(...(detailMap[r[idxStatusMain]]||detHeaders.slice(1).map(()=> "Desconocido")));
+      if (idxEquipment !== -1) {
+          newRow.splice(idxEquipment+1,0,equipName);
+      }
+
+      const durParsed = parseFload(r[idxDuracion]);
+      if (idxDuracion !== -1) {
+          newRow.splice(idxDuracion+1,0,durParsed);
+      }
+
+      newRow.push(...statusDetails);
       return newRow;
     });
 
-    headers=newHeaders; dataRows=stData;
-    construirCabecera(); renderTable(); renderPagination();
-  }catch(err){ console.error(err); } finally{ loading.style.display="none"; }
+    headers=newHeaders; // Incluir la primera columna
+    dataRows=stData.map(r=>r); // Incluir la primera columna
+
+    construirCabecera();
+    renderTable();
+    renderPagination();
+  } catch(err){
+    console.error(err);
+  } finally{ loading.style.display="none"; }
 }
 
 cargarDatos();
