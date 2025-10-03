@@ -73,21 +73,9 @@ th.sorted-desc::after { content: " ▼"; }
 </div>
 
 <script>
-const summaryData = [
-  { id: 1, status: 'READY', hdr: 58.9 },
-  { id: 2, status: 'DELAY', hdr: 27.5 },
-  { id: 3, status: 'STANDBY', hdr: 12.6 },
-  { id: 4, status: 'MAINT', hdr: 38.6 },
-  { id: 5, status: 'OUTOFPLAN', hdr: 10.39 }
-];
-const statusMap = { 'READY':'1','DELAY':'2','STANDBY':'3','MAINT':'4','OUTOFPLAN':'5' };
-
 let headers=[], dataRows=[], currentPage=1, rowsPerPage=20;
 let sortColumn=-1, sortDirection='asc';
-
 const statusUrl="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
-const equipmentUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
-const detailUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
 
 function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
 function parseFload(value){ const num=parseFloat(String(value).replace(",",".")); return isNaN(num)?0:num; }
@@ -99,27 +87,36 @@ function renderSummaryTable(){
   const tbody=document.querySelector("#summaryTable tbody");
   const filterValue=document.getElementById("statusFilter").value;
   tbody.innerHTML="";
+  const resumen = {};
+  dataRows.forEach(r=>{
+    const idStatus = r[findHeaderIndex(headers,"Id status main")];
+    const statusName = r[findHeaderIndex(headers,"Status main")] || idStatus;
+    const dur = parseFload(r[findHeaderIndex(headers,"Duracion")]);
+    if(!resumen[idStatus]) resumen[idStatus]={status: statusName, dur:0};
+    resumen[idStatus].dur += dur;
+  });
   let suma=0;
-  const filtered=filterValue?summaryData.filter(r=>r.status===filterValue):summaryData;
-  filtered.forEach(r=>{
+  Object.entries(resumen).forEach(([id, obj])=>{
+    if(filterValue && obj.status!==filterValue) return;
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${r.id}</td><td>${escapeHTML(r.status)}</td><td>${r.hdr.toFixed(2)}</td>`;
-    tbody.appendChild(tr); suma+=r.hdr;
+    tr.innerHTML=`<td>${id}</td><td>${escapeHTML(obj.status)}</td><td>${obj.dur.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+    suma += obj.dur;
   });
   document.getElementById("totalResumen").textContent=`Suma Duración HDR: ${suma.toFixed(2)}`;
 
-  // Filtrar tabla principal automáticamente según el resumen
+  // Filtrar tabla principal automáticamente según resumen
   const idxStatusMain = findHeaderIndex(headers, "Id status main");
   if(idxStatusMain!==-1){
-    document.querySelectorAll("#filter-row select")[idxStatusMain].value = filterValue ? statusMap[filterValue] : "";
-    currentPage=1;
-    renderTable();
-    renderPagination();
+    document.querySelectorAll("#filter-row select")[idxStatusMain].value = filterValue || "";
+    currentPage=1; renderTable(); renderPagination();
   }
 }
+
 function populateStatusFilter(){
   const sel=document.getElementById("statusFilter");
-  [...new Set(summaryData.map(r=>r.status))].sort().forEach(s=>{
+  const statuses = [...new Set(dataRows.map(r=>r[findHeaderIndex(headers,"Status main")]))].sort();
+  statuses.forEach(s=>{
     const opt=document.createElement("option"); opt.value=s; opt.textContent=s; sel.appendChild(opt);
   });
   sel.addEventListener("change",renderSummaryTable);
@@ -216,58 +213,35 @@ function exportToCSV(){
 // ================== CARGA DATOS REALES ================
 async function cargarDatos(){
   const loading=document.getElementById("loadingMessage"); loading.style.display="block";
-  populateStatusFilter(); renderSummaryTable();
   try{
-    const respEq=await fetch(equipmentUrl);
-    const eqCsv=await respEq.text();
-    const eqRows=eqCsv.trim().split("\n").map(r=>r.split(";"));
-    const eqData=eqRows.slice(1);
-    const equipmentMap={}; eqData.forEach(r=>{ equipmentMap[r[0]]=r[1]||"Desconocido"; });
-
-    const respDet=await fetch(detailUrl);
-    const detCsv=await respDet.text();
-    const detRows=detCsv.trim().split("\n").map(r=>r.split(";"));
-    const detHeaders=detRows[0];
-    const detData=detRows.slice(1);
-    const detailMap={}; detData.forEach(r=>{ detailMap[r[0]]=r.slice(1); });
-
-    const respSt=await fetch(statusUrl);
-    const arrayBuffer=await respSt.arrayBuffer();
+    const resp=await fetch(statusUrl);
+    const arrayBuffer=await resp.arrayBuffer();
     const data=new Uint8Array(arrayBuffer);
     const decompressed=pako.inflate(data);
-    const stCsv=new TextDecoder("utf-8").decode(decompressed);
-    const stRows=stCsv.trim().split("\n").map(r=>r.split(";"));
-    const stHeaders=stRows[0]; let stData=stRows.slice(1);
+    const csv=new TextDecoder("utf-8").decode(decompressed);
+    const rows=csv.trim().split("\n").map(r=>r.split(";"));
+    headers=rows[0]; dataRows=rows.slice(1);
 
-    const idxStatusMain=findHeaderIndex(stHeaders,"Id status main");
-    const idxEquipment=findHeaderIndex(stHeaders,"Id equipment");
-    const idxDuracion=findHeaderIndex(stHeaders,"Duracion");
+    // Crear columna Duración ParseFload si no existe
+    const idxDur=findHeaderIndex(headers,"Duracion");
+    if(idxDur!==-1){
+      headers.splice(idxDur+1,0,"Duración ParseFload");
+      dataRows=dataRows.map(r=>{
+        const dur=parseFload(r[idxDur]);
+        const newRow=[...r]; newRow.splice(idxDur+1,0,dur); return newRow;
+      });
+    }
 
-    const newHeaders=[...stHeaders];
-    if(idxEquipment!==-1) newHeaders.splice(idxEquipment+1,0,"Equipo");
-    if(idxDuracion!==-1) newHeaders.splice(idxDuracion+1,0,"Duración ParseFload");
-    newHeaders.push(...detHeaders.slice(1));
-
-    stData=stData.map(r=>{
-      const idEquip=r[idxEquipment];
-      const idStatus=r[idxStatusMain];
-      const equipName=equipmentMap[idEquip]||"Desconocido";
-      const statusDetails=detailMap[idStatus]||detHeaders.slice(1).map(()=> "Desconocido");
-      const newRow=[...r];
-      if(idxEquipment!==-1) newRow.splice(idxEquipment+1,0,equipName);
-      if(idxDuracion!==-1) newRow.splice(idxDuracion+1,0,parseFload(r[idxDuracion]));
-      newRow.push(...statusDetails);
-      return newRow;
-    });
-
-    headers=newHeaders; dataRows=stData;
-    construirCabecera(); renderTable(); renderPagination();
+    construirCabecera();
+    populateStatusFilter();
+    renderSummaryTable();
+    renderTable(); renderPagination();
   }catch(err){
     console.error(err); document.getElementById("errorMessage").textContent="Error cargando datos: "+err;
   }finally{ loading.style.display="none"; }
 }
 
-    cargarDatos();
+cargarDatos();
 </script>
 </body>
 </html>
