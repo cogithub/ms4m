@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -59,10 +58,6 @@ th.sorted-desc::after { content: " ▼"; }
   </table>
   <div id="totalResumen">Suma Duración HDR: 0</div>
 
-  <div class="history-controls">
-    <button onclick="limpiarFiltrosHistory()">Limpiar Filtros History</button>
-  </div>
-
   <table id="combinedTable" role="grid">
     <thead>
       <tr id="header-row"></tr>
@@ -74,12 +69,21 @@ th.sorted-desc::after { content: " ▼"; }
 </div>
 
 <script>
+function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
+function parseFload(value){ 
+  const str=value==null?"0":String(value).trim().replace(",","."); 
+  const num=parseFloat(str); 
+  return isNaN(num)?0:num; 
+}
+
 const summaryData = [
-  { id: 1, status: 'READY', hdr: 58.9 },
-  { id: 2, status: 'DELAY', hdr: 27.5 },
-  { id: 3, status: 'STANDBY', hdr: 12.6 },
-  { id: 4, status: 'MAINT', hdr: 38.6 },
-  { id: 5, status: 'OUTOFPLAN', hdr: 10.39 }
+  // Se usa parseFload para asegurar que 'hdr' sea numérico (0 si no se puede convertir)
+  { id: 1, status: 'READY', hdr: parseFload('58.9') },
+  { id: 2, status: 'DELAY', hdr: parseFload('27.5') },
+  { id: 3, status: 'STANDBY', hdr: parseFload('12.6') },
+  { id: 4, status: 'MAINT', hdr: parseFload('38.6') },
+  // Se ha cambiado a un string no numérico para demostrar que se convierte a 0
+  { id: 5, status: 'OUTOFPLAN', hdr: parseFload('NO_NUM') } 
 ];
 
 const statusMap = { 'READY': '1', 'DELAY': '2', 'STANDBY': '3', 'MAINT': '4', 'OUTOFPLAN': '5' };
@@ -91,8 +95,6 @@ const statusUrl="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statu
 const equipmentUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
 const detailUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
 
-function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
-function parseFload(value){ const str=value==null?"0":String(value).trim().replace(",","."); const num=parseFloat(str); return isNaN(num)?0:num; }
 function normalize(str){ return str.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim(); }
 function findHeaderIndex(headers, search){ return headers.findIndex(h=>normalize(h)===normalize(search)); }
 
@@ -104,7 +106,8 @@ function renderSummaryTable(){
   const filtered=filterValue?summaryData.filter(r=>r.status===filterValue):summaryData;
   filtered.forEach(r=>{
     const tr=document.createElement("tr");
-    tr.innerHTML=`<td>${r.id}</td><td>${escapeHTML(r.status)}</td><td>${r.hdr.toFixed(2)}</td>`;
+    // Se usa toFixed(2) para asegurar el formato numérico con dos decimales en la tabla
+    tr.innerHTML=`<td>${r.id}</td><td>${escapeHTML(r.status)}</td><td>${r.hdr.toFixed(2)}</td>`; 
     tbody.appendChild(tr);
     suma+=r.hdr;
   });
@@ -176,6 +179,7 @@ function renderTable(){
     const durIdx=findHeaderIndex(headers,"Duración ParseFload");
     filtered.sort((a,b)=>{
       let va=a[sortColumn], vb=b[sortColumn];
+      // Si la columna es la de Duración ParseFload, usamos parseFload para el sorting
       if(sortColumn===durIdx){ va=parseFload(va); vb=parseFload(vb); } else { va=String(va).toLowerCase(); vb=String(vb).toLowerCase(); }
       if(va<vb) return sortDirection==='asc'?-1:1;
       if(va>vb) return sortDirection==='asc'?1:-1;
