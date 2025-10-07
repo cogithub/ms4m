@@ -1,61 +1,568 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Estado de Actividades</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f6f8;
-      margin: 40px;
-    }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    table {
-      width: 80%;
-      margin: auto;
-      border-collapse: collapse;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    th, td {
-      padding: 12px 15px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-    th {
-      background-color: #007acc;
-      color: white;
-    }
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-    tr:hover {
-      background-color: #e0f7fa;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StatusHistory + Equipment + StatusDetail con Resumen y Gráfico</title>
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
+h2 { text-align: center; color: #1a73e8; margin-top: 30px; }
+.container { width: 95%; margin: 20px auto; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 8px; overflow-x: auto; padding: 20px; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th, td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; font-size: 14px; }
+th { background: #1a73e8; color: white; font-weight: 600; cursor: pointer; white-space: nowrap; }
+tr:nth-child(even) { background: #f8f9fa; }
+th.sorted-asc::after { content: " ▲"; }
+th.sorted-desc::after { content: " ▼"; }
+.controls { display: flex; justify-content: flex-end; align-items: center; margin: 20px 0; gap: 10px; flex-wrap: wrap; }
+.controls button { padding: 8px 12px; border: none; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+.controls button:hover:not(:disabled) { transform: translateY(-2px); }
+.controls .clear-btn { background: #1a73e8; }
+.controls .clear-btn:hover { background: #1557b0; }
+.pagination button { margin: 2px; padding: 5px 10px; }
+#loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #fff176; }
+.date-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
+.date-controls input, .header-filter { max-width: 150px; padding: 5px; }
+#totalResumen, #totalHistory { font-weight: bold; text-align: right; margin-top: 5px; }
+.summary-container { display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch; flex-direction: row; }
+#summaryTable { flex: 1; min-width: 300px; order: 1; }
+#chartContainer { flex: 0.6; min-width: 200px; order: 2; height: auto; align-self: stretch; }
+.date-controls { order: 3; flex: 1 1 100%; }
+#areaChart { width: 100%; height: 100%; }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 </head>
 <body>
-  <h1>Estado de Actividades</h1>
-  <table>
+
+<h2>StatusHistory + Equipment + StatusDetail</h2>
+<div id="loadingMessage">Espere, cargando datos...</div>
+
+<div class="container">
+  <div class="controls">
+    <div>
+      <button class="clear-btn" onclick="limpiarFiltros()">Limpiar Filtros</button>
+    </div>
+  </div>
+
+  <h2>Resumen por ID Status Main</h2>
+  <div class="summary-container">
+    <div id="summaryTable">
+      <table>
+        <thead>
+          <tr>
+            <th>ID Status main</th>
+            <th>Status main</th>
+            <th>Duración HR numérico</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div id="totalResumen">Suma Duración HR numérico: 0</div>
+    </div>
+    <div id="chartContainer">
+      <canvas id="areaChart"></canvas>
+    </div>
+    <div class="date-controls">
+      <label for="dateCubeInicio">Date cube inicio:</label>
+      <input type="date" id="dateCubeInicio" aria-label="Filtrar por fecha de inicio">
+      <label for="dateCubeFin">Date cube fin:</label>
+      <input type="date" id="dateCubeFin" aria-label="Filtrar por fecha de fin">
+    </div>
+  </div>
+
+  <h2>Historial</h2>
+  <table id="combinedTable" role="grid">
     <thead>
-      <tr>
-        <th>Id</th>
-        <th>Status Main</th>
-        <th>Transcurrido Total Calculado</th>
-        <th>Transcurrido Total Manual</th>
-        <th>Diferencia</th>
-      </tr>
+      <tr id="header-row"></tr>
     </thead>
-    <tbody>
-      <tr><td>1</td><td>READY</td><td>320.455867577222</td><td>320.455867577222</td><td>0 ✅</td></tr>
-      <tr><td>2</td><td>DELAY</td><td>9.12270991638889</td><td>9.12270991638889</td><td>0 ✅</td></tr>
-      <tr><td>3</td><td>STANDBY</td><td>192.328769556945</td><td>192.328769556945</td><td>0 ✅</td></tr>
-      <tr><td>4</td><td>MAINT</td><td>192.840880780278</td><td>192.840880780278</td><td>0 ✅</td></tr>
-      <tr><td>5</td><td>OUTOFPLAN</td><td>24.5300352675</td><td>24.5300352675</td><td>0 ✅</td></tr>
-    </tbody>
+    <tbody></tbody>
   </table>
+  <div id="totalHistory">Suma Duración HR numérico (History): 0</div>
+  <div id="pagination" class="pagination"></div>
+</div>
+
+<script>
+let summaryData = [];
+const statusMap = { 'READY': '1', 'DELAY': '2', 'STANDBY': '3', 'MAINT': '4', 'OUTOFPLAN': '5' };
+
+let headers = [], dataRows = [], currentPage = 1, rowsPerPage = 20;
+let sortColumn = -1, sortDirection = 'asc';
+let barChart = null;
+
+const statusUrl = "http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
+const equipmentUrl = "http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
+const detailUrl = "http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
+
+function escapeHTML(str) { return String(str).replace(/[&<>"']/g, m => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[m]); }
+function parseFload(value) { const str = value == null ? "0" : String(value).trim().replace(",", "."); const num = parseFloat(str); return isNaN(num) ? 0 : num; }
+function normalize(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
+function findHeaderIndex(headers, search) { 
+  const index = headers.findIndex(h => normalize(h) === normalize(search)); 
+  if (index === -1) console.warn(`Columna "${search}" no encontrada en encabezados:`, headers); 
+  return index; 
+}
+function parseDate(dateStr) {
+  if (!dateStr) return null;
+  const formats = [
+    "YYYY-MM-DD",
+    "YYYY-MM-DD HH:mm:ss",
+    "DD/MM/YYYY",
+    "DD/MM/YYYY HH:mm:ss"
+  ];
+  let parsed = new Date(dateStr);
+  if (!isNaN(parsed)) return parsed;
+  parsed = new Date(dateStr.replace(/(\d{2})\/(\d{2})\/(\d{4})/, "$3-$2-$1"));
+  if (!isNaN(parsed)) return parsed;
+  console.warn(`No se pudo parsear la fecha: ${dateStr}`);
+  return null;
+}
+
+function calculateTrendLine(data) {
+  const n = data.length;
+  if (n === 0) return [];
+  let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+  for (let i = 0; i < n; i++) {
+    sumX += i;
+    sumY += data[i];
+    sumXY += i * data[i];
+    sumXX += i * i;
+  }
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  return data.map((_, i) => intercept + slope * i);
+}
+
+function calculateAverageLine(data) {
+  const n = data.length;
+  if (n === 0) return [];
+  const avg = data.reduce((sum, val) => sum + val, 0) / n;
+  return data.map(() => avg);
+}
+
+function calculateFilteredSummaryData(filteredRows) {
+  const idxStatusMain = findHeaderIndex(headers, "Id status main");
+  const idxInicio = findHeaderIndex(headers, "Inicio de estado");
+  const idxFin = findHeaderIndex(headers, "Fin de estado");
+  const durationMap = {};
+
+  filteredRows.forEach(row => {
+    if (idxInicio !== -1 && idxFin !== -1 && row[idxInicio] && row[idxFin]) {
+      const inicio = parseDate(row[idxInicio]);
+      const fin = parseDate(row[idxFin]);
+      if (inicio && fin && !isNaN(inicio) && !isNaN(fin)) {
+        const durationHrs = (fin - inicio) / 3600000;
+        const statusId = row[idxStatusMain] || "Desconocido";
+        const statusName = Object.keys(statusMap).find(key => statusMap[key] === statusId) || "Desconocido";
+        if (!durationMap[statusId]) {
+          durationMap[statusId] = { id: statusId, status: statusName, hdr: 0 };
+        }
+        durationMap[statusId].hdr += durationHrs;
+      }
+    }
+  });
+
+  const filteredSummary = Object.values(durationMap).filter(d => d.hdr > 0);
+  console.log("summaryData filtrado:", filteredSummary);
+  return filteredSummary;
+}
+
+function renderBarChart(filteredSummary) {
+  const ctx = document.getElementById('areaChart').getContext('2d');
+  const labels = filteredSummary.map(r => r.status);
+  const data = filteredSummary.map(r => r.hdr);
+  const colors = [
+    'rgba(26, 115, 232, 0.2)', 'rgba(255, 99, 132, 0.2)', 'rgba(75, 192, 192, 0.2)', 
+    'rgba(255, 159, 64, 0.2)', 'rgba(153, 102, 255, 0.2)'
+  ];
+  const borderColors = [
+    'rgba(26, 115, 232, 1)', 'rgba(255, 99, 132, 1)', 'rgba(75, 192, 192, 1)', 
+    'rgba(255, 159, 64, 1)', 'rgba(153, 102, 255, 1)'
+  ];
+  const backgroundColors = labels.map((_, i) => colors[i % colors.length]);
+  const borderColorArray = labels.map((_, i) => borderColors[i % borderColors.length]);
+  const trendData = calculateTrendLine(data);
+  const average = calculateAverageLine(data);
+  console.log("Datos para el gráfico de barras:", { labels, data, backgroundColors, borderColorArray, trendData, average });
+
+  if (barChart) barChart.destroy();
+  barChart = new Chart(ctx, {
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Duración HR numérico',
+          data: data,
+          backgroundColor: backgroundColors,
+          borderColor: borderColorArray,
+          borderWidth: 2,
+          yAxisID: 'y'
+        },
+        {
+          type: 'line',
+          label: 'Tendencia',
+          data: trendData,
+          borderColor: 'rgba(0, 0, 255, 0.8)',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          fill: false,
+          pointRadius: 0,
+          yAxisID: 'y'
+        },
+        {
+          type: 'line',
+          label: 'Promedio',
+          data: average,
+          borderColor: 'rgba(255, 0, 0, 0.8)',
+          borderWidth: 2,
+          borderDash: [5, 5],
+          fill: false,
+          pointRadius: 0,
+          yAxisID: 'y'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: { title: { display: true, text: 'Status main' } },
+        y: { 
+          title: { display: true, text: 'Duración HR numérico (horas)' },
+          beginAtZero: true
+        }
+      },
+      plugins: {
+        legend: { display: true, position: 'top' },
+        tooltip: { 
+          enabled: true,
+          callbacks: {
+            label: function(context) {
+              const label = context.dataset.label || '';
+              const value = context.parsed.y || 0;
+              const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+              const percentage = total > 0 ? ((value / total) * 100).toFixed(2) : 0;
+              return `${label}: ${value.toFixed(2)} horas (${percentage}%)`;
+            }
+          }
+        },
+        datalabels: {
+          display: function(context) {
+            return context.dataset.data[context.dataIndex] > 0 && context.dataset.type === 'bar';
+          },
+          color: '#fff',
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          borderRadius: 3,
+          font: { size: 12 },
+          formatter: function(value, context) {
+            const total = context.dataset.data.reduce((sum, val) => sum + val, 0);
+            const percentage = total > 0 ? ((value / total) * 100).toFixed(2) : 0;
+            return `${percentage}%`;
+          },
+          anchor: 'end',
+          align: 'top'
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+}
+
+function renderSummaryTable() {
+  const filteredRows = getFilteredData();
+  const filteredSummary = calculateFilteredSummaryData(filteredRows);
+  console.log("Renderizando summaryTable con filteredSummary:", filteredSummary);
+  const tbody = document.querySelector("#summaryTable tbody");
+  tbody.innerHTML = "";
+  let suma = 0;
+  filteredSummary.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.id}</td><td>${escapeHTML(r.status)}</td><td>${r.hdr.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+    suma += r.hdr;
+  });
+  document.getElementById("totalResumen").textContent = `Suma Duración HR numérico: ${suma.toFixed(2)}`;
+  renderBarChart(filteredSummary);
+}
+
+function populateMainStatusFilter() {
+  console.log("Poblando mainStatusFilter con valores de Main status");
+  const idxMainStatus = findHeaderIndex(headers, "Main status");
+  const select = document.getElementById("mainStatusFilter");
+  select.innerHTML = "<option value=''>Todos</option>";
+  if (idxMainStatus !== -1) {
+    const uniqueValues = [...new Set(dataRows.map(r => r[idxMainStatus]).filter(v => v))].sort();
+    uniqueValues.forEach(value => {
+      const opt = document.createElement("option");
+      opt.value = value;
+      opt.textContent = escapeHTML(value);
+      select.appendChild(opt);
+    });
+  } else {
+    console.warn("No se pudo poblar mainStatusFilter: columna 'Main status' no encontrada");
+  }
+  select.addEventListener("change", () => { currentPage = 1; renderTable(); renderPagination(); });
+}
+
+function limpiarFiltros() { 
+  document.getElementById("dateCubeInicio").value = ""; 
+  document.getElementById("dateCubeFin").value = "";
+  document.getElementById("mainStatusFilter").value = "";
+  currentPage = 1; 
+  renderTable(); 
+  renderPagination(); 
+}
+
+function sortByColumn(col) {
+  if (sortColumn === col) sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  else { sortColumn = col; sortDirection = 'asc'; }
+  updateHeaderSortIndicators(); currentPage = 1; renderTable(); renderPagination();
+}
+
+function updateHeaderSortIndicators() {
+  document.querySelectorAll('#header-row th').forEach((th, i) => th.classList.remove('sorted-asc', 'sorted-desc'));
+  if (sortColumn !== -1) document.querySelectorAll('#header-row th')[sortColumn].classList.add(`sorted-${sortDirection}`);
+}
+
+function construirCabecera() {
+  console.log("Construyendo cabecera con headers:", headers);
+  const headerRow = document.getElementById("header-row");
+  headerRow.innerHTML = "";
+  const idxMainStatus = findHeaderIndex(headers, "Main status");
+  headers.forEach((h, i) => {
+    const th = document.createElement("th");
+    if (i === idxMainStatus) {
+      const select = document.createElement("select");
+      select.id = "mainStatusFilter";
+      select.className = "header-filter";
+      th.textContent = escapeHTML(h);
+      th.appendChild(document.createElement("br"));
+      th.appendChild(select);
+    } else {
+      th.textContent = escapeHTML(h);
+    }
+    th.addEventListener("click", () => sortByColumn(i));
+    headerRow.appendChild(th);
+  });
+  updateHeaderSortIndicators();
+  if (idxMainStatus !== -1) populateMainStatusFilter();
+}
+
+function getFilteredData() {
+  const dateInicio = document.getElementById("dateCubeInicio").value;
+  const dateFin = document.getElementById("dateCubeFin").value;
+  const mainStatusFilter = document.getElementById("mainStatusFilter")?.value || "";
+  const idxDateCube = findHeaderIndex(headers, "Date cube");
+  const idxMainStatus = findHeaderIndex(headers, "Main status");
+
+  const filtered = dataRows.filter(r => {
+    let pass = true;
+    if (idxDateCube !== -1 && (dateInicio || dateFin)) {
+      const rowDate = parseDate(r[idxDateCube]);
+      if (rowDate && !isNaN(rowDate)) {
+        if (dateInicio) {
+          const startDate = parseDate(dateInicio);
+          pass = pass && rowDate >= startDate;
+        }
+        if (dateFin) {
+          const endDate = parseDate(dateFin);
+          endDate.setHours(23, 59, 59, 999);
+          pass = pass && rowDate <= endDate;
+        }
+      } else {
+        pass = false;
+      }
+    }
+    if (idxMainStatus !== -1 && mainStatusFilter) {
+      pass = pass && r[idxMainStatus] === mainStatusFilter;
+    }
+    return pass;
+  });
+  console.log("Datos filtrados para combinedTable:", { filteredLength: filtered.length, dateInicio, dateFin, mainStatusFilter, idxDateCube, idxMainStatus });
+  return filtered;
+}
+
+function renderTable() {
+  const tbody = document.querySelector("#combinedTable tbody"); tbody.innerHTML = "";
+  let filtered = getFilteredData();
+  const hrIdx = findHeaderIndex(headers, "Duración HR numérico");
+  let sumaHR = 0;
+  if (hrIdx !== -1) {
+    sumaHR = filtered.reduce((sum, row) => sum + parseFload(row[hrIdx]), 0);
+  }
+  document.getElementById("totalHistory").textContent = `Suma Duración HR numérico (History): ${sumaHR.toFixed(2)}`;
+
+  if (sortColumn !== -1) {
+    filtered.sort((a, b) => {
+      let va = a[sortColumn], vb = b[sortColumn];
+      if (sortColumn === hrIdx) { va = parseFload(va); vb = parseFload(vb); } else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
+      if (va < vb) return sortDirection === 'asc' ? -1 : 1;
+      if (va > vb) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  }
+  const start = (currentPage - 1) * rowsPerPage, end = start + rowsPerPage;
+  const pageRows = filtered.slice(start, end);
+  console.log("Filas para renderizar en combinedTable (página):", pageRows);
+  const fragment = document.createDocumentFragment();
+  if (pageRows.length === 0) { 
+    const tr = document.createElement("tr"); 
+    tr.innerHTML = `<td colspan="${headers.length}">No hay datos que coincidan con los filtros</td>`; 
+    fragment.appendChild(tr); 
+  } else {
+    pageRows.forEach(r => { 
+      const tr = document.createElement("tr"); 
+      r.forEach(v => { const td = document.createElement("td"); td.textContent = escapeHTML(v); tr.appendChild(td); }); 
+      fragment.appendChild(tr); 
+    });
+  }
+  tbody.appendChild(fragment);
+  renderSummaryTable();
+}
+
+function renderPagination() {
+  const pagination = document.getElementById("pagination"); pagination.innerHTML = "";
+  const filtered = getFilteredData(); const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const fragment = document.createDocumentFragment();
+
+  const btnFirst = document.createElement("button"); btnFirst.textContent = "Primero"; btnFirst.disabled = currentPage === 1; btnFirst.onclick = () => { currentPage = 1; renderTable(); renderPagination(); }; fragment.appendChild(btnFirst);
+  const btnPrev = document.createElement("button"); btnPrev.textContent = "◄ Anterior"; btnPrev.disabled = currentPage === 1; btnPrev.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); renderPagination(); } }; fragment.appendChild(btnPrev);
+  const pageInfo = document.createElement("span"); pageInfo.textContent = `Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`; fragment.appendChild(pageInfo);
+  const btnNext = document.createElement("button"); btnNext.textContent = "Siguiente ►"; btnNext.disabled = currentPage >= totalPages; btnNext.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); renderPagination(); } }; fragment.appendChild(btnNext);
+  const btnLast = document.createElement("button"); btnLast.textContent = "Último"; btnLast.disabled = currentPage >= totalPages; btnLast.onclick = () => { currentPage = totalPages; renderTable(); renderPagination(); }; fragment.appendChild(btnLast);
+
+  pagination.appendChild(fragment);
+}
+
+document.getElementById("dateCubeInicio").addEventListener("change", () => { currentPage = 1; renderTable(); renderPagination(); });
+document.getElementById("dateCubeFin").addEventListener("change", () => { currentPage = 1; renderTable(); renderPagination(); });
+
+async function cargarDatos() {
+  const loading = document.getElementById("loadingMessage"); loading.style.display = "block";
+  console.log("Iniciando carga de datos...");
+  try {
+    let stCsv, eqCsv, detCsv;
+    try {
+      const respEq = await fetch(equipmentUrl); 
+      eqCsv = await respEq.text();
+      if (!eqCsv.trim()) throw new Error("equipmentUrl devolvió datos vacíos");
+    } catch (e) {
+      console.warn("Error al cargar equipmentUrl, usando datos simulados:", e);
+      eqCsv = `Id equipment;Equipo\n101;Equipo A\n102;Equipo B\n103;Equipo C\n104;Equipo D\n105;Equipo E`;
+    }
+    const eqData = eqCsv.trim().split("\n").slice(1).map(r => r.split(";")); 
+    const equipmentMap = {}; eqData.forEach(r => { equipmentMap[r[0]] = r[1] || "Desconocido"; });
+    console.log("equipmentMap:", equipmentMap);
+
+    try {
+      const respDet = await fetch(detailUrl); 
+      detCsv = await respDet.text();
+      if (!detCsv.trim()) throw new Error("detailUrl devolvió datos vacíos");
+    } catch (e) {
+      console.warn("Error al cargar detailUrl, usando datos simulados:", e);
+      detCsv = `Id status main;Main status;Mind, status\n1;READY;Active\n2;DELAY;Inactive\n3;STANDBY;Active\n4;MAINT;Pending\n5;OUTOFPLAN;Active`;
+    }
+    const detRows = detCsv.trim().split("\n").map(r => r.split(";")); 
+    const detHeaders = detRows[0]; 
+    const detailMap = {}; detRows.slice(1).forEach(r => { detailMap[r[0]] = r.slice(1); });
+    console.log("detailMap:", detailMap);
+
+    try {
+      const respSt = await fetch(statusUrl); 
+      const arrayBuffer = await respSt.arrayBuffer();
+      const decompressed = pako.inflate(new Uint8Array(arrayBuffer)); 
+      stCsv = new TextDecoder("utf-8").decode(decompressed);
+      if (!stCsv.trim()) throw new Error("statusUrl devolvió datos vacíos");
+    } catch (e) {
+      console.warn("Error al cargar statusUrl, usando datos simulados:", e);
+      stCsv = `Id status main;Inicio de estado;Fin de estado;Id equipment;Date cube\n1;2025-09-01 12:38:51;2025-09-01 12:48:36;101;2025-09-01\n2;2025-09-02 13:00:00;2025-09-02 14:30:00;102;2025-09-02\n3;2025-09-03 15:00:00;2025-09-03 16:00:00;103;2025-09-03\n4;2025-09-04 16:30:00;2025-09-04 18:00:00;104;2025-09-04\n5;2025-09-05 18:30:00;2025-09-05 19:00:00;105;2025-09-05`;
+    }
+    const stRows = stCsv.trim().split("\n").map(r => r.split(";"));
+    console.log("Datos crudos de StatusHistory:", stRows);
+
+    const stHeaders = stRows[0]; 
+    let stData = stRows.slice(1);
+    if (stData.length === 0) {
+      console.warn("No se encontraron datos en StatusHistory después de los encabezados");
+      loading.textContent = "Error: No se encontraron datos en StatusHistory";
+      loading.style.display = "block";
+      return;
+    }
+    console.log("Encabezados de StatusHistory:", stHeaders);
+
+    const idxStatusMain = findHeaderIndex(stHeaders, "Id status main");
+    const idxInicio = findHeaderIndex(stHeaders, "Inicio de estado");
+    const idxFin = findHeaderIndex(stHeaders, "Fin de estado");
+    const idxEquipment = findHeaderIndex(stHeaders, "Id equipment");
+    const idxDateCube = findHeaderIndex(stHeaders, "Date cube");
+    console.log("Índices:", { idxStatusMain, idxInicio, idxFin, idxEquipment, idxDateCube });
+
+    const durationMap = {};
+    stData.forEach(row => {
+      if (idxInicio !== -1 && idxFin !== -1 && row[idxInicio] && row[idxFin]) {
+        const inicio = parseDate(row[idxInicio]);
+        const fin = parseDate(row[idxFin]);
+        console.log("Fechas para summaryTable:", row[idxInicio], row[idxFin], inicio, fin);
+        if (inicio && fin && !isNaN(inicio) && !isNaN(fin)) {
+          const durationHrs = (fin - inicio) / 3600000;
+          const statusId = row[idxStatusMain] || "Desconocido";
+          const statusName = Object.keys(statusMap).find(key => statusMap[key] === statusId) || "Desconocido";
+          if (!durationMap[statusId]) {
+            durationMap[statusId] = { id: statusId, status: statusName, hdr: 0 };
+          }
+          durationMap[statusId].hdr += durationHrs;
+        }
+      }
+    });
+    summaryData = Object.values(durationMap).filter(d => d.hdr > 0);
+    console.log("summaryData calculado:", summaryData);
+
+    const newHeaders = [...stHeaders];
+    if (idxEquipment !== -1) newHeaders.splice(idxEquipment + 1, 0, "Equipo");
+    if (idxFin !== -1 && idxInicio !== -1) newHeaders.splice(idxFin + 1, 0, "Duración HR numérico");
+    newHeaders.push(...detHeaders.slice(1));
+
+    stData = stData.map(r => {
+      const newRow = [...r];
+      if (idxEquipment !== -1) newRow.splice(idxEquipment + 1, 0, equipmentMap[r[idxEquipment]] || "Desconocido");
+      if (idxInicio !== -1 && idxFin !== -1) {
+        const inicio = parseDate(r[idxInicio]);
+        const fin = parseDate(r[idxFin]);
+        const durationHrs = (inicio && fin && !isNaN(inicio) && !isNaN(fin)) ? ((fin - inicio) / 3600000).toFixed(2) : "0.00";
+        console.log(`Duración HR numérico para fila: ${r[idxInicio]} - ${r[idxFin]} = ${durationHrs} horas`);
+        newRow.splice(idxFin + 1, 0, durationHrs);
+      }
+      const statusDetail = detailMap[r[idxStatusMain]] || detHeaders.slice(1).map(() => "Desconocido");
+      newRow.push(...statusDetail);
+      return newRow;
+    });
+    console.log("dataRows construido:", stData);
+
+    headers = newHeaders; dataRows = stData;
+    renderSummaryTable();
+    construirCabecera();
+    document.getElementById("dateCubeInicio").value = "2025-09-01";
+    document.getElementById("dateCubeFin").value = "2025-09-04";
+    renderTable();
+    renderPagination();
+    console.log("Carga de datos completada.");
+  } catch (err) {
+    console.error("Error en cargarDatos:", err);
+    loading.textContent = `Error al cargar datos: ${err.message}`;
+    loading.style.display = "block";
+  } finally {
+    if (dataRows.length === 0) {
+      loading.textContent = "Error: No se cargaron datos en la tabla History";
+      loading.style.display = "block";
+    } else {
+      loading.style.display = "none";
+    }
+  }
+}
+
+cargarDatos();
+</script>
 </body>
 </html>
