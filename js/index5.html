@@ -287,29 +287,34 @@ function renderSummaryTable() {
   renderBarChart(filteredSummary);
 }
 
-function populateMainStatusFilter() {
-  console.log("Poblando mainStatusFilter con valores de Main status");
-  const idxMainStatus = findHeaderIndex(headers, "Main status");
-  const select = document.getElementById("mainStatusFilter");
-  select.innerHTML = "<option value=''>Todos</option>";
-  if (idxMainStatus !== -1) {
-    const uniqueValues = [...new Set(dataRows.map(r => r[idxMainStatus]).filter(v => v))].sort();
-    uniqueValues.forEach(value => {
-      const opt = document.createElement("option");
-      opt.value = value;
-      opt.textContent = escapeHTML(value);
-      select.appendChild(opt);
-    });
-  } else {
-    console.warn("No se pudo poblar mainStatusFilter: columna 'Main status' no encontrada");
-  }
-  select.addEventListener("change", () => { currentPage = 1; renderTable(); renderPagination(); });
+function populateAllFilters() {
+  headers.forEach(header => {
+    const idx = findHeaderIndex(headers, header);
+    const select = document.getElementById(`filter-${normalize(header)}`);
+    select.innerHTML = "<option value=''>Todos</option>";
+    if (idx !== -1) {
+      const uniqueValues = [...new Set(dataRows.map(r => r[idx]).filter(v => v))].sort();
+      console.log(`Valores únicos para ${header}:`, uniqueValues);
+      uniqueValues.forEach(value => {
+        const opt = document.createElement("option");
+        opt.value = value;
+        opt.textContent = escapeHTML(value);
+        select.appendChild(opt);
+      });
+      select.addEventListener("change", () => { currentPage = 1; renderTable(); renderPagination(); });
+    } else {
+      console.warn(`No se pudo poblar filtro para ${header}: columna no encontrada`);
+    }
+  });
 }
 
 function limpiarFiltros() { 
   document.getElementById("dateCubeInicio").value = ""; 
   document.getElementById("dateCubeFin").value = "";
-  document.getElementById("mainStatusFilter").value = "";
+  headers.forEach(header => {
+    const select = document.getElementById(`filter-${normalize(header)}`);
+    if (select) select.value = "";
+  });
   currentPage = 1; 
   renderTable(); 
   renderPagination(); 
@@ -330,32 +335,30 @@ function construirCabecera() {
   console.log("Construyendo cabecera con headers:", headers);
   const headerRow = document.getElementById("header-row");
   headerRow.innerHTML = "";
-  const idxMainStatus = findHeaderIndex(headers, "Main status");
   headers.forEach((h, i) => {
     const th = document.createElement("th");
-    if (i === idxMainStatus) {
-      const select = document.createElement("select");
-      select.id = "mainStatusFilter";
-      select.className = "header-filter";
-      th.textContent = escapeHTML(h);
-      th.appendChild(document.createElement("br"));
-      th.appendChild(select);
-    } else {
-      th.textContent = escapeHTML(h);
-    }
+    th.textContent = escapeHTML(h);
+    const select = document.createElement("select");
+    select.id = `filter-${normalize(h)}`;
+    select.className = "header-filter";
+    th.appendChild(document.createElement("br"));
+    th.appendChild(select);
     th.addEventListener("click", () => sortByColumn(i));
     headerRow.appendChild(th);
   });
   updateHeaderSortIndicators();
-  if (idxMainStatus !== -1) populateMainStatusFilter();
+  populateAllFilters();
 }
 
 function getFilteredData() {
   const dateInicio = document.getElementById("dateCubeInicio").value;
   const dateFin = document.getElementById("dateCubeFin").value;
-  const mainStatusFilter = document.getElementById("mainStatusFilter")?.value || "";
+  const filters = headers.reduce((acc, header) => {
+    const filterValue = document.getElementById(`filter-${normalize(header)}`)?.value || "";
+    if (filterValue) acc[header] = filterValue;
+    return acc;
+  }, {});
   const idxDateCube = findHeaderIndex(headers, "Date cube");
-  const idxMainStatus = findHeaderIndex(headers, "Main status");
 
   const filtered = dataRows.filter(r => {
     let pass = true;
@@ -375,17 +378,19 @@ function getFilteredData() {
         pass = false;
       }
     }
-    if (idxMainStatus !== -1 && mainStatusFilter) {
-      pass = pass && r[idxMainStatus] === mainStatusFilter;
+    for (const [header, filterValue] of Object.entries(filters)) {
+      const idx = findHeaderIndex(headers, header);
+      if (idx !== -1) pass = pass && r[idx] === filterValue;
     }
     return pass;
   });
-  console.log("Datos filtrados para combinedTable:", { filteredLength: filtered.length, dateInicio, dateFin, mainStatusFilter, idxDateCube, idxMainStatus });
+  console.log("Datos filtrados para combinedTable:", { filteredLength: filtered.length, dateInicio, dateFin, filters });
   return filtered;
 }
 
 function renderTable() {
-  const tbody = document.querySelector("#combinedTable tbody"); tbody.innerHTML = "";
+  const tbody = document.querySelector("#combinedTable tbody"); 
+  tbody.innerHTML = "";
   let filtered = getFilteredData();
   const hrIdx = findHeaderIndex(headers, "Duración HR numérico");
   let sumaHR = 0;
@@ -397,7 +402,8 @@ function renderTable() {
   if (sortColumn !== -1) {
     filtered.sort((a, b) => {
       let va = a[sortColumn], vb = b[sortColumn];
-      if (sortColumn === hrIdx) { va = parseFload(va); vb = parseFload(vb); } else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
+      if (sortColumn === hrIdx) { va = parseFload(va); vb = parseFload(vb); } 
+      else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
       if (va < vb) return sortDirection === 'asc' ? -1 : 1;
       if (va > vb) return sortDirection === 'asc' ? 1 : -1;
       return 0;
@@ -414,7 +420,11 @@ function renderTable() {
   } else {
     pageRows.forEach(r => { 
       const tr = document.createElement("tr"); 
-      r.forEach(v => { const td = document.createElement("td"); td.textContent = escapeHTML(v); tr.appendChild(td); }); 
+      r.forEach(v => { 
+        const td = document.createElement("td"); 
+        td.textContent = escapeHTML(v); 
+        tr.appendChild(td); 
+      }); 
       fragment.appendChild(tr); 
     });
   }
@@ -423,15 +433,35 @@ function renderTable() {
 }
 
 function renderPagination() {
-  const pagination = document.getElementById("pagination"); pagination.innerHTML = "";
-  const filtered = getFilteredData(); const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const pagination = document.getElementById("pagination"); 
+  pagination.innerHTML = "";
+  const filtered = getFilteredData(); 
+  const totalPages = Math.ceil(filtered.length / rowsPerPage);
   const fragment = document.createDocumentFragment();
 
-  const btnFirst = document.createElement("button"); btnFirst.textContent = "Primero"; btnFirst.disabled = currentPage === 1; btnFirst.onclick = () => { currentPage = 1; renderTable(); renderPagination(); }; fragment.appendChild(btnFirst);
-  const btnPrev = document.createElement("button"); btnPrev.textContent = "◄ Anterior"; btnPrev.disabled = currentPage === 1; btnPrev.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); renderPagination(); } }; fragment.appendChild(btnPrev);
-  const pageInfo = document.createElement("span"); pageInfo.textContent = `Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`; fragment.appendChild(pageInfo);
-  const btnNext = document.createElement("button"); btnNext.textContent = "Siguiente ►"; btnNext.disabled = currentPage >= totalPages; btnNext.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); renderPagination(); } }; fragment.appendChild(btnNext);
-  const btnLast = document.createElement("button"); btnLast.textContent = "Último"; btnLast.disabled = currentPage >= totalPages; btnLast.onclick = () => { currentPage = totalPages; renderTable(); renderPagination(); }; fragment.appendChild(btnLast);
+  const btnFirst = document.createElement("button"); 
+  btnFirst.textContent = "Primero"; 
+  btnFirst.disabled = currentPage === 1; 
+  btnFirst.onclick = () => { currentPage = 1; renderTable(); renderPagination(); }; 
+  fragment.appendChild(btnFirst);
+  const btnPrev = document.createElement("button"); 
+  btnPrev.textContent = "◄ Anterior"; 
+  btnPrev.disabled = currentPage === 1; 
+  btnPrev.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); renderPagination(); } }; 
+  fragment.appendChild(btnPrev);
+  const pageInfo = document.createElement("span"); 
+  pageInfo.textContent = `Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`; 
+  fragment.appendChild(pageInfo);
+  const btnNext = document.createElement("button"); 
+  btnNext.textContent = "Siguiente ►"; 
+  btnNext.disabled = currentPage >= totalPages; 
+  btnNext.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); renderPagination(); } }; 
+  fragment.appendChild(btnNext);
+  const btnLast = document.createElement("button"); 
+  btnLast.textContent = "Último"; 
+  btnLast.disabled = currentPage >= totalPages; 
+  btnLast.onclick = () => { currentPage = totalPages; renderTable(); renderPagination(); }; 
+  fragment.appendChild(btnLast);
 
   pagination.appendChild(fragment);
 }
@@ -440,7 +470,8 @@ document.getElementById("dateCubeInicio").addEventListener("change", () => { cur
 document.getElementById("dateCubeFin").addEventListener("change", () => { currentPage = 1; renderTable(); renderPagination(); });
 
 async function cargarDatos() {
-  const loading = document.getElementById("loadingMessage"); loading.style.display = "block";
+  const loading = document.getElementById("loadingMessage"); 
+  loading.style.display = "block";
   console.log("Iniciando carga de datos...");
   try {
     let stCsv, eqCsv, detCsv;
@@ -450,10 +481,16 @@ async function cargarDatos() {
       if (!eqCsv.trim()) throw new Error("equipmentUrl devolvió datos vacíos");
     } catch (e) {
       console.warn("Error al cargar equipmentUrl, usando datos simulados:", e);
-      eqCsv = `Id equipment;Equipo\n101;Equipo A\n102;Equipo B\n103;Equipo C\n104;Equipo D\n105;Equipo E`;
+      eqCsv = `Id equipment;Equipo;Fleet category;Tipo;Ubicación;Fleet type\n101;Equipo A;Categoría 1;Máquina;Calle 1;Tipo A\n102;Equipo B;Categoría 2;Vehículo;Calle 2;Tipo B\n103;Equipo C;Categoría 1;Máquina;Calle 3;Tipo A\n104;Equipo D;Categoría 2;Vehículo;Calle 4;Tipo B\n105;Equipo E;Categoría 1;Máquina;Calle 5;Tipo A`;
     }
-    const eqData = eqCsv.trim().split("\n").slice(1).map(r => r.split(";")); 
-    const equipmentMap = {}; eqData.forEach(r => { equipmentMap[r[0]] = r[1] || "Desconocido"; });
+    const eqRows = eqCsv.trim().split("\n").map(r => r.split(";"));
+    const eqHeaders = eqRows[0]; 
+    const equipmentMap = {};
+    eqRows.slice(1).forEach(r => {
+      const id = r[0];
+      equipmentMap[id] = r.slice(1).map(val => val || "Desconocido");
+    });
+    console.log("Encabezados de equipmentUrl:", eqHeaders);
     console.log("equipmentMap:", equipmentMap);
 
     try {
@@ -462,11 +499,12 @@ async function cargarDatos() {
       if (!detCsv.trim()) throw new Error("detailUrl devolvió datos vacíos");
     } catch (e) {
       console.warn("Error al cargar detailUrl, usando datos simulados:", e);
-      detCsv = `Id status main;Main status;Mind, status\n1;READY;Active\n2;DELAY;Inactive\n3;STANDBY;Active\n4;MAINT;Pending\n5;OUTOFPLAN;Active`;
+      detCsv = `Id status main;Main status;Mind, status;Detail status\n1;READY;Active;Operational\n2;DELAY;Inactive;Stopped\n3;STANDBY;Active;Waiting\n4;MAINT;Pending;Under Repair\n5;OUTOFPLAN;Active;Not Scheduled`;
     }
     const detRows = detCsv.trim().split("\n").map(r => r.split(";")); 
     const detHeaders = detRows[0]; 
-    const detailMap = {}; detRows.slice(1).forEach(r => { detailMap[r[0]] = r.slice(1); });
+    const detailMap = {}; 
+    detRows.slice(1).forEach(r => { detailMap[r[0]] = r.slice(1); });
     console.log("detailMap:", detailMap);
 
     try {
@@ -520,13 +558,16 @@ async function cargarDatos() {
     console.log("summaryData calculado:", summaryData);
 
     const newHeaders = [...stHeaders];
-    if (idxEquipment !== -1) newHeaders.splice(idxEquipment + 1, 0, "Equipo");
+    if (idxEquipment !== -1) newHeaders.splice(idxEquipment + 1, 0, ...eqHeaders.slice(1));
     if (idxFin !== -1 && idxInicio !== -1) newHeaders.splice(idxFin + 1, 0, "Duración HR numérico");
     newHeaders.push(...detHeaders.slice(1));
 
     stData = stData.map(r => {
       const newRow = [...r];
-      if (idxEquipment !== -1) newRow.splice(idxEquipment + 1, 0, equipmentMap[r[idxEquipment]] || "Desconocido");
+      if (idxEquipment !== -1) {
+        const equipmentData = equipmentMap[r[idxEquipment]] || eqHeaders.slice(1).map(() => "Desconocido");
+        newRow.splice(idxEquipment + 1, 0, ...equipmentData);
+      }
       if (idxInicio !== -1 && idxFin !== -1) {
         const inicio = parseDate(r[idxInicio]);
         const fin = parseDate(r[idxFin]);
@@ -540,7 +581,8 @@ async function cargarDatos() {
     });
     console.log("dataRows construido:", stData);
 
-    headers = newHeaders; dataRows = stData;
+    headers = newHeaders; 
+    dataRows = stData;
     renderSummaryTable();
     construirCabecera();
     document.getElementById("dateCubeInicio").value = "2025-09-01";
