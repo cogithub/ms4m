@@ -16,12 +16,14 @@ th.sorted-asc::after { content: " ▲"; }
 th.sorted-desc::after { content: " ▼"; }
 .controls { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 10px; flex-wrap: wrap; }
 .controls input, .summary-controls select { max-width: 300px; padding: 5px; }
-.controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
-.controls button:hover:not(:disabled) { background: #1557b0; transform: translateY(-2px); }
+.controls button, .history-controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+.controls button:hover:not(:disabled), .history-controls button:hover:not(:disabled) { background: #1557b0; transform: translateY(-2px); }
 .export-btn { background: #28a745; }
 .pagination button { margin: 2px; padding: 5px 10px; }
 #loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #fff176; }
 .summary-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
+.history-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
+#totalResumen { font-weight: bold; text-align: right; margin-top: 5px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
@@ -39,13 +41,10 @@ th.sorted-desc::after { content: " ▼"; }
     </div>
   </div>
 
-  <!-- Tabla resumen con filtro Select para Status main -->
   <h2>Resumen por ID Status Main</h2>
   <div class="summary-controls">
     <label for="statusFilter">Filtrar por Status main:</label>
-    <select id="statusFilter">
-      <option value="">Todos</option>
-    </select>
+    <select id="statusFilter"><option value="">Todos</option></select>
   </div>
   <table id="summaryTable">
     <thead>
@@ -57,8 +56,12 @@ th.sorted-desc::after { content: " ▼"; }
     </thead>
     <tbody></tbody>
   </table>
+  <div id="totalResumen">Suma Duración HDR: 0</div>
 
-  <!-- Tabla principal -->
+  <div class="history-controls">
+    <button onclick="limpiarFiltrosHistory()">Limpiar Filtros History</button>
+  </div>
+
   <table id="combinedTable" role="grid">
     <thead>
       <tr id="header-row"></tr>
@@ -66,317 +69,269 @@ th.sorted-desc::after { content: " ▼"; }
     </thead>
     <tbody></tbody>
   </table>
-
   <div id="pagination" class="pagination"></div>
 </div>
 
 <script>
-const summaryData = [
-  { id: 1, status: 'READY', hdr: 58.9 },
-  { id: 2, status: 'DELAY', hdr: 27.5 },
-  { id: 3, status: 'STANDBY', hdr: 12.6 },
-  { id: 4, status: 'MAINT', hdr: 38.6 },
-  { id: 5, status: 'OUTOFPLAN', hdr: 10.39 }
-];
+let summaryData = [];
+const statusMap = { 'READY': '1', 'DELAY': '2', 'STANDBY': '3', 'MAINT': '4', 'OUTOFPLAN': '5' };
 
-const statusMap = {
-  'READY': '1',
-  'DELAY': '2',
-  'STANDBY': '3',
-  'MAINT': '4',
-  'OUTOFPLAN': '5'
-};
+let headers = [], dataRows = [], currentPage = 1, rowsPerPage = 20;
+let sortColumn = -1, sortDirection = 'asc';
 
-function renderSummaryTable() {
-  const tbody = document.querySelector("#summaryTable tbody");
-  const select = document.getElementById("statusFilter");
-  const filterValue = select.value;
-  tbody.innerHTML = "";
-  const filteredData = filterValue ? summaryData.filter(row => row.status === filterValue) : summaryData;
-  filteredData.forEach(row => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${row.id}</td><td>${escapeHTML(row.status)}</td><td>${row.hdr.toFixed(2)}</td>`;
-    tbody.appendChild(tr);
-  });
+const statusUrl = "http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
+const equipmentUrl = "http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
+const detailUrl = "http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
+
+function escapeHTML(str) { return String(str).replace(/[&<>"']/g, m => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[m]); }
+function parseFload(value) { const str = value == null ? "0" : String(value).trim().replace(",", "."); const num = parseFloat(str); return isNaN(num) ? 0 : num; }
+function normalize(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
+function findHeaderIndex(headers, search) { 
+  const index = headers.findIndex(h => normalize(h) === normalize(search)); 
+  if (index === -1) console.warn(`Columna "${search}" no encontrada en encabezados:`, headers); 
+  return index; 
 }
 
-function populateStatusFilter() {
-  const select = document.getElementById("statusFilter");
-  const uniqueStatuses = [...new Set(summaryData.map(row => row.status))].sort();
-  uniqueStatuses.forEach(status => {
-    const opt = document.createElement("option");
-    opt.value = status;
-    opt.textContent = status;
-    select.appendChild(opt);
+function renderSummaryTable() {
+  console.log("Renderizando summaryTable con summaryData:", summaryData);
+  const tbody = document.querySelector("#summaryTable tbody");
+  const filterValue = document.getElementById("statusFilter").value;
+  tbody.innerHTML = "";
+  let suma = 0;
+  const filtered = filterValue ? summaryData.filter(r => r.status === filterValue) : summaryData;
+  filtered.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.id}</td><td>${escapeHTML(r.status)}</td><td>${r.hdr.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+    suma += r.hdr;
   });
-  select.addEventListener("change", (e) => {
-    renderSummaryTable();
-    const selectedStatus = e.target.value;
-    const idxStatusMain = headers.findIndex(h => normalize(h) === normalize("Id status main"));
-    if (idxStatusMain !== -1) {
-      const selects = document.querySelectorAll("#filter-row select");
-      const mainSelect = selects[idxStatusMain];
-      if (selectedStatus) {
-        const id = statusMap[selectedStatus];
-        mainSelect.value = id;
-      } else {
-        mainSelect.value = "";
-      }
-    }
+  document.getElementById("totalResumen").textContent = `Suma Duración HDR: ${suma.toFixed(2)}`;
+
+  const idxStatusMain = findHeaderIndex(headers, "Id status main");
+  if (idxStatusMain !== -1) {
+    const selects = document.querySelectorAll("#filter-row select");
+    if (selects[idxStatusMain]) selects[idxStatusMain].value = filterValue ? statusMap[filterValue] : "";
     currentPage = 1;
     renderTable();
     renderPagination();
+  }
+}
+
+function populateStatusFilter() {
+  console.log("Poblando statusFilter con summaryData:", summaryData);
+  const select = document.getElementById("statusFilter");
+  [...new Set(summaryData.map(r => r.status))].sort().forEach(s => {
+    const opt = document.createElement("option"); opt.value = s; opt.textContent = s; select.appendChild(opt);
   });
+  select.addEventListener("change", renderSummaryTable);
 }
 
-function parseFload(value) {
-    if (!value) return 0;                  
-    const str = String(value).trim().replace(",", ".");
-    const num = parseFloat(str);
-    return isNaN(num) ? 0 : num;
+function limpiarFiltrosHistory() { 
+  document.querySelectorAll("#filter-row select").forEach(s => s.value = ""); 
+  document.getElementById("globalSearch").value = ""; 
+  currentPage = 1; 
+  renderTable(); 
+  renderPagination(); 
 }
-
-function normalize(str) {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+function limpiarFiltros() { 
+  limpiarFiltrosHistory(); 
+  document.getElementById("statusFilter").value = ""; 
+  renderSummaryTable(); 
 }
-
-function findHeaderIndex(headers, search) {
-    const normSearch = normalize(search);
-    return headers.findIndex(h => normalize(h) === normSearch);
-}
-
-let headers=[], dataRows=[], currentPage=1, rowsPerPage=20;
-let sortColumn = -1, sortDirection = 'asc';
-const statusUrl="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
-const equipmentUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
-const detailUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
-
-function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
 
 function sortByColumn(col) {
-  if (sortColumn === col) {
-    sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortColumn = col;
-    sortDirection = 'asc';
-  }
-  updateHeaderSortIndicators();
-  currentPage = 1;
-  renderTable();
-  renderPagination();
+  if (sortColumn === col) sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  else { sortColumn = col; sortDirection = 'asc'; }
+  updateHeaderSortIndicators(); currentPage = 1; renderTable(); renderPagination();
 }
 
 function updateHeaderSortIndicators() {
-  const ths = document.querySelectorAll('#header-row th');
-  ths.forEach((th, i) => {
-    th.classList.remove('sorted-asc', 'sorted-desc');
-  });
-  if (sortColumn !== -1) {
-    ths[sortColumn].classList.add(`sorted-${sortDirection}`);
-  }
+  document.querySelectorAll('#header-row th').forEach((th, i) => th.classList.remove('sorted-asc', 'sorted-desc'));
+  if (sortColumn !== -1) document.querySelectorAll('#header-row th')[sortColumn].classList.add(`sorted-${sortDirection}`);
 }
 
-async function cargarDatos(){
-  const loading=document.getElementById("loadingMessage");
-  loading.style.display="block";
-  populateStatusFilter(); // Renderizar tabla resumen primero
-  renderSummaryTable();
-  try {
-    const respEq=await fetch(equipmentUrl);
-    const eqCsv=await respEq.text();
-    const eqRows=eqCsv.trim().split("\n").map(r=>r.split(";"));
-    const eqData=eqRows.slice(1);
-    const equipmentMap={}; eqData.forEach(r=>{ equipmentMap[r[0]]=r[1] || "Desconocido"; });
-
-    const respDet=await fetch(detailUrl);
-    const detCsv=await respDet.text();
-    const detRows=detCsv.trim().split("\n").map(r=>r.split(";"));
-    const detHeaders=detRows[0];
-    const detData=detRows.slice(1);
-    const detailMap={}; detData.forEach(r=>{ detailMap[r[0]]=r.slice(1); });
-
-    const respSt=await fetch(statusUrl);
-    const arrayBuffer = await respSt.arrayBuffer();
-    const data = new Uint8Array(arrayBuffer);
-    const decompressed = pako.inflate(data);
-    const stCsv = new TextDecoder("utf-8").decode(decompressed);
-    const stRows=stCsv.trim().split("\n").map(r=>r.split(";"));
-
-    const stHeaders=stRows[0];
-    console.log("stHeaders:", stHeaders); // Para debug
-    let stData=stRows.slice(1);
-
-    const idxStatusMain=findHeaderIndex(stHeaders, "Id status main");
-    const idxEquipment=findHeaderIndex(stHeaders, "Id equipment");
-    const idxDuracion=findHeaderIndex(stHeaders, "Duracion");
-    console.log("Indices encontrados:", {idxStatusMain, idxEquipment, idxDuracion}); // Para debug
-
-    const newHeaders=[...stHeaders];
-    if (idxEquipment !== -1) {
-        newHeaders.splice(idxEquipment+1,0,"equipment");
-    }
-    if (idxDuracion !== -1) {
-        newHeaders.splice(idxDuracion+1,0,"Duración ParseFload");
-    }
-    newHeaders.push(...detHeaders.slice(1));
-
-    stData=stData.map(r=>{
-      const idEquip=r[idxEquipment];
-      const idStatus=r[idxStatusMain];
-      const equipName=equipmentMap[idEquip] || "Desconocido";
-      const statusDetails=detailMap[idStatus] || detHeaders.slice(1).map(()=> "Desconocido");
-
-      const newRow=[...r];
-      if (idxEquipment !== -1) {
-          newRow.splice(idxEquipment+1,0,equipName);
-      }
-
-      const durParsed = parseFload(r[idxDuracion]);
-      if (idxDuracion !== -1) {
-          newRow.splice(idxDuracion+1,0,durParsed);
-      }
-
-      newRow.push(...statusDetails);
-      return newRow;
-    });
-
-    headers=newHeaders; // Incluir la primera columna
-    dataRows=stData.map(r=>r); // Incluir la primera columna
-
-    construirCabecera();
-    renderTable();
-    renderPagination();
-  } catch(err){
-    console.error(err);
-  } finally{ loading.style.display="none"; }
-}
-
-function construirCabecera(){
-  const headerRow=document.getElementById("header-row");
-  const filterRow=document.getElementById("filter-row");
-  headerRow.innerHTML=""; filterRow.innerHTML="";
-  headers.forEach((h,i)=>{
-    const th=document.createElement("th"); 
-    th.textContent=escapeHTML(h); 
-    th.addEventListener('click', () => sortByColumn(i));
-    headerRow.appendChild(th);
-    const thF=document.createElement("th");
-    const sel=document.createElement("select");
-    sel.innerHTML="<option value=''>Todos</option>";
-    sel.addEventListener("change",()=>{ 
-      // Opcional: Si quieres que filtrar en main actualice summary, agrega aquí
-      currentPage=1; renderTable(); renderPagination(); 
-    });
+function construirCabecera() {
+  console.log("Construyendo cabecera con headers:", headers);
+  const headerRow = document.getElementById("header-row");
+  const filterRow = document.getElementById("filter-row");
+  headerRow.innerHTML = ""; filterRow.innerHTML = "";
+  headers.forEach((h, i) => {
+    const th = document.createElement("th"); th.textContent = escapeHTML(h); th.addEventListener("click", () => sortByColumn(i)); headerRow.appendChild(th);
+    const thF = document.createElement("th"); const sel = document.createElement("select"); sel.innerHTML = "<option value=''>Todos</option>";
+    sel.addEventListener("change", () => { currentPage = 1; renderTable(); renderPagination(); });
     thF.appendChild(sel); filterRow.appendChild(thF);
   });
-  headers.forEach((h,i)=>{
-    const sel=filterRow.children[i].querySelector("select");
-    const vals=[...new Set(dataRows.map(r=>r[i]))].sort();
-    vals.forEach(v=>{ const opt=document.createElement("option"); opt.value=v; opt.textContent=v; sel.appendChild(opt); });
+  headers.forEach((h, i) => {
+    const sel = filterRow.children[i].querySelector("select");
+    [...new Set(dataRows.map(r => r[i]))].sort().forEach(v => { const opt = document.createElement("option"); opt.value = v; opt.textContent = v; sel.appendChild(opt); });
   });
   updateHeaderSortIndicators();
 }
 
-function getFilteredData(){
-  const selects=document.querySelectorAll("#filter-row select");
-  const searchInput=document.getElementById("globalSearch").value.toLowerCase();
-  return dataRows.filter(r=>{
-    const matchFilters=[...selects].every((sel,i)=>!sel||sel.value===""||r[i]===sel.value);
-    const matchSearch=!searchInput||r.some(v=>String(v).toLowerCase().includes(searchInput));
-    return matchFilters&&matchSearch;
+function getFilteredData() {
+  const selects = document.querySelectorAll("#filter-row select");
+  const search = document.getElementById("globalSearch").value.toLowerCase();
+  const filtered = dataRows.filter(r => {
+    return [...selects].every((sel, i) => !sel || sel.value === "" || r[i] === sel.value) &&
+           (!search || r.some(v => String(v).toLowerCase().includes(search)));
   });
+  console.log("Datos filtrados para combinedTable:", filtered);
+  return filtered;
 }
 
-function renderTable(){
-  const tbody=document.querySelector("#combinedTable tbody");
-  tbody.innerHTML="";
-  let filtered = getFilteredData().slice();
+function renderTable() {
+  const tbody = document.querySelector("#combinedTable tbody"); tbody.innerHTML = "";
+  let filtered = getFilteredData();
   if (sortColumn !== -1) {
-    const durIdx = headers.findIndex(h => normalize(h) === normalize("Duración ParseFload"));
+    const durIdx = findHeaderIndex(headers, "Duración ParseFload");
+    const hdrIdx = findHeaderIndex(headers, "Duración HDR");
     filtered.sort((a, b) => {
-      let valA = a[sortColumn];
-      let valB = b[sortColumn];
-      if (sortColumn === durIdx) {
-        valA = parseFloat(valA) || 0;
-        valB = parseFloat(valB) || 0;
-      } else {
-        valA = String(valA).toLowerCase();
-        valB = String(valB).toLowerCase();
-      }
-      if (valA < valB) return sortDirection === 'asc' ? -1 : 1;
-      if (valA > valB) return sortDirection === 'asc' ? 1 : -1;
+      let va = a[sortColumn], vb = b[sortColumn];
+      if (sortColumn === durIdx || sortColumn === hdrIdx) { va = parseFload(va); vb = parseFload(vb); } else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
+      if (va < vb) return sortDirection === 'asc' ? -1 : 1;
+      if (va > vb) return sortDirection === 'asc' ? 1 : -1;
       return 0;
     });
   }
-  const start=(currentPage-1)*rowsPerPage;
-  const end=start+rowsPerPage;
-  const pageRows=filtered.slice(start,end);
-  const fragment=document.createDocumentFragment();
-  if(pageRows.length===0){
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td colspan="${headers.length}">No hay datos que coincidan con los filtros</td>`;
-    fragment.appendChild(tr);
+  const start = (currentPage - 1) * rowsPerPage, end = start + rowsPerPage;
+  const pageRows = filtered.slice(start, end);
+  console.log("Filas para renderizar en combinedTable (página):", pageRows);
+  const fragment = document.createDocumentFragment();
+  if (pageRows.length === 0) { 
+    const tr = document.createElement("tr"); 
+    tr.innerHTML = `<td colspan="${headers.length}">No hay datos que coincidan con los filtros</td>`; 
+    fragment.appendChild(tr); 
   } else {
-    pageRows.forEach((r)=>{
-      const tr=document.createElement("tr");
-      r.forEach(v=>{ const td=document.createElement("td"); td.textContent=escapeHTML(v); tr.appendChild(td); });
-      fragment.appendChild(tr);
+    pageRows.forEach(r => { 
+      const tr = document.createElement("tr"); 
+      r.forEach(v => { const td = document.createElement("td"); td.textContent = escapeHTML(v); tr.appendChild(td); }); 
+      fragment.appendChild(tr); 
     });
   }
   tbody.appendChild(fragment);
 }
 
-function limpiarFiltros(){
-  document.querySelectorAll("#filter-row select").forEach(sel=>sel.value="");
-  document.getElementById("globalSearch").value="";
-  document.getElementById("statusFilter").value = ""; // Limpiar filtro de resumen
-  currentPage=1; 
-  renderTable(); 
-  renderPagination();
-  renderSummaryTable(); // Re-render resumen
-}
+function renderPagination() {
+  const pagination = document.getElementById("pagination"); pagination.innerHTML = "";
+  const filtered = getFilteredData(); const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const fragment = document.createDocumentFragment();
 
-function exportToCSV(){
-  const filtered=getFilteredData();
-  const csvRows=filtered.map(r=>r.map(v=>String(v)).join(";"));
-  const csvContent=[headers.join(";"),...csvRows].join("\n");
-  const blob=new Blob([csvContent],{type:"text/csv;charset=utf-8;"});
-  const url=URL.createObjectURL(blob);
-  const link=document.createElement("a");
-  link.href=url;
-  link.download=`statushistory_equipment_statusdetail_${new Date().toISOString().split("T")[0]}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
-function renderPagination(){
-  const pagination=document.getElementById("pagination");
-  pagination.innerHTML="";
-  const filtered=getFilteredData();
-  const totalPages=Math.ceil(filtered.length/rowsPerPage);
-  const fragment=document.createDocumentFragment();
-
-  const firstBtn=document.createElement("button"); firstBtn.textContent="Primero"; firstBtn.disabled=currentPage===1;
-  firstBtn.addEventListener("click",()=>{currentPage=1; renderTable(); renderPagination();}); fragment.appendChild(firstBtn);
-
-  const prevBtn=document.createElement("button"); prevBtn.textContent="◄ Anterior"; prevBtn.disabled=currentPage===1;
-  prevBtn.addEventListener("click",()=>{if(currentPage>1){currentPage--; renderTable(); renderPagination();}}); fragment.appendChild(prevBtn);
-
-  const pageAndTotal=document.createElement("span"); pageAndTotal.textContent=`Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`;
-  fragment.appendChild(pageAndTotal);
-
-  const nextBtn=document.createElement("button"); nextBtn.textContent="Siguiente ►"; nextBtn.disabled=currentPage>=totalPages;
-  nextBtn.addEventListener("click",()=>{if(currentPage<totalPages){currentPage++; renderTable(); renderPagination();}}); fragment.appendChild(nextBtn);
-
-  const lastBtn=document.createElement("button"); lastBtn.textContent="Último"; lastBtn.disabled=currentPage>=totalPages;
-  lastBtn.addEventListener("click",()=>{currentPage=totalPages; renderTable(); renderPagination();}); fragment.appendChild(lastBtn);
+  const btnFirst = document.createElement("button"); btnFirst.textContent = "Primero"; btnFirst.disabled = currentPage === 1; btnFirst.onclick = () => { currentPage = 1; renderTable(); renderPagination(); }; fragment.appendChild(btnFirst);
+  const btnPrev = document.createElement("button"); btnPrev.textContent = "◄ Anterior"; btnPrev.disabled = currentPage === 1; btnPrev.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); renderPagination(); } }; fragment.appendChild(btnPrev);
+  const pageInfo = document.createElement("span"); pageInfo.textContent = `Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`; fragment.appendChild(pageInfo);
+  const btnNext = document.createElement("button"); btnNext.textContent = "Siguiente ►"; btnNext.disabled = currentPage >= totalPages; btnNext.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); renderPagination(); } }; fragment.appendChild(btnNext);
+  const btnLast = document.createElement("button"); btnLast.textContent = "Último"; btnLast.disabled = currentPage >= totalPages; btnLast.onclick = () => { currentPage = totalPages; renderTable(); renderPagination(); }; fragment.appendChild(btnLast);
 
   pagination.appendChild(fragment);
 }
 
-document.getElementById("globalSearch").addEventListener("input",()=>{
-  currentPage=1; renderTable(); renderPagination();
-});
+document.getElementById("globalSearch").addEventListener("input", () => { currentPage = 1; renderTable(); renderPagination(); });
+
+function exportToCSV() {
+  const filtered = getFilteredData();
+  const csvRows = [headers.join(";"), ...filtered.map(r => r.join(";"))].join("\n");
+  const blob = new Blob([csvRows], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = `statushistory_${new Date().toISOString().split("T")[0]}.csv`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function cargarDatos() {
+  const loading = document.getElementById("loadingMessage"); loading.style.display = "block";
+  try {
+    const respEq = await fetch(equipmentUrl); const eqCsv = await respEq.text();
+    const eqData = eqCsv.trim().split("\n").slice(1).map(r => r.split(";")); 
+    const equipmentMap = {}; eqData.forEach(r => { equipmentMap[r[0]] = r[1] || "Desconocido"; });
+    console.log("equipmentMap:", equipmentMap);
+
+    const respDet = await fetch(detailUrl); const detCsv = await respDet.text();
+    const detRows = detCsv.trim().split("\n").map(r => r.split(";")); 
+    const detHeaders = detRows[0]; const detailMap = {}; detRows.slice(1).forEach(r => { detailMap[r[0]] = r.slice(1); });
+    console.log("detailMap:", detailMap);
+
+    const respSt = await fetch(statusUrl); const arrayBuffer = await respSt.arrayBuffer();
+    const decompressed = pako.inflate(new Uint8Array(arrayBuffer)); 
+    const stCsv = new TextDecoder("utf-8").decode(decompressed);
+    const stRows = stCsv.trim().split("\n").map(r => r.split(";"));
+    console.log("Datos crudos de StatusHistory:", stRows);
+
+    const stHeaders = stRows[0]; let stData = stRows.slice(1);
+    console.log("Encabezados de StatusHistory:", stHeaders);
+
+    const idxStatusMain = findHeaderIndex(stHeaders, "Id status main");
+    const idxInicio = findHeaderIndex(stHeaders, "Inicio de estado");
+    const idxFin = findHeaderIndex(stHeaders, "Fin de estado");
+    const idxEquipment = findHeaderIndex(stHeaders, "Id equipment");
+    const idxDuracion = findHeaderIndex(stHeaders, "Duracion");
+    console.log("Índices:", { idxStatusMain, idxInicio, idxFin, idxEquipment, idxDuracion });
+
+    // Calcular Duración HDR para summaryTable
+    const durationMap = {};
+    stData.forEach(row => {
+      if (idxInicio !== -1 && idxFin !== -1 && row[idxInicio] && row[idxFin]) {
+        const inicio = new Date(row[idxInicio]);
+        const fin = new Date(row[idxFin]);
+        console.log("Fechas para summaryTable:", row[idxInicio], row[idxFin], inicio, fin);
+        if (!isNaN(inicio) && !isNaN(fin)) {
+          const durationHrs = (fin - inicio) / 3600000; // Diferencia en horas
+          const statusId = row[idxStatusMain] || "Desconocido";
+          const statusName = Object.keys(statusMap).find(key => statusMap[key] === statusId) || "Desconocido";
+          if (!durationMap[statusId]) {
+            durationMap[statusId] = { id: statusId, status: statusName, hdr: 0 };
+          }
+          durationMap[statusId].hdr += durationHrs;
+        }
+      }
+    });
+    summaryData = Object.values(durationMap).filter(d => d.hdr > 0);
+    console.log("summaryData calculado:", summaryData);
+
+    // Procesar valores vacíos en Duracion
+    if (idxDuracion !== -1) {
+      for (let i = 0; i < stData.length; i++) {
+        if (!stData[i][idxDuracion] || stData[i][idxDuracion].trim() === "") {
+          stData[i][idxDuracion] = parseFloat("0");
+        } else {
+          stData[i][idxDuracion] = parseFloat(stData[i][idxDuracion]);
+        }
+      }
+    }
+
+    // Agregar Duración HDR a headers y calcular para cada fila
+    const newHeaders = [...stHeaders];
+    if (idxEquipment !== -1) newHeaders.splice(idxEquipment + 1, 0, "Equipo");
+    if (idxDuracion !== -1) newHeaders.splice(idxDuracion + 1, 0, "Duración ParseFload");
+    if (idxFin !== -1 && idxInicio !== -1) newHeaders.splice(idxFin + 1, 0, "Duración HDR");
+    newHeaders.push(...detHeaders.slice(1));
+
+    stData = stData.map(r => {
+      const newRow = [...r];
+      if (idxEquipment !== -1) newRow.splice(idxEquipment + 1, 0, equipmentMap[r[idxEquipment]] || "Desconocido");
+      if (idxDuracion !== -1) newRow.splice(idxDuracion + 1, 0, parseFload(r[idxDuracion]));
+      if (idxInicio !== -1 && idxFin !== -1) {
+        const inicio = new Date(r[idxInicio]);
+        const fin = new Date(r[idxFin]);
+        const durationHrs = (!isNaN(inicio) && !isNaN(fin)) ? ((fin - inicio) / 3600000).toFixed(2) : "0.00";
+        newRow.splice(idxFin + 1, 0, durationHrs);
+      }
+      newRow.push(...(detailMap[r[idxStatusMain]] || detHeaders.slice(1).map(() => "Desconocido")));
+      return newRow;
+    });
+    console.log("dataRows construido:", stData);
+
+    headers = newHeaders; dataRows = stData;
+    populateStatusFilter();
+    renderSummaryTable();
+    construirCabecera();
+    renderTable();
+    renderPagination();
+    limpiarFiltrosHistory(); // Asegurar que no hay filtros aplicados
+  } catch (err) {
+    console.error("Error en cargarDatos:", err);
+  } finally {
+    loading.style.display = "none";
+  }
+}
 
 cargarDatos();
 </script>

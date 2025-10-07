@@ -1,0 +1,18 @@
+# Ignorar todos los archivos MP4
+*.mp4
+*.mov
+Grabación*
+
+# Ignorar archivos temporales del sistema
+.DS_Store
+Thumbs.db
+
+# Ignorar archivos de compilación comunes
+*.class
+*.log
+*.tmp
+
+# Ignorar carpetas de dependencias
+node_modules/
+target/
+build/

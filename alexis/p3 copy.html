@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Historial de Estado y Duración Calculada (Segundos)</title>
+<title>StatusHistory + Equipment + StatusDetail con Resumen por Id status main</title>
 <style>
 body { font-family: 'Segoe UI', Arial, sans-serif; margin: 20px; background: #f0f2f5; color: #333; }
 h2 { text-align: center; color: #1a73e8; margin-top: 30px; }
@@ -12,20 +12,25 @@ table { border-collapse: collapse; width: 100%; margin: 10px 0; }
 th, td { border: 1px solid #e0e0e0; padding: 10px; text-align: center; font-size: 14px; }
 th { background: #1a73e8; color: white; font-weight: 600; cursor: pointer; white-space: nowrap; }
 tr:nth-child(even) { background: #f8f9fa; }
+th.sorted-asc::after { content: " ▲"; }
+th.sorted-desc::after { content: " ▼"; }
 .controls { display: flex; justify-content: space-between; align-items: center; margin: 20px 0; gap: 10px; flex-wrap: wrap; }
-.controls input { max-width: 300px; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-.controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s; }
-.controls button:hover:not(:disabled) { background: #1557b0; }
+.controls input, .summary-controls select { max-width: 300px; padding: 5px; }
+.controls button, .history-controls button { padding: 8px 12px; border: none; background: #1a73e8; color: white; border-radius: 4px; cursor: pointer; transition: background 0.3s, transform 0.2s; }
+.controls button:hover:not(:disabled), .history-controls button:hover:not(:disabled) { background: #1557b0; transform: translateY(-2px); }
 .export-btn { background: #28a745; }
-.pagination button { margin: 2px; padding: 5px 10px; border: 1px solid #ccc; background: #fff; border-radius: 4px; }
-#loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #e3f2fd; }
+.pagination button { margin: 2px; padding: 5px 10px; }
+#loadingMessage { text-align: center; font-weight: bold; font-size: 1.2em; color: #1a73e8; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); padding: 15px; margin-bottom: 15px; display: none; border-radius: 6px; background: #fff176; }
+.summary-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
+.history-controls { display: flex; justify-content: flex-start; align-items: center; margin: 10px 0; gap: 10px; }
+#totalResumen, #totalHistory { font-weight: bold; text-align: right; margin-top: 5px; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
 
 <h2>StatusHistory + Equipment + StatusDetail</h2>
-<div id="loadingMessage">Espere, cargando y procesando datos...</div>
+<div id="loadingMessage">Espere, cargando datos...</div>
 
 <div class="container">
   <div class="controls">
@@ -36,6 +41,27 @@ tr:nth-child(even) { background: #f8f9fa; }
     </div>
   </div>
 
+  <h2>Resumen por ID Status Main</h2>
+  <div class="summary-controls">
+    <label for="statusFilter">Filtrar por Status main:</label>
+    <select id="statusFilter"><option value="">Todos</option></select>
+  </div>
+  <table id="summaryTable">
+    <thead>
+      <tr>
+        <th>ID Status main</th>
+        <th>Status main</th>
+        <th>Duración HDR</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div id="totalResumen">Suma Duración HDR: 0</div>
+
+  <div class="history-controls">
+    <button onclick="limpiarFiltrosHistory()">Limpiar Filtros History</button>
+  </div>
+
   <table id="combinedTable" role="grid">
     <thead>
       <tr id="header-row"></tr>
@@ -43,378 +69,278 @@ tr:nth-child(even) { background: #f8f9fa; }
     </thead>
     <tbody></tbody>
   </table>
-
-  <h2>Resumen de Duración por Id Status Main</h2>
-  <table id="summaryTable">
-    <thead>
-      <tr>
-        <th>Id status main</th>
-        <th>Duración Total (Horas Decimales)</th>
-        <th>Duración Total (Segundos)</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
+  <div id="totalHistory">Suma Duración HDR (History): 0</div>
   <div id="pagination" class="pagination"></div>
 </div>
 
 <script>
-// URL de las APIs
-const statusUrl="http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
-const equipmentUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
-const detailUrl="http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
+let summaryData = [];
+const statusMap = { 'READY': '1', 'DELAY': '2', 'STANDBY': '3', 'MAINT': '4', 'OUTOFPLAN': '5' };
 
-// Estado Global
-let headers=[], dataRows=[], currentPage=1, rowsPerPage=20;
-let idxStatusMainSummary=-1, idxDuracionHoursSummary=-1, idxDuracionSecondsSummary=-1;
-let columnFilters = [];
+let headers = [], dataRows = [], currentPage = 1, rowsPerPage = 20;
+let sortColumn = -1, sortDirection = 'asc';
 
-// --- Funciones de Cálculo de Duración ---
+const statusUrl = "http://10.1.64.119:6060/api/v1/cube/get/zipfact/?d=2025&f=statushistory";
+const equipmentUrl = "http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=equipment";
+const detailUrl = "http://10.1.64.119:6060/api/v1/cube/get/dimension/?f=statusdetail";
 
-/**
- * Convierte duración timestamp "inicio - fin" a horas decimales (Alta precisión).
- * @param {string} durationStr - Duración en formato "YYYY-MM-DD HH:MM:SS.sss - YYYY-MM-DD HH:MM:SS.sss".
- * @returns {number} Horas totales con decimales.
- */
-function parseDurationToHours(durationStr){
-    if(!durationStr) return 0;
-    const parts = durationStr.split(" - ");
-    if(parts.length !== 2) return 0;
-    const start = new Date(parts[0]);
-    const end = new Date(parts[1]);
-    if(isNaN(start) || isNaN(end) || end <= start) return 0;
-    const diffMs = end - start; 
-    return diffMs / (1000 * 3600); // Milisegundos a horas
+function escapeHTML(str) { return String(str).replace(/[&<>"']/g, m => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"})[m]); }
+function parseFload(value) { const str = value == null ? "0" : String(value).trim().replace(",", "."); const num = parseFloat(str); return isNaN(num) ? 0 : num; }
+function normalize(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim(); }
+function findHeaderIndex(headers, search) { 
+  const index = headers.findIndex(h => normalize(h) === normalize(search)); 
+  if (index === -1) console.warn(`Columna "${search}" no encontrada en encabezados:`, headers); 
+  return index; 
 }
 
-/**
- * Convierte duración timestamp "inicio - fin" a HH:MM:SS.
- * @param {string} durationStr - Duración en formato "YYYY-MM-DD HH:MM:SS.sss - YYYY-MM-DD HH:MM:SS.sss".
- * @returns {string} Duración en formato "HH:MM:SS".
- */
-function parseDurationToHHMMSS(durationStr){
-    if(!durationStr) return "00:00:00";
-    const parts = durationStr.split(" - ");
-    if(parts.length !== 2) return "00:00:00";
-    const start = new Date(parts[0]);
-    const end = new Date(parts[1]);
-    if(isNaN(start) || isNaN(end) || end <= start) return "00:00:00";
-    let diffSec = Math.floor((end - start)/1000);
-    const hours = String(Math.floor(diffSec/3600)).padStart(2,'0');
-    diffSec %= 3600;
-    const minutes = String(Math.floor(diffSec/60)).padStart(2,'0');
-    const seconds = String(diffSec%60).padStart(2,'0');
-    return `${hours}:${minutes}:${seconds}`;
-}
+function renderSummaryTable() {
+  console.log("Renderizando summaryTable con summaryData:", summaryData);
+  const tbody = document.querySelector("#summaryTable tbody");
+  const filterValue = document.getElementById("statusFilter").value;
+  tbody.innerHTML = "";
+  let suma = 0;
+  const filtered = filterValue ? summaryData.filter(r => r.status === filterValue) : summaryData;
+  filtered.forEach(r => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${r.id}</td><td>${escapeHTML(r.status)}</td><td>${r.hdr.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+    suma += r.hdr;
+  });
+  document.getElementById("totalResumen").textContent = `Suma Duración HDR: ${suma.toFixed(2)}`;
 
-/**
- * Convierte una duración en formato HH:MM:SS a segundos totales.
- * @param {string} hhmmss - Duración en formato "HH:MM:SS".
- * @returns {number} Segundos totales (entero).
- */
-function durationToSeconds(hhmmss) {
-    if (!hhmmss) return 0;
-    
-    // Asume que hhmmss es un string "HH:MM:SS"
-    const parts = hhmmss.split(':').map(p => parseInt(p, 10));
-
-    if (parts.length !== 3) return 0;
-
-    const hours = parts[0] || 0;
-    const minutes = parts[1] || 0;
-    const seconds = parts[2] || 0;
-
-    return (hours * 3600) + (minutes * 60) + seconds;
-}
-
-
-function escapeHTML(str){ return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m])); }
-
-async function cargarDatos(){
-  const loading=document.getElementById("loadingMessage");
-  loading.style.display="block";
-  try {
-    // 1. Cargar Dimensiones
-    const [respEq, respDet, respSt] = await Promise.all([
-      fetch(equipmentUrl).then(r => r.text()),
-      fetch(detailUrl).then(r => r.text()),
-      fetch(statusUrl).then(r => r.arrayBuffer())
-    ]);
-
-    // Procesar Equipment
-    const eqRows=respEq.trim().split("\n").map(r=>r.split(";"));
-    const equipmentMap={}; 
-    eqRows.slice(1).forEach(r=>{ equipmentMap[r[0]]=r[1]||"Desconocido"; });
-
-    // Procesar StatusDetail
-    const detRows=respDet.trim().split("\n").map(r=>r.split(";"));
-    const detHeaders=detRows[0];
-    const detailMap={}; 
-    detRows.slice(1).forEach(r=>{ detailMap[r[0]]=r.slice(1); });
-
-    // Procesar StatusHistory (descomprimir pako)
-    const decompressed = pako.inflate(new Uint8Array(respSt));
-    const stCsv = new TextDecoder("utf-8").decode(decompressed);
-    const stRows=stCsv.trim().split("\n").map(r=>r.split(";"));
-
-    const stHeaders=stRows[0];
-    let stData=stRows.slice(1);
-
-    // Índices de columnas clave
-    const idxStatusMain=stHeaders.indexOf("Id status main");
-    const idxEquipment=stHeaders.indexOf("Id equipment");
-    const idxDuracionOriginal=stHeaders.indexOf("Duracion"); 
-
-    // 2. Definir Nuevas Cabeceras
-    const newHeaders=[...stHeaders];
-    newHeaders.splice(idxEquipment+1,0,"equipment"); 
-    newHeaders.splice(idxDuracionOriginal+1,0,"Duración Decimal"); 
-    newHeaders.splice(idxDuracionOriginal+2,0,"Duración HH:MM:SS");
-    newHeaders.splice(idxDuracionOriginal+3,0,"Duración en Segundos"); // ¡Nueva Columna!
-    newHeaders.push(...detHeaders.slice(1)); 
-
-    // 3. Procesar Filas de Datos
-    stData=stData.map(r=>{
-      const idEquip=r[idxEquipment];
-      const idStatus=r[idxStatusMain];
-      const duracionStr=r[idxDuracionOriginal];
-
-      const equipName=equipmentMap[idEquip]||"Desconocido";
-      const statusDetails=detailMap[idStatus]||detHeaders.slice(1).map(()=> "Desconocido");
-      
-      const durHours=parseDurationToHours(duracionStr);
-      const durHHMMSS=parseDurationToHHMMSS(duracionStr);
-      const durSeconds=durationToSeconds(durHHMMSS); // Calcular segundos
-
-      const newRow=[...r];
-      newRow.splice(idxEquipment+1,0,equipName);
-      newRow.splice(idxDuracionOriginal+1,0,durHours.toFixed(6)); 
-      newRow.splice(idxDuracionOriginal+2,0,durHHMMSS);
-      newRow.splice(idxDuracionOriginal+3,0,durSeconds); // Insertar segundos
-      newRow.push(...statusDetails);
-      return newRow;
-    });
-
-    headers=newHeaders.slice(1); 
-    dataRows=stData.map(r=>r.slice(1));
-    
-    // Asignar índices para el resumen
-    idxStatusMainSummary=headers.indexOf("Id status main");
-    idxDuracionHoursSummary=headers.indexOf("Duración Decimal"); 
-    idxDuracionSecondsSummary=headers.indexOf("Duración en Segundos"); 
-
-    construirCabecera();
+  const idxStatusMain = findHeaderIndex(headers, "Id status main");
+  if (idxStatusMain !== -1) {
+    const selects = document.querySelectorAll("#filter-row select");
+    if (selects[idxStatusMain]) selects[idxStatusMain].value = filterValue ? statusMap[filterValue] : "";
+    currentPage = 1;
     renderTable();
     renderPagination();
-    renderSummary();
-  } catch(err){
-    console.error("Error al cargar o procesar datos:", err);
-    loading.textContent = "Error al cargar datos. Verifique las URLs y la consola.";
-    loading.style.background = "#ffdddd";
-  } finally{ loading.style.display="none"; }
+  }
 }
 
-// --- Funciones de Renderizado, Filtros y Paginación ---
+function populateStatusFilter() {
+  console.log("Poblando statusFilter con summaryData:", summaryData);
+  const select = document.getElementById("statusFilter");
+  [...new Set(summaryData.map(r => r.status))].sort().forEach(s => {
+    const opt = document.createElement("option"); opt.value = s; opt.textContent = s; select.appendChild(opt);
+  });
+  select.addEventListener("change", renderSummaryTable);
+}
 
-function construirCabecera(){
-  const headerRow=document.getElementById("header-row");
-  const filterRow=document.getElementById("filter-row");
-  headerRow.innerHTML=""; filterRow.innerHTML="";
-  columnFilters = []; 
+function limpiarFiltrosHistory() { 
+  document.querySelectorAll("#filter-row select").forEach(s => s.value = ""); 
+  document.getElementById("globalSearch").value = ""; 
+  currentPage = 1; 
+  renderTable(); 
+  renderPagination(); 
+}
+function limpiarFiltros() { 
+  limpiarFiltrosHistory(); 
+  document.getElementById("statusFilter").value = ""; 
+  renderSummaryTable(); 
+}
 
-  headers.forEach((h,i)=>{
-    const th=document.createElement("th"); th.textContent=escapeHTML(h); headerRow.appendChild(th);
-    
-    const thF=document.createElement("th");
-    const sel=document.createElement("select");
-    sel.innerHTML="<option value=''>Todos</option>";
-    sel.addEventListener("change",(e)=>{ 
-        columnFilters[i] = e.target.value;
-        currentPage=1; 
-        renderTable(); 
-        renderPagination(); 
-        renderSummary(); 
-    });
+function sortByColumn(col) {
+  if (sortColumn === col) sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+  else { sortColumn = col; sortDirection = 'asc'; }
+  updateHeaderSortIndicators(); currentPage = 1; renderTable(); renderPagination();
+}
+
+function updateHeaderSortIndicators() {
+  document.querySelectorAll('#header-row th').forEach((th, i) => th.classList.remove('sorted-asc', 'sorted-desc'));
+  if (sortColumn !== -1) document.querySelectorAll('#header-row th')[sortColumn].classList.add(`sorted-${sortDirection}`);
+}
+
+function construirCabecera() {
+  console.log("Construyendo cabecera con headers:", headers);
+  const headerRow = document.getElementById("header-row");
+  const filterRow = document.getElementById("filter-row");
+  headerRow.innerHTML = ""; filterRow.innerHTML = "";
+  headers.forEach((h, i) => {
+    const th = document.createElement("th"); th.textContent = escapeHTML(h); th.addEventListener("click", () => sortByColumn(i)); headerRow.appendChild(th);
+    const thF = document.createElement("th"); const sel = document.createElement("select"); sel.innerHTML = "<option value=''>Todos</option>";
+    sel.addEventListener("change", () => { currentPage = 1; renderTable(); renderPagination(); });
     thF.appendChild(sel); filterRow.appendChild(thF);
   });
-  
-  headers.forEach((h,i)=>{
-    const sel=filterRow.children[i].querySelector("select");
-    const vals=[...new Set(dataRows.map(r=>r[i]))].sort((a, b) => String(a).localeCompare(String(b), undefined, { numeric: true }));
-    vals.forEach(v=>{ 
-        if (v !== null && v !== undefined && String(v).trim() !== "") {
-            const opt=document.createElement("option"); 
-            opt.value=v; 
-            opt.textContent=v; 
-            sel.appendChild(opt); 
-        }
+  headers.forEach((h, i) => {
+    const sel = filterRow.children[i].querySelector("select");
+    [...new Set(dataRows.map(r => r[i]))].sort().forEach(v => { const opt = document.createElement("option"); opt.value = v; opt.textContent = v; sel.appendChild(opt); });
+  });
+  updateHeaderSortIndicators();
+}
+
+function getFilteredData() {
+  const selects = document.querySelectorAll("#filter-row select");
+  const search = document.getElementById("globalSearch").value.toLowerCase();
+  const filtered = dataRows.filter(r => {
+    return [...selects].every((sel, i) => !sel || sel.value === "" || r[i] === sel.value) &&
+           (!search || r.some(v => String(v).toLowerCase().includes(search)));
+  });
+  console.log("Datos filtrados para combinedTable:", filtered);
+  return filtered;
+}
+
+function renderTable() {
+  const tbody = document.querySelector("#combinedTable tbody"); tbody.innerHTML = "";
+  let filtered = getFilteredData();
+  const hdrIdx = findHeaderIndex(headers, "Duración HDR");
+  let sumaHDR = 0;
+  if (hdrIdx !== -1) {
+    sumaHDR = filtered.reduce((sum, row) => sum + parseFload(row[hdrIdx]), 0);
+  }
+  document.getElementById("totalHistory").textContent = `Suma Duración HDR (History): ${sumaHDR.toFixed(2)}`;
+
+  if (sortColumn !== -1) {
+    const durIdx = findHeaderIndex(headers, "Duración ParseFload");
+    filtered.sort((a, b) => {
+      let va = a[sortColumn], vb = b[sortColumn];
+      if (sortColumn === durIdx || sortColumn === hdrIdx) { va = parseFload(va); vb = parseFload(vb); } else { va = String(va).toLowerCase(); vb = String(vb).toLowerCase(); }
+      if (va < vb) return sortDirection === 'asc' ? -1 : 1;
+      if (va > vb) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
     });
-  });
-}
-
-function getFilteredData(){
-  const searchInput=document.getElementById("globalSearch").value.toLowerCase();
-  
-  return dataRows.filter(r=>{
-    const matchFilters=columnFilters.every((filterValue,i)=>!filterValue||filterValue===""||r[i]===filterValue);
-    const matchSearch=!searchInput||r.some(v=>String(v).toLowerCase().includes(searchInput));
-    
-    return matchFilters&&matchSearch;
-  });
-}
-
-function renderTable(){
-  const tbody=document.querySelector("#combinedTable tbody");
-  tbody.innerHTML="";
-  const filtered=getFilteredData();
-  const start=(currentPage-1)*rowsPerPage;
-  const end=start+rowsPerPage;
-  const pageRows=filtered.slice(start,end);
-  const fragment=document.createDocumentFragment();
-
-  if(pageRows.length===0){
-    const tr=document.createElement("tr");
-    tr.innerHTML=`<td colspan="${headers.length}">No hay datos que coincidan con los filtros o búsqueda.</td>`;
-    fragment.appendChild(tr);
+  }
+  const start = (currentPage - 1) * rowsPerPage, end = start + rowsPerPage;
+  const pageRows = filtered.slice(start, end);
+  console.log("Filas para renderizar en combinedTable (página):", pageRows);
+  const fragment = document.createDocumentFragment();
+  if (pageRows.length === 0) { 
+    const tr = document.createElement("tr"); 
+    tr.innerHTML = `<td colspan="${headers.length}">No hay datos que coincidan con los filtros</td>`; 
+    fragment.appendChild(tr); 
   } else {
-    pageRows.forEach((r)=>{
-      const tr=document.createElement("tr");
-      r.forEach((v, i)=>{ 
-        const td=document.createElement("td"); 
-        
-        // Formatear Duración Decimal
-        if(headers[i] === "Duración Decimal") {
-             td.textContent = parseFloat(v).toFixed(6); 
-        // Formatear Duración en Segundos
-        } else if (headers[i] === "Duración en Segundos") {
-             td.textContent = parseInt(v, 10).toLocaleString('es-CL'); // Formato de miles
-        } else {
-             td.textContent=escapeHTML(v); 
-        }
-        tr.appendChild(td); 
-      });
-      fragment.appendChild(tr);
+    pageRows.forEach(r => { 
+      const tr = document.createElement("tr"); 
+      r.forEach(v => { const td = document.createElement("td"); td.textContent = escapeHTML(v); tr.appendChild(td); }); 
+      fragment.appendChild(tr); 
     });
   }
   tbody.appendChild(fragment);
 }
 
-function renderSummary(){
-  const summaryBody=document.querySelector("#summaryTable tbody");
-  summaryBody.innerHTML="";
-  if(idxStatusMainSummary===-1||idxDuracionHoursSummary===-1||idxDuracionSecondsSummary===-1) return;
-  
-  const summaryMapHours={};
-  const summaryMapSeconds={};
-  
-  getFilteredData().forEach(r=>{
-    const status=r[idxStatusMainSummary]||"Desconocido";
-    const durHours=parseFloat(r[idxDuracionHoursSummary])||0; 
-    const durSeconds=parseInt(r[idxDuracionSecondsSummary])||0;
-    
-    if(!summaryMapHours[status]) summaryMapHours[status]=0;
-    summaryMapHours[status]+=durHours;
+function renderPagination() {
+  const pagination = document.getElementById("pagination"); pagination.innerHTML = "";
+  const filtered = getFilteredData(); const totalPages = Math.ceil(filtered.length / rowsPerPage);
+  const fragment = document.createDocumentFragment();
 
-    if(!summaryMapSeconds[status]) summaryMapSeconds[status]=0;
-    summaryMapSeconds[status]+=durSeconds;
-  });
-  
-  Object.keys(summaryMapHours).sort().forEach(status=>{
-    const tr=document.createElement("tr");
-    const tdStatus=document.createElement("td"); tdStatus.textContent=status; tr.appendChild(tdStatus);
-    
-    // Suma total en horas decimales (4 decimales)
-    const tdDurHours=document.createElement("td"); tdDurHours.textContent=summaryMapHours[status].toFixed(4); tr.appendChild(tdDurHours);
-    
-    // Suma total en segundos (entero con formato de miles)
-    const tdDurSeconds=document.createElement("td"); tdDurSeconds.textContent=summaryMapSeconds[status].toLocaleString('es-CL'); tr.appendChild(tdDurSeconds);
-    
-    summaryBody.appendChild(tr);
-  });
-}
-
-function limpiarFiltros(){
-  document.querySelectorAll("#filter-row select").forEach(sel=>sel.value="");
-  document.getElementById("globalSearch").value="";
-  columnFilters = []; 
-  currentPage=1; 
-  renderTable(); 
-  renderPagination(); 
-  renderSummary();
-}
-
-function exportToCSV(){
-  const filtered=getFilteredData();
-  const csvRows=filtered.map(r=>{
-    return r.map((v, i) => {
-        let value = String(v);
-        if (headers[i] === "Duración Decimal") {
-            value = parseFloat(v).toFixed(6).replace('.', ','); 
-        } else if (headers[i] === "Duración en Segundos") {
-            value = parseInt(v, 10).toString(); // Asegurar exportación como número limpio
-        }
-        value = value.replace(/"/g, '""');
-        if (value.includes(';') || value.includes('\n') || value.includes('"')) {
-            value = `"${value}"`;
-        }
-        return value;
-    }).join(";");
-  });
-  
-  const headerRow = headers.map(h => {
-    let value = h.replace(/"/g, '""');
-    if (value.includes(';') || value.includes('\n') || value.includes('"')) {
-        value = `"${value}"`;
-    }
-    return value;
-  }).join(";");
-  
-  const csvContent=[headerRow, ...csvRows].join("\n");
-  const blob=new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent],{type:"text/csv;charset=utf-8;"});
-  const url=URL.createObjectURL(blob);
-  const link=document.createElement("a");
-  link.href=url;
-  link.download=`statushistory_equipment_statusdetail_segundos_${new Date().toISOString().split("T")[0]}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
-function renderPagination(){
-  const pagination=document.getElementById("pagination");
-  pagination.innerHTML="";
-  const filtered=getFilteredData();
-  const totalPages=Math.ceil(filtered.length/rowsPerPage);
-  const fragment=document.createDocumentFragment();
-
-  if (totalPages <= 1) return; 
-
-  const firstBtn=document.createElement("button"); firstBtn.textContent="Primero"; firstBtn.disabled=currentPage===1;
-  firstBtn.addEventListener("click",()=>{currentPage=1; renderTable(); renderPagination();}); fragment.appendChild(firstBtn);
-
-  const prevBtn=document.createElement("button"); prevBtn.textContent="◄ Anterior"; prevBtn.disabled=currentPage===1;
-  prevBtn.addEventListener("click",()=>{if(currentPage>1){currentPage--; renderTable(); renderPagination();}}); fragment.appendChild(prevBtn);
-
-  const pageAndTotal=document.createElement("span"); pageAndTotal.textContent=`Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`;
-  fragment.appendChild(pageAndTotal);
-
-  const nextBtn=document.createElement("button"); nextBtn.textContent="Siguiente ►"; nextBtn.disabled=currentPage>=totalPages;
-  nextBtn.addEventListener("click",()=>{if(currentPage<totalPages){currentPage++; renderTable(); renderPagination();}}); fragment.appendChild(nextBtn);
-
-  const lastBtn=document.createElement("button"); lastBtn.textContent="Último"; lastBtn.disabled=currentPage>=totalPages;
-  lastBtn.addEventListener("click",()=>{currentPage=totalPages; renderTable(); renderPagination();}); fragment.appendChild(lastBtn);
+  const btnFirst = document.createElement("button"); btnFirst.textContent = "Primero"; btnFirst.disabled = currentPage === 1; btnFirst.onclick = () => { currentPage = 1; renderTable(); renderPagination(); }; fragment.appendChild(btnFirst);
+  const btnPrev = document.createElement("button"); btnPrev.textContent = "◄ Anterior"; btnPrev.disabled = currentPage === 1; btnPrev.onclick = () => { if (currentPage > 1) { currentPage--; renderTable(); renderPagination(); } }; fragment.appendChild(btnPrev);
+  const pageInfo = document.createElement("span"); pageInfo.textContent = `Página ${currentPage} de ${totalPages} - Total registros: ${filtered.length}`; fragment.appendChild(pageInfo);
+  const btnNext = document.createElement("button"); btnNext.textContent = "Siguiente ►"; btnNext.disabled = currentPage >= totalPages; btnNext.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTable(); renderPagination(); } }; fragment.appendChild(btnNext);
+  const btnLast = document.createElement("button"); btnLast.textContent = "Último"; btnLast.disabled = currentPage >= totalPages; btnLast.onclick = () => { currentPage = totalPages; renderTable(); renderPagination(); }; fragment.appendChild(btnLast);
 
   pagination.appendChild(fragment);
 }
 
-document.getElementById("globalSearch").addEventListener("input",()=>{
-  currentPage=1; 
-  renderTable(); 
-  renderPagination(); 
-  renderSummary();
-});
+document.getElementById("globalSearch").addEventListener("input", () => { currentPage = 1; renderTable(); renderPagination(); });
 
-// Iniciar la carga de datos al cargar la página
+function exportToCSV() {
+  const filtered = getFilteredData();
+  const csvRows = [headers.join(";"), ...filtered.map(r => r.join(";"))].join("\n");
+  const blob = new Blob([csvRows], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href = url; a.download = `statushistory_${new Date().toISOString().split("T")[0]}.csv`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+async function cargarDatos() {
+  const loading = document.getElementById("loadingMessage"); loading.style.display = "block";
+  try {
+    const respEq = await fetch(equipmentUrl); const eqCsv = await respEq.text();
+    const eqData = eqCsv.trim().split("\n").slice(1).map(r => r.split(";")); 
+    const equipmentMap = {}; eqData.forEach(r => { equipmentMap[r[0]] = r[1] || "Desconocido"; });
+    console.log("equipmentMap:", equipmentMap);
+
+    const respDet = await fetch(detailUrl); const detCsv = await respDet.text();
+    const detRows = detCsv.trim().split("\n").map(r => r.split(";")); 
+    const detHeaders = detRows[0]; const detailMap = {}; detRows.slice(1).forEach(r => { detailMap[r[0]] = r.slice(1); });
+    console.log("detailMap:", detailMap);
+
+    const respSt = await fetch(statusUrl); const arrayBuffer = await respSt.arrayBuffer();
+    const decompressed = pako.inflate(new Uint8Array(arrayBuffer)); 
+    const stCsv = new TextDecoder("utf-8").decode(decompressed);
+    const stRows = stCsv.trim().split("\n").map(r => r.split(";"));
+    console.log("Datos crudos de StatusHistory:", stRows);
+
+    const stHeaders = stRows[0]; let stData = stRows.slice(1);
+    console.log("Encabezados de StatusHistory:", stHeaders);
+
+    const idxStatusMain = findHeaderIndex(stHeaders, "Id status main");
+    const idxInicio = findHeaderIndex(stHeaders, "Inicio de estado");
+    const idxFin = findHeaderIndex(stHeaders, "Fin de estado");
+    const idxEquipment = findHeaderIndex(stHeaders, "Id equipment");
+    const idxDuracion = findHeaderIndex(stHeaders, "Duracion");
+    console.log("Índices:", { idxStatusMain, idxInicio, idxFin, idxEquipment, idxDuracion });
+
+    // Calcular Duración HDR para summaryTable
+    const durationMap = {};
+    stData.forEach(row => {
+      if (idxInicio !== -1 && idxFin !== -1 && row[idxInicio] && row[idxFin]) {
+        const inicio = new Date(row[idxInicio]);
+        const fin = new Date(row[idxFin]);
+        console.log("Fechas para summaryTable:", row[idxInicio], row[idxFin], inicio, fin);
+        if (!isNaN(inicio) && !isNaN(fin)) {
+          const durationHrs = (fin - inicio) / 3600000; // Diferencia en horas
+          const statusId = row[idxStatusMain] || "Desconocido";
+          const statusName = Object.keys(statusMap).find(key => statusMap[key] === statusId) || "Desconocido";
+          if (!durationMap[statusId]) {
+            durationMap[statusId] = { id: statusId, status: statusName, hdr: 0 };
+          }
+          durationMap[statusId].hdr += durationHrs;
+        }
+      }
+    });
+    summaryData = Object.values(durationMap).filter(d => d.hdr > 0);
+    console.log("summaryData calculado:", summaryData);
+
+    // Procesar valores vacíos en Duracion
+    if (idxDuracion !== -1) {
+      for (let i = 0; i < stData.length; i++) {
+        if (!stData[i][idxDuracion] || stData[i][idxDuracion].trim() === "") {
+          stData[i][idxDuracion] = parseFloat("0");
+        } else {
+          stData[i][idxDuracion] = parseFloat(stData[i][idxDuracion]);
+        }
+      }
+    }
+
+    // Agregar Duración HDR a headers y calcular para cada fila en combinedTable
+    const newHeaders = [...stHeaders];
+    if (idxEquipment !== -1) newHeaders.splice(idxEquipment + 1, 0, "Equipo");
+    if (idxDuracion !== -1) newHeaders.splice(idxDuracion + 1, 0, "Duración ParseFload");
+    if (idxFin !== -1 && idxInicio !== -1) newHeaders.splice(idxFin + 1, 0, "Duración HDR");
+    newHeaders.push(...detHeaders.slice(1));
+
+    stData = stData.map(r => {
+      const newRow = [...r];
+      if (idxEquipment !== -1) newRow.splice(idxEquipment + 1, 0, equipmentMap[r[idxEquipment]] || "Desconocido");
+      if (idxDuracion !== -1) newRow.splice(idxDuracion + 1, 0, parseFload(r[idxDuracion]));
+      if (idxInicio !== -1 && idxFin !== -1) {
+        const inicio = new Date(r[idxInicio]);
+        const fin = new Date(r[idxFin]);
+        const durationHrs = (!isNaN(inicio) && !isNaN(fin)) ? ((fin - inicio) / 3600000).toFixed(2) : "0.00";
+        console.log(`Duración HDR para fila: ${r[idxInicio]} - ${r[idxFin]} = ${durationHrs} horas`);
+        newRow.splice(idxFin + 1, 0, durationHrs);
+      }
+      newRow.push(...(detailMap[r[idxStatusMain]] || detHeaders.slice(1).map(() => "Desconocido")));
+      return newRow;
+    });
+    console.log("dataRows construido:", stData);
+
+    headers = newHeaders; dataRows = stData;
+    populateStatusFilter();
+    renderSummaryTable();
+    construirCabecera();
+    renderTable();
+    renderPagination();
+    limpiarFiltrosHistory(); // Asegurar que no hay filtros aplicados
+  } catch (err) {
+    console.error("Error en cargarDatos:", err);
+  } finally {
+    loading.style.display = "none";
+  }
+}
+
 cargarDatos();
 </script>
 </body>

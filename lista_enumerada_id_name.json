@@ -1,0 +1,6062 @@
+[
+  {
+    "n": 1,
+    "id": "m101",
+    "name": "Trabajadores"
+  },
+  {
+    "n": 2,
+    "id": "m102",
+    "name": "Equipos"
+  },
+  {
+    "n": 3,
+    "id": "m109",
+    "name": "Equipos - Sensores"
+  },
+  {
+    "n": 4,
+    "id": "m108",
+    "name": "Equipos - Combustible"
+  },
+  {
+    "n": 5,
+    "id": "m107",
+    "name": "Mensajes Llamadas"
+  },
+  {
+    "n": 6,
+    "id": "m103",
+    "name": "Configuracion"
+  },
+  {
+    "n": 7,
+    "id": "m104",
+    "name": "CheckList"
+  },
+  {
+    "n": 8,
+    "id": "m105",
+    "name": "Estados"
+  },
+  {
+    "n": 9,
+    "id": "m106",
+    "name": "Calendario"
+  },
+  {
+    "n": 10,
+    "id": "m110",
+    "name": "Alertas"
+  },
+  {
+    "n": 11,
+    "id": "m111",
+    "name": "Produccion Carguio Acarreo"
+  },
+  {
+    "n": 12,
+    "id": "m112",
+    "name": "Perforacion"
+  },
+  {
+    "n": 13,
+    "id": "m115",
+    "name": "Perforacion Produccion"
+  },
+  {
+    "n": 14,
+    "id": "m116",
+    "name": "Perforacion Logistica"
+  },
+  {
+    "n": 15,
+    "id": "m117",
+    "name": "Perforacion Proyectos"
+  },
+  {
+    "n": 16,
+    "id": "m113",
+    "name": "Geologia"
+  },
+  {
+    "n": 17,
+    "id": "m114",
+    "name": "Proyectos"
+  },
+  {
+    "n": 18,
+    "id": "d4t",
+    "name": "Tables"
+  },
+  {
+    "n": 19,
+    "id": "m101",
+    "name": "Trabajadores"
+  },
+  {
+    "n": 20,
+    "id": "m102",
+    "name": "Equipos"
+  },
+  {
+    "n": 21,
+    "id": "m109",
+    "name": "Equipos - Sensores"
+  },
+  {
+    "n": 22,
+    "id": "m108",
+    "name": "Equipos - Combustible"
+  },
+  {
+    "n": 23,
+    "id": "m107",
+    "name": "Mensajes Llamadas"
+  },
+  {
+    "n": 24,
+    "id": "m103",
+    "name": "Configuracion"
+  },
+  {
+    "n": 25,
+    "id": "m104",
+    "name": "CheckList"
+  },
+  {
+    "n": 26,
+    "id": "m105",
+    "name": "Estados"
+  },
+  {
+    "n": 27,
+    "id": "m106",
+    "name": "Calendario"
+  },
+  {
+    "n": 28,
+    "id": "m110",
+    "name": "Alertas"
+  },
+  {
+    "n": 29,
+    "id": "m111",
+    "name": "Produccion Carguio Acarreo"
+  },
+  {
+    "n": 30,
+    "id": "m112",
+    "name": "Perforacion"
+  },
+  {
+    "n": 31,
+    "id": "m115",
+    "name": "Perforacion Produccion"
+  },
+  {
+    "n": 32,
+    "id": "m116",
+    "name": "Perforacion Logistica"
+  },
+  {
+    "n": 33,
+    "id": "m117",
+    "name": "Perforacion Proyectos"
+  },
+  {
+    "n": 34,
+    "id": "m113",
+    "name": "Geologia"
+  },
+  {
+    "n": 35,
+    "id": "m114",
+    "name": "Proyectos"
+  },
+  {
+    "n": 36,
+    "id": "t3692",
+    "name": "public.at_collision_alerts (Alertas de colision)"
+  },
+  {
+    "n": 37,
+    "id": "t3694",
+    "name": "public.at_equipment_model_history (Historial de modelos de equipos)"
+  },
+  {
+    "n": 38,
+    "id": "t3711",
+    "name": "public.st_rosterrotationpattern (Regimen de Trabajo)"
+  },
+  {
+    "n": 39,
+    "id": "t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 40,
+    "id": "t3719",
+    "name": "public.ta_alertasvims (Alertas CPU)"
+  },
+  {
+    "n": 41,
+    "id": "t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 42,
+    "id": "t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 43,
+    "id": "t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 44,
+    "id": "t3729",
+    "name": "public.ta_burnrate (Ratio de Consumo de Combustible)"
+  },
+  {
+    "n": 45,
+    "id": "t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 46,
+    "id": "t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 47,
+    "id": "t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 48,
+    "id": "t3735",
+    "name": "public.ta_carguio_alerta (Alerta de Carguio)"
+  },
+  {
+    "n": 49,
+    "id": "t3740",
+    "name": "public.ta_checklist (Registro de Checklist)"
+  },
+  {
+    "n": 50,
+    "id": "t3741",
+    "name": "public.ta_checklistdetalle (Registro de Checklist - Detalle por item)"
+  },
+  {
+    "n": 51,
+    "id": "t3743",
+    "name": "public.ta_combustible (Abastecimiento de combustible)"
+  },
+  {
+    "n": 52,
+    "id": "t3744",
+    "name": "public.ta_combustibletr (Combustible Actual de Equipo)"
+  },
+  {
+    "n": 53,
+    "id": "t3747",
+    "name": "public.ta_controlalertas (Alertas Control Sense)"
+  },
+  {
+    "n": 54,
+    "id": "t3751",
+    "name": "public.ta_data_auxiliares (Sensores de Equipos-Auxiliares)"
+  },
+  {
+    "n": 55,
+    "id": "t3752",
+    "name": "public.ta_data_auxiliares_historic (Sensores de Equipos-Auxiliares Historico)"
+  },
+  {
+    "n": 56,
+    "id": "t3753",
+    "name": "public.ta_datacamion (Sensores de Equipos-Acarreo)"
+  },
+  {
+    "n": 57,
+    "id": "t3754",
+    "name": "public.ta_datacamion_historic (Sensores de Equipos-Acarreo Historico)"
+  },
+  {
+    "n": 58,
+    "id": "t3755",
+    "name": "public.ta_datacamiongps (Sensores de Equipos-Acarreo Ultima hora)"
+  },
+  {
+    "n": 59,
+    "id": "t3761",
+    "name": "public.ta_datapala (Sensores de Equipos-Carguio)"
+  },
+  {
+    "n": 60,
+    "id": "t3762",
+    "name": "public.ta_datapala_historic (Sensores de Equipos-Carguio Historico)"
+  },
+  {
+    "n": 61,
+    "id": "t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 62,
+    "id": "t3770",
+    "name": "public.ta_empresas (Empresas)"
+  },
+  {
+    "n": 63,
+    "id": "t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 64,
+    "id": "t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 65,
+    "id": "t3779",
+    "name": "public.ta_factortonelaje (Factor de Tonelaje)"
+  },
+  {
+    "n": 66,
+    "id": "t3783",
+    "name": "public.ta_gmaterial (Grupo de Material)"
+  },
+  {
+    "n": 67,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 68,
+    "id": "t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 69,
+    "id": "t3786",
+    "name": "public.ta_idioma (Idioma)"
+  },
+  {
+    "n": 70,
+    "id": "t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 71,
+    "id": "t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 72,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 73,
+    "id": "t3791",
+    "name": "public.ta_llamadas (Llamadas a equipos de campo)"
+  },
+  {
+    "n": 74,
+    "id": "t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 75,
+    "id": "t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 76,
+    "id": "t3801",
+    "name": "public.ta_mensajes_detalle (Mensajes de Chat)"
+  },
+  {
+    "n": 77,
+    "id": "t3803",
+    "name": "public.ta_message (Mensajes Predeterminados)"
+  },
+  {
+    "n": 78,
+    "id": "t3804",
+    "name": "public.ta_modelo_drill_tdrill (Estructura de perforacion)"
+  },
+  {
+    "n": 79,
+    "id": "t3805",
+    "name": "public.ta_modelocpu (Drivel del Equipo)"
+  },
+  {
+    "n": 80,
+    "id": "t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 81,
+    "id": "t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 82,
+    "id": "t3811",
+    "name": "public.ta_outroutecamion (Alerta de fuera de ruta)"
+  },
+  {
+    "n": 83,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 84,
+    "id": "t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 85,
+    "id": "t3822",
+    "name": "public.ta_plcamiones (Configuracion Payload)"
+  },
+  {
+    "n": 86,
+    "id": "t3823",
+    "name": "public.ta_plcamionesreal (Payload en tiempo real)"
+  },
+  {
+    "n": 87,
+    "id": "t3825",
+    "name": "public.ta_polyline_proyecto (Coordenadas Proyecto LP)"
+  },
+  {
+    "n": 88,
+    "id": "t3830",
+    "name": "public.ta_prisma_hp (Bloques)"
+  },
+  {
+    "n": 89,
+    "id": "t3832",
+    "name": "public.ta_procedenciatrabajador (Lugares de Procedencia)"
+  },
+  {
+    "n": 90,
+    "id": "t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 91,
+    "id": "t3834",
+    "name": "public.ta_proyecto_hp (Proyectos HP)"
+  },
+  {
+    "n": 92,
+    "id": "t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 93,
+    "id": "t3836",
+    "name": "public.ta_registro_horometro (Horometro Historico)"
+  },
+  {
+    "n": 94,
+    "id": "t3842",
+    "name": "public.ta_speed_limits_exceeded (Alertas de exceso de velocidad)"
+  },
+  {
+    "n": 95,
+    "id": "t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 96,
+    "id": "t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 97,
+    "id": "t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 98,
+    "id": "t3857",
+    "name": "public.ta_wrongcarguiodesc (Alertas de carga / descarga erronea)"
+  },
+  {
+    "n": 99,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 100,
+    "id": "t3860",
+    "name": "public.tp_cargadescarga (Ciclo Acarreo)"
+  },
+  {
+    "n": 101,
+    "id": "t3861",
+    "name": "public.tp_crewschedule (Calendario de Guardias)"
+  },
+  {
+    "n": 102,
+    "id": "t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 103,
+    "id": "t3863",
+    "name": "public.tp_estados (Estados)"
+  },
+  {
+    "n": 104,
+    "id": "t3866",
+    "name": "public.tp_palas (Ciclo Carguio)"
+  },
+  {
+    "n": 105,
+    "id": "t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 106,
+    "id": "t3868",
+    "name": "public.tp_proyectoreg_hp (Asignacion a Proyectos HP)"
+  },
+  {
+    "n": 107,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 108,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 109,
+    "id": "t3877",
+    "name": "public.ts_checklistsi (Motivos en caso de incoformidad)"
+  },
+  {
+    "n": 110,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 111,
+    "id": "t3880",
+    "name": "public.ts_configuracion (Configuracion ControlSense)"
+  },
+  {
+    "n": 112,
+    "id": "t3881",
+    "name": "public.ts_configuracion_equipo (Configuracion ControlScreen)"
+  },
+  {
+    "n": 113,
+    "id": "t3882",
+    "name": "public.ts_configuracion_equipo_detalle (Configuracion Equipos)"
+  },
+  {
+    "n": 114,
+    "id": "t3883",
+    "name": "public.ts_confirmaestado (Confirmacion Estados)"
+  },
+  {
+    "n": 115,
+    "id": "t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 116,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 117,
+    "id": "t3886",
+    "name": "public.ts_detalle_proyecto_tractores (Asignacion a Proyectos LP)"
+  },
+  {
+    "n": 118,
+    "id": "t3887",
+    "name": "public.ts_detallealertas (Detalle alertas Control Sense)"
+  },
+  {
+    "n": 119,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 120,
+    "id": "t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 121,
+    "id": "t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 122,
+    "id": "t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 123,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 124,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 125,
+    "id": "m105t3863",
+    "name": "public.tp_estados (Estados)"
+  },
+  {
+    "n": 126,
+    "id": "m105t3883",
+    "name": "public.ts_confirmaestado (Confirmacion Estados)"
+  },
+  {
+    "n": 127,
+    "id": "m105t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 128,
+    "id": "m105t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 129,
+    "id": "m116t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 130,
+    "id": "m116t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 131,
+    "id": "m116t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 132,
+    "id": "m116t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 133,
+    "id": "m116t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 134,
+    "id": "m116t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 135,
+    "id": "m116t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 136,
+    "id": "m116t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 137,
+    "id": "m116t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 138,
+    "id": "m116t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 139,
+    "id": "m116t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 140,
+    "id": "m116t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 141,
+    "id": "m116t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 142,
+    "id": "m117t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 143,
+    "id": "m117t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 144,
+    "id": "m117t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 145,
+    "id": "m117t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 146,
+    "id": "m117t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 147,
+    "id": "m101",
+    "name": "Trabajadores"
+  },
+  {
+    "n": 148,
+    "id": "m102",
+    "name": "Equipos"
+  },
+  {
+    "n": 149,
+    "id": "m109",
+    "name": "Equipos - Sensores"
+  },
+  {
+    "n": 150,
+    "id": "m108",
+    "name": "Equipos - Combustible"
+  },
+  {
+    "n": 151,
+    "id": "m107",
+    "name": "Mensajes Llamadas"
+  },
+  {
+    "n": 152,
+    "id": "m103",
+    "name": "Configuracion"
+  },
+  {
+    "n": 153,
+    "id": "m104",
+    "name": "CheckList"
+  },
+  {
+    "n": 154,
+    "id": "m105",
+    "name": "Estados"
+  },
+  {
+    "n": 155,
+    "id": "m106",
+    "name": "Calendario"
+  },
+  {
+    "n": 156,
+    "id": "m110",
+    "name": "Alertas"
+  },
+  {
+    "n": 157,
+    "id": "m111",
+    "name": "Produccion Carguio Acarreo"
+  },
+  {
+    "n": 158,
+    "id": "m112",
+    "name": "Perforacion"
+  },
+  {
+    "n": 159,
+    "id": "m115",
+    "name": "Perforacion Produccion"
+  },
+  {
+    "n": 160,
+    "id": "m116",
+    "name": "Perforacion Logistica"
+  },
+  {
+    "n": 161,
+    "id": "m117",
+    "name": "Perforacion Proyectos"
+  },
+  {
+    "n": 162,
+    "id": "m113",
+    "name": "Geologia"
+  },
+  {
+    "n": 163,
+    "id": "m114",
+    "name": "Proyectos"
+  },
+  {
+    "n": 164,
+    "id": "d4t",
+    "name": "Tables"
+  },
+  {
+    "n": 165,
+    "id": "m101",
+    "name": "Trabajadores"
+  },
+  {
+    "n": 166,
+    "id": "m102",
+    "name": "Equipos"
+  },
+  {
+    "n": 167,
+    "id": "m109",
+    "name": "Equipos - Sensores"
+  },
+  {
+    "n": 168,
+    "id": "m108",
+    "name": "Equipos - Combustible"
+  },
+  {
+    "n": 169,
+    "id": "m107",
+    "name": "Mensajes Llamadas"
+  },
+  {
+    "n": 170,
+    "id": "m103",
+    "name": "Configuracion"
+  },
+  {
+    "n": 171,
+    "id": "m104",
+    "name": "CheckList"
+  },
+  {
+    "n": 172,
+    "id": "m105",
+    "name": "Estados"
+  },
+  {
+    "n": 173,
+    "id": "m106",
+    "name": "Calendario"
+  },
+  {
+    "n": 174,
+    "id": "m110",
+    "name": "Alertas"
+  },
+  {
+    "n": 175,
+    "id": "m111",
+    "name": "Produccion Carguio Acarreo"
+  },
+  {
+    "n": 176,
+    "id": "m112",
+    "name": "Perforacion"
+  },
+  {
+    "n": 177,
+    "id": "m115",
+    "name": "Perforacion Produccion"
+  },
+  {
+    "n": 178,
+    "id": "m116",
+    "name": "Perforacion Logistica"
+  },
+  {
+    "n": 179,
+    "id": "m117",
+    "name": "Perforacion Proyectos"
+  },
+  {
+    "n": 180,
+    "id": "m113",
+    "name": "Geologia"
+  },
+  {
+    "n": 181,
+    "id": "m114",
+    "name": "Proyectos"
+  },
+  {
+    "n": 182,
+    "id": "t3692",
+    "name": "public.at_collision_alerts (Alertas de colision)"
+  },
+  {
+    "n": 183,
+    "id": "t3694",
+    "name": "public.at_equipment_model_history (Historial de modelos de equipos)"
+  },
+  {
+    "n": 184,
+    "id": "t3711",
+    "name": "public.st_rosterrotationpattern (Regimen de Trabajo)"
+  },
+  {
+    "n": 185,
+    "id": "t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 186,
+    "id": "t3719",
+    "name": "public.ta_alertasvims (Alertas CPU)"
+  },
+  {
+    "n": 187,
+    "id": "t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 188,
+    "id": "t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 189,
+    "id": "t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 190,
+    "id": "t3729",
+    "name": "public.ta_burnrate (Ratio de Consumo de Combustible)"
+  },
+  {
+    "n": 191,
+    "id": "t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 192,
+    "id": "t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 193,
+    "id": "t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 194,
+    "id": "t3735",
+    "name": "public.ta_carguio_alerta (Alerta de Carguio)"
+  },
+  {
+    "n": 195,
+    "id": "t3740",
+    "name": "public.ta_checklist (Registro de Checklist)"
+  },
+  {
+    "n": 196,
+    "id": "t3741",
+    "name": "public.ta_checklistdetalle (Registro de Checklist - Detalle por item)"
+  },
+  {
+    "n": 197,
+    "id": "t3743",
+    "name": "public.ta_combustible (Abastecimiento de combustible)"
+  },
+  {
+    "n": 198,
+    "id": "t3744",
+    "name": "public.ta_combustibletr (Combustible Actual de Equipo)"
+  },
+  {
+    "n": 199,
+    "id": "t3747",
+    "name": "public.ta_controlalertas (Alertas Control Sense)"
+  },
+  {
+    "n": 200,
+    "id": "t3751",
+    "name": "public.ta_data_auxiliares (Sensores de Equipos-Auxiliares)"
+  },
+  {
+    "n": 201,
+    "id": "t3752",
+    "name": "public.ta_data_auxiliares_historic (Sensores de Equipos-Auxiliares Historico)"
+  },
+  {
+    "n": 202,
+    "id": "t3753",
+    "name": "public.ta_datacamion (Sensores de Equipos-Acarreo)"
+  },
+  {
+    "n": 203,
+    "id": "t3754",
+    "name": "public.ta_datacamion_historic (Sensores de Equipos-Acarreo Historico)"
+  },
+  {
+    "n": 204,
+    "id": "t3755",
+    "name": "public.ta_datacamiongps (Sensores de Equipos-Acarreo Ultima hora)"
+  },
+  {
+    "n": 205,
+    "id": "t3761",
+    "name": "public.ta_datapala (Sensores de Equipos-Carguio)"
+  },
+  {
+    "n": 206,
+    "id": "t3762",
+    "name": "public.ta_datapala_historic (Sensores de Equipos-Carguio Historico)"
+  },
+  {
+    "n": 207,
+    "id": "t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 208,
+    "id": "t3770",
+    "name": "public.ta_empresas (Empresas)"
+  },
+  {
+    "n": 209,
+    "id": "t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 210,
+    "id": "t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 211,
+    "id": "t3779",
+    "name": "public.ta_factortonelaje (Factor de Tonelaje)"
+  },
+  {
+    "n": 212,
+    "id": "t3783",
+    "name": "public.ta_gmaterial (Grupo de Material)"
+  },
+  {
+    "n": 213,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 214,
+    "id": "t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 215,
+    "id": "t3786",
+    "name": "public.ta_idioma (Idioma)"
+  },
+  {
+    "n": 216,
+    "id": "t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 217,
+    "id": "t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 218,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 219,
+    "id": "t3791",
+    "name": "public.ta_llamadas (Llamadas a equipos de campo)"
+  },
+  {
+    "n": 220,
+    "id": "t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 221,
+    "id": "t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 222,
+    "id": "t3801",
+    "name": "public.ta_mensajes_detalle (Mensajes de Chat)"
+  },
+  {
+    "n": 223,
+    "id": "t3803",
+    "name": "public.ta_message (Mensajes Predeterminados)"
+  },
+  {
+    "n": 224,
+    "id": "t3804",
+    "name": "public.ta_modelo_drill_tdrill (Estructura de perforacion)"
+  },
+  {
+    "n": 225,
+    "id": "t3805",
+    "name": "public.ta_modelocpu (Drivel del Equipo)"
+  },
+  {
+    "n": 226,
+    "id": "t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 227,
+    "id": "t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 228,
+    "id": "t3811",
+    "name": "public.ta_outroutecamion (Alerta de fuera de ruta)"
+  },
+  {
+    "n": 229,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 230,
+    "id": "t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 231,
+    "id": "t3822",
+    "name": "public.ta_plcamiones (Configuracion Payload)"
+  },
+  {
+    "n": 232,
+    "id": "t3823",
+    "name": "public.ta_plcamionesreal (Payload en tiempo real)"
+  },
+  {
+    "n": 233,
+    "id": "t3825",
+    "name": "public.ta_polyline_proyecto (Coordenadas Proyecto LP)"
+  },
+  {
+    "n": 234,
+    "id": "t3830",
+    "name": "public.ta_prisma_hp (Bloques)"
+  },
+  {
+    "n": 235,
+    "id": "t3832",
+    "name": "public.ta_procedenciatrabajador (Lugares de Procedencia)"
+  },
+  {
+    "n": 236,
+    "id": "t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 237,
+    "id": "t3834",
+    "name": "public.ta_proyecto_hp (Proyectos HP)"
+  },
+  {
+    "n": 238,
+    "id": "t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 239,
+    "id": "t3836",
+    "name": "public.ta_registro_horometro (Horometro Historico)"
+  },
+  {
+    "n": 240,
+    "id": "t3842",
+    "name": "public.ta_speed_limits_exceeded (Alertas de exceso de velocidad)"
+  },
+  {
+    "n": 241,
+    "id": "t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 242,
+    "id": "t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 243,
+    "id": "t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 244,
+    "id": "t3857",
+    "name": "public.ta_wrongcarguiodesc (Alertas de carga / descarga erronea)"
+  },
+  {
+    "n": 245,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 246,
+    "id": "t3860",
+    "name": "public.tp_cargadescarga (Ciclo Acarreo)"
+  },
+  {
+    "n": 247,
+    "id": "t3861",
+    "name": "public.tp_crewschedule (Calendario de Guardias)"
+  },
+  {
+    "n": 248,
+    "id": "t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 249,
+    "id": "t3863",
+    "name": "public.tp_estados (Estados)"
+  },
+  {
+    "n": 250,
+    "id": "t3866",
+    "name": "public.tp_palas (Ciclo Carguio)"
+  },
+  {
+    "n": 251,
+    "id": "t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 252,
+    "id": "t3868",
+    "name": "public.tp_proyectoreg_hp (Asignacion a Proyectos HP)"
+  },
+  {
+    "n": 253,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 254,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 255,
+    "id": "t3877",
+    "name": "public.ts_checklistsi (Motivos en caso de incoformidad)"
+  },
+  {
+    "n": 256,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 257,
+    "id": "t3880",
+    "name": "public.ts_configuracion (Configuracion ControlSense)"
+  },
+  {
+    "n": 258,
+    "id": "t3881",
+    "name": "public.ts_configuracion_equipo (Configuracion ControlScreen)"
+  },
+  {
+    "n": 259,
+    "id": "t3882",
+    "name": "public.ts_configuracion_equipo_detalle (Configuracion Equipos)"
+  },
+  {
+    "n": 260,
+    "id": "t3883",
+    "name": "public.ts_confirmaestado (Confirmacion Estados)"
+  },
+  {
+    "n": 261,
+    "id": "t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 262,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 263,
+    "id": "t3886",
+    "name": "public.ts_detalle_proyecto_tractores (Asignacion a Proyectos LP)"
+  },
+  {
+    "n": 264,
+    "id": "t3887",
+    "name": "public.ts_detallealertas (Detalle alertas Control Sense)"
+  },
+  {
+    "n": 265,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 266,
+    "id": "t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 267,
+    "id": "t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 268,
+    "id": "t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 269,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 270,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 271,
+    "id": "m105t3863",
+    "name": "public.tp_estados (Estados)"
+  },
+  {
+    "n": 272,
+    "id": "m105t3883",
+    "name": "public.ts_confirmaestado (Confirmacion Estados)"
+  },
+  {
+    "n": 273,
+    "id": "m105t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 274,
+    "id": "m105t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 275,
+    "id": "m116t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 276,
+    "id": "m116t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 277,
+    "id": "m116t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 278,
+    "id": "m116t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 279,
+    "id": "m116t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 280,
+    "id": "m116t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 281,
+    "id": "m116t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 282,
+    "id": "m116t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 283,
+    "id": "m116t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 284,
+    "id": "m116t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 285,
+    "id": "m116t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 286,
+    "id": "m116t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 287,
+    "id": "m116t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 288,
+    "id": "m117t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 289,
+    "id": "m117t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 290,
+    "id": "m117t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 291,
+    "id": "m117t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 292,
+    "id": "m117t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 293,
+    "id": "m101t3711",
+    "name": "public.st_rosterrotationpattern (Regimen de Trabajo)"
+  },
+  {
+    "n": 294,
+    "id": "m101t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 295,
+    "id": "m101t3770",
+    "name": "public.ta_empresas (Empresas)"
+  },
+  {
+    "n": 296,
+    "id": "m101t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 297,
+    "id": "m101t3786",
+    "name": "public.ta_idioma (Idioma)"
+  },
+  {
+    "n": 298,
+    "id": "m101t3832",
+    "name": "public.ta_procedenciatrabajador (Lugares de Procedencia)"
+  },
+  {
+    "n": 299,
+    "id": "m101t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 300,
+    "id": "m101t3711",
+    "name": "public.st_rosterrotationpattern (Regimen de Trabajo)"
+  },
+  {
+    "n": 301,
+    "id": "m101t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 302,
+    "id": "m101t3770",
+    "name": "public.ta_empresas (Empresas)"
+  },
+  {
+    "n": 303,
+    "id": "m101t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 304,
+    "id": "m101t3786",
+    "name": "public.ta_idioma (Idioma)"
+  },
+  {
+    "n": 305,
+    "id": "m101t3832",
+    "name": "public.ta_procedenciatrabajador (Lugares de Procedencia)"
+  },
+  {
+    "n": 306,
+    "id": "m101t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 307,
+    "id": "m102t3694",
+    "name": "public.at_equipment_model_history (Historial de modelos de equipos)"
+  },
+  {
+    "n": 308,
+    "id": "m102t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 309,
+    "id": "m102t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 310,
+    "id": "m102t3805",
+    "name": "public.ta_modelocpu (Drivel del Equipo)"
+  },
+  {
+    "n": 311,
+    "id": "m102t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 312,
+    "id": "m102t3822",
+    "name": "public.ta_plcamiones (Configuracion Payload)"
+  },
+  {
+    "n": 313,
+    "id": "m102t3823",
+    "name": "public.ta_plcamionesreal (Payload en tiempo real)"
+  },
+  {
+    "n": 314,
+    "id": "m102t3836",
+    "name": "public.ta_registro_horometro (Horometro Historico)"
+  },
+  {
+    "n": 315,
+    "id": "m102t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 316,
+    "id": "m102t3694",
+    "name": "public.at_equipment_model_history (Historial de modelos de equipos)"
+  },
+  {
+    "n": 317,
+    "id": "m102t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 318,
+    "id": "m102t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 319,
+    "id": "m102t3805",
+    "name": "public.ta_modelocpu (Drivel del Equipo)"
+  },
+  {
+    "n": 320,
+    "id": "m102t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 321,
+    "id": "m102t3822",
+    "name": "public.ta_plcamiones (Configuracion Payload)"
+  },
+  {
+    "n": 322,
+    "id": "m102t3823",
+    "name": "public.ta_plcamionesreal (Payload en tiempo real)"
+  },
+  {
+    "n": 323,
+    "id": "m102t3836",
+    "name": "public.ta_registro_horometro (Horometro Historico)"
+  },
+  {
+    "n": 324,
+    "id": "m102t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 325,
+    "id": "m103t3880",
+    "name": "public.ts_configuracion (Configuracion ControlSense)"
+  },
+  {
+    "n": 326,
+    "id": "m103t3881",
+    "name": "public.ts_configuracion_equipo (Configuracion ControlScreen)"
+  },
+  {
+    "n": 327,
+    "id": "m103t3882",
+    "name": "public.ts_configuracion_equipo_detalle (Configuracion Equipos)"
+  },
+  {
+    "n": 328,
+    "id": "m103t3880",
+    "name": "public.ts_configuracion (Configuracion ControlSense)"
+  },
+  {
+    "n": 329,
+    "id": "m103t3881",
+    "name": "public.ts_configuracion_equipo (Configuracion ControlScreen)"
+  },
+  {
+    "n": 330,
+    "id": "m103t3882",
+    "name": "public.ts_configuracion_equipo_detalle (Configuracion Equipos)"
+  },
+  {
+    "n": 331,
+    "id": "m104t3740",
+    "name": "public.ta_checklist (Registro de Checklist)"
+  },
+  {
+    "n": 332,
+    "id": "m104t3741",
+    "name": "public.ta_checklistdetalle (Registro de Checklist - Detalle por item)"
+  },
+  {
+    "n": 333,
+    "id": "m104t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 334,
+    "id": "m104t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 335,
+    "id": "m104t3877",
+    "name": "public.ts_checklistsi (Motivos en caso de incoformidad)"
+  },
+  {
+    "n": 336,
+    "id": "m104t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 337,
+    "id": "m104t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 338,
+    "id": "m104t3740",
+    "name": "public.ta_checklist (Registro de Checklist)"
+  },
+  {
+    "n": 339,
+    "id": "m104t3741",
+    "name": "public.ta_checklistdetalle (Registro de Checklist - Detalle por item)"
+  },
+  {
+    "n": 340,
+    "id": "m104t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 341,
+    "id": "m104t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 342,
+    "id": "m104t3877",
+    "name": "public.ts_checklistsi (Motivos en caso de incoformidad)"
+  },
+  {
+    "n": 343,
+    "id": "m104t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 344,
+    "id": "m104t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 345,
+    "id": "m105t3863",
+    "name": "public.tp_estados (Estados)"
+  },
+  {
+    "n": 346,
+    "id": "m105t3883",
+    "name": "public.ts_confirmaestado (Confirmacion Estados)"
+  },
+  {
+    "n": 347,
+    "id": "m105t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 348,
+    "id": "m105t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 349,
+    "id": "m105t3863",
+    "name": "public.tp_estados (Estados)"
+  },
+  {
+    "n": 350,
+    "id": "m105t3883",
+    "name": "public.ts_confirmaestado (Confirmacion Estados)"
+  },
+  {
+    "n": 351,
+    "id": "m105t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 352,
+    "id": "m105t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 353,
+    "id": "m106t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 354,
+    "id": "m106t3861",
+    "name": "public.tp_crewschedule (Calendario de Guardias)"
+  },
+  {
+    "n": 355,
+    "id": "m106t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 356,
+    "id": "m106t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 357,
+    "id": "m106t3861",
+    "name": "public.tp_crewschedule (Calendario de Guardias)"
+  },
+  {
+    "n": 358,
+    "id": "m106t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 359,
+    "id": "m107t3791",
+    "name": "public.ta_llamadas (Llamadas a equipos de campo)"
+  },
+  {
+    "n": 360,
+    "id": "m107t3801",
+    "name": "public.ta_mensajes_detalle (Mensajes de Chat)"
+  },
+  {
+    "n": 361,
+    "id": "m107t3803",
+    "name": "public.ta_message (Mensajes Predeterminados)"
+  },
+  {
+    "n": 362,
+    "id": "m107t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 363,
+    "id": "m107t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 364,
+    "id": "m107t3791",
+    "name": "public.ta_llamadas (Llamadas a equipos de campo)"
+  },
+  {
+    "n": 365,
+    "id": "m107t3801",
+    "name": "public.ta_mensajes_detalle (Mensajes de Chat)"
+  },
+  {
+    "n": 366,
+    "id": "m107t3803",
+    "name": "public.ta_message (Mensajes Predeterminados)"
+  },
+  {
+    "n": 367,
+    "id": "m107t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 368,
+    "id": "m107t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 369,
+    "id": "m108t3729",
+    "name": "public.ta_burnrate (Ratio de Consumo de Combustible)"
+  },
+  {
+    "n": 370,
+    "id": "m108t3743",
+    "name": "public.ta_combustible (Abastecimiento de combustible)"
+  },
+  {
+    "n": 371,
+    "id": "m108t3744",
+    "name": "public.ta_combustibletr (Combustible Actual de Equipo)"
+  },
+  {
+    "n": 372,
+    "id": "m108t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 373,
+    "id": "m108t3729",
+    "name": "public.ta_burnrate (Ratio de Consumo de Combustible)"
+  },
+  {
+    "n": 374,
+    "id": "m108t3743",
+    "name": "public.ta_combustible (Abastecimiento de combustible)"
+  },
+  {
+    "n": 375,
+    "id": "m108t3744",
+    "name": "public.ta_combustibletr (Combustible Actual de Equipo)"
+  },
+  {
+    "n": 376,
+    "id": "m108t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 377,
+    "id": "m109t3751",
+    "name": "public.ta_data_auxiliares (Sensores de Equipos-Auxiliares)"
+  },
+  {
+    "n": 378,
+    "id": "m109t3752",
+    "name": "public.ta_data_auxiliares_historic (Sensores de Equipos-Auxiliares Historico)"
+  },
+  {
+    "n": 379,
+    "id": "m109t3753",
+    "name": "public.ta_datacamion (Sensores de Equipos-Acarreo)"
+  },
+  {
+    "n": 380,
+    "id": "m109t3754",
+    "name": "public.ta_datacamion_historic (Sensores de Equipos-Acarreo Historico)"
+  },
+  {
+    "n": 381,
+    "id": "m109t3755",
+    "name": "public.ta_datacamiongps (Sensores de Equipos-Acarreo Ultima hora)"
+  },
+  {
+    "n": 382,
+    "id": "m109t3761",
+    "name": "public.ta_datapala (Sensores de Equipos-Carguio)"
+  },
+  {
+    "n": 383,
+    "id": "m109t3762",
+    "name": "public.ta_datapala_historic (Sensores de Equipos-Carguio Historico)"
+  },
+  {
+    "n": 384,
+    "id": "m109t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 385,
+    "id": "m109t3751",
+    "name": "public.ta_data_auxiliares (Sensores de Equipos-Auxiliares)"
+  },
+  {
+    "n": 386,
+    "id": "m109t3752",
+    "name": "public.ta_data_auxiliares_historic (Sensores de Equipos-Auxiliares Historico)"
+  },
+  {
+    "n": 387,
+    "id": "m109t3753",
+    "name": "public.ta_datacamion (Sensores de Equipos-Acarreo)"
+  },
+  {
+    "n": 388,
+    "id": "m109t3754",
+    "name": "public.ta_datacamion_historic (Sensores de Equipos-Acarreo Historico)"
+  },
+  {
+    "n": 389,
+    "id": "m109t3755",
+    "name": "public.ta_datacamiongps (Sensores de Equipos-Acarreo Ultima hora)"
+  },
+  {
+    "n": 390,
+    "id": "m109t3761",
+    "name": "public.ta_datapala (Sensores de Equipos-Carguio)"
+  },
+  {
+    "n": 391,
+    "id": "m109t3762",
+    "name": "public.ta_datapala_historic (Sensores de Equipos-Carguio Historico)"
+  },
+  {
+    "n": 392,
+    "id": "m109t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 393,
+    "id": "m110t3692",
+    "name": "public.at_collision_alerts (Alertas de colision)"
+  },
+  {
+    "n": 394,
+    "id": "m110t3719",
+    "name": "public.ta_alertasvims (Alertas CPU)"
+  },
+  {
+    "n": 395,
+    "id": "m110t3735",
+    "name": "public.ta_carguio_alerta (Alerta de Carguio)"
+  },
+  {
+    "n": 396,
+    "id": "m110t3747",
+    "name": "public.ta_controlalertas (Alertas Control Sense)"
+  },
+  {
+    "n": 397,
+    "id": "m110t3811",
+    "name": "public.ta_outroutecamion (Alerta de fuera de ruta)"
+  },
+  {
+    "n": 398,
+    "id": "m110t3842",
+    "name": "public.ta_speed_limits_exceeded (Alertas de exceso de velocidad)"
+  },
+  {
+    "n": 399,
+    "id": "m110t3857",
+    "name": "public.ta_wrongcarguiodesc (Alertas de carga / descarga erronea)"
+  },
+  {
+    "n": 400,
+    "id": "m110t3887",
+    "name": "public.ts_detallealertas (Detalle alertas Control Sense)"
+  },
+  {
+    "n": 401,
+    "id": "m110t3692",
+    "name": "public.at_collision_alerts (Alertas de colision)"
+  },
+  {
+    "n": 402,
+    "id": "m110t3719",
+    "name": "public.ta_alertasvims (Alertas CPU)"
+  },
+  {
+    "n": 403,
+    "id": "m110t3735",
+    "name": "public.ta_carguio_alerta (Alerta de Carguio)"
+  },
+  {
+    "n": 404,
+    "id": "m110t3747",
+    "name": "public.ta_controlalertas (Alertas Control Sense)"
+  },
+  {
+    "n": 405,
+    "id": "m110t3811",
+    "name": "public.ta_outroutecamion (Alerta de fuera de ruta)"
+  },
+  {
+    "n": 406,
+    "id": "m110t3842",
+    "name": "public.ta_speed_limits_exceeded (Alertas de exceso de velocidad)"
+  },
+  {
+    "n": 407,
+    "id": "m110t3857",
+    "name": "public.ta_wrongcarguiodesc (Alertas de carga / descarga erronea)"
+  },
+  {
+    "n": 408,
+    "id": "m110t3887",
+    "name": "public.ts_detallealertas (Detalle alertas Control Sense)"
+  },
+  {
+    "n": 409,
+    "id": "m111t3779",
+    "name": "public.ta_factortonelaje (Factor de Tonelaje)"
+  },
+  {
+    "n": 410,
+    "id": "m111t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 411,
+    "id": "m111t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 412,
+    "id": "m111t3860",
+    "name": "public.tp_cargadescarga (Ciclo Acarreo)"
+  },
+  {
+    "n": 413,
+    "id": "m111t3866",
+    "name": "public.tp_palas (Ciclo Carguio)"
+  },
+  {
+    "n": 414,
+    "id": "m111t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 415,
+    "id": "m111t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 416,
+    "id": "m111t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 417,
+    "id": "m111t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 418,
+    "id": "m111t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 419,
+    "id": "m111t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 420,
+    "id": "m111t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 421,
+    "id": "m111t3779",
+    "name": "public.ta_factortonelaje (Factor de Tonelaje)"
+  },
+  {
+    "n": 422,
+    "id": "m111t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 423,
+    "id": "m111t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 424,
+    "id": "m111t3860",
+    "name": "public.tp_cargadescarga (Ciclo Acarreo)"
+  },
+  {
+    "n": 425,
+    "id": "m111t3866",
+    "name": "public.tp_palas (Ciclo Carguio)"
+  },
+  {
+    "n": 426,
+    "id": "m111t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 427,
+    "id": "m111t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 428,
+    "id": "m111t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 429,
+    "id": "m111t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 430,
+    "id": "m111t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 431,
+    "id": "m111t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 432,
+    "id": "m111t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 433,
+    "id": "m112t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 434,
+    "id": "m112t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 435,
+    "id": "m112t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 436,
+    "id": "m112t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 437,
+    "id": "m112t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 438,
+    "id": "m112t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 439,
+    "id": "m112t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 440,
+    "id": "m112t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 441,
+    "id": "m112t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 442,
+    "id": "m112t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 443,
+    "id": "m112t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 444,
+    "id": "m112t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 445,
+    "id": "m112t3804",
+    "name": "public.ta_modelo_drill_tdrill (Estructura de perforacion)"
+  },
+  {
+    "n": 446,
+    "id": "m112t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 447,
+    "id": "m112t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 448,
+    "id": "m112t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 449,
+    "id": "m112t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 450,
+    "id": "m112t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 451,
+    "id": "m112t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 452,
+    "id": "m112t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 453,
+    "id": "m112t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 454,
+    "id": "m112t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 455,
+    "id": "m112t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 456,
+    "id": "m112t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 457,
+    "id": "m112t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 458,
+    "id": "m112t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 459,
+    "id": "m112t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 460,
+    "id": "m112t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 461,
+    "id": "m112t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 462,
+    "id": "m112t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 463,
+    "id": "m112t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 464,
+    "id": "m112t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 465,
+    "id": "m112t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 466,
+    "id": "m112t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 467,
+    "id": "m112t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 468,
+    "id": "m112t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 469,
+    "id": "m112t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 470,
+    "id": "m112t3804",
+    "name": "public.ta_modelo_drill_tdrill (Estructura de perforacion)"
+  },
+  {
+    "n": 471,
+    "id": "m112t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 472,
+    "id": "m112t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 473,
+    "id": "m112t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 474,
+    "id": "m112t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 475,
+    "id": "m112t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 476,
+    "id": "m112t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 477,
+    "id": "m112t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 478,
+    "id": "m112t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 479,
+    "id": "m112t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 480,
+    "id": "m112t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 481,
+    "id": "m112t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 482,
+    "id": "m112t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 483,
+    "id": "m113t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 484,
+    "id": "m113t3783",
+    "name": "public.ta_gmaterial (Grupo de Material)"
+  },
+  {
+    "n": 485,
+    "id": "m113t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 486,
+    "id": "m113t3830",
+    "name": "public.ta_prisma_hp (Bloques)"
+  },
+  {
+    "n": 487,
+    "id": "m113t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 488,
+    "id": "m113t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 489,
+    "id": "m113t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 490,
+    "id": "m113t3783",
+    "name": "public.ta_gmaterial (Grupo de Material)"
+  },
+  {
+    "n": 491,
+    "id": "m113t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 492,
+    "id": "m113t3830",
+    "name": "public.ta_prisma_hp (Bloques)"
+  },
+  {
+    "n": 493,
+    "id": "m113t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 494,
+    "id": "m113t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 495,
+    "id": "m114t3825",
+    "name": "public.ta_polyline_proyecto (Coordenadas Proyecto LP)"
+  },
+  {
+    "n": 496,
+    "id": "m114t3834",
+    "name": "public.ta_proyecto_hp (Proyectos HP)"
+  },
+  {
+    "n": 497,
+    "id": "m114t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 498,
+    "id": "m114t3868",
+    "name": "public.tp_proyectoreg_hp (Asignacion a Proyectos HP)"
+  },
+  {
+    "n": 499,
+    "id": "m114t3886",
+    "name": "public.ts_detalle_proyecto_tractores (Asignacion a Proyectos LP)"
+  },
+  {
+    "n": 500,
+    "id": "m114t3825",
+    "name": "public.ta_polyline_proyecto (Coordenadas Proyecto LP)"
+  },
+  {
+    "n": 501,
+    "id": "m114t3834",
+    "name": "public.ta_proyecto_hp (Proyectos HP)"
+  },
+  {
+    "n": 502,
+    "id": "m114t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 503,
+    "id": "m114t3868",
+    "name": "public.tp_proyectoreg_hp (Asignacion a Proyectos HP)"
+  },
+  {
+    "n": 504,
+    "id": "m114t3886",
+    "name": "public.ts_detalle_proyecto_tractores (Asignacion a Proyectos LP)"
+  },
+  {
+    "n": 505,
+    "id": "m115t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 506,
+    "id": "m115t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 507,
+    "id": "m115t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 508,
+    "id": "m115t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 509,
+    "id": "m115t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 510,
+    "id": "m115t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 511,
+    "id": "m115t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 512,
+    "id": "m115t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 513,
+    "id": "m115t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 514,
+    "id": "m115t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 515,
+    "id": "m115t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 516,
+    "id": "m115t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 517,
+    "id": "m115t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 518,
+    "id": "m115t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 519,
+    "id": "m116t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 520,
+    "id": "m116t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 521,
+    "id": "m116t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 522,
+    "id": "m116t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 523,
+    "id": "m116t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 524,
+    "id": "m116t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 525,
+    "id": "m116t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 526,
+    "id": "m116t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 527,
+    "id": "m116t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 528,
+    "id": "m116t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 529,
+    "id": "m116t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 530,
+    "id": "m116t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 531,
+    "id": "m116t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 532,
+    "id": "m116t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 533,
+    "id": "m116t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 534,
+    "id": "m116t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 535,
+    "id": "m116t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 536,
+    "id": "m116t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 537,
+    "id": "m116t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 538,
+    "id": "m116t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 539,
+    "id": "m116t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 540,
+    "id": "m116t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 541,
+    "id": "m116t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 542,
+    "id": "m116t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 543,
+    "id": "m116t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 544,
+    "id": "m116t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 545,
+    "id": "m117t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 546,
+    "id": "m117t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 547,
+    "id": "m117t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 548,
+    "id": "m117t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 549,
+    "id": "m117t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 550,
+    "id": "m117t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 551,
+    "id": "m117t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 552,
+    "id": "m117t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 553,
+    "id": "m117t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 554,
+    "id": "m117t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 555,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 556,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 557,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 558,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 559,
+    "id": "t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 560,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 561,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 562,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 563,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 564,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 565,
+    "id": "t3773",
+    "name": "public.ta_equipo_cpu"
+  },
+  {
+    "n": 566,
+    "id": "t3770",
+    "name": "public.ta_empresas (Empresas)"
+  },
+  {
+    "n": 567,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 568,
+    "id": "t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 569,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 570,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 571,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 572,
+    "id": "t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 573,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 574,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 575,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 576,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 577,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 578,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 579,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 580,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 581,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 582,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 583,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 584,
+    "id": "t3740",
+    "name": "public.ta_checklist (Registro de Checklist)"
+  },
+  {
+    "n": 585,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 586,
+    "id": "t3877",
+    "name": "public.ts_checklistsi (Motivos en caso de incoformidad)"
+  },
+  {
+    "n": 587,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 588,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 589,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 590,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 591,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 592,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 593,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 594,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 595,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 596,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 597,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 598,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 599,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 600,
+    "id": "t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 601,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 602,
+    "id": "t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 603,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 604,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 605,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 606,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 607,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 608,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 609,
+    "id": "t3711",
+    "name": "public.st_rosterrotationpattern (Regimen de Trabajo)"
+  },
+  {
+    "n": 610,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 611,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 612,
+    "id": "t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 613,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 614,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 615,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 616,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 617,
+    "id": "t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 618,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 619,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 620,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 621,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 622,
+    "id": "t3801",
+    "name": "public.ta_mensajes_detalle (Mensajes de Chat)"
+  },
+  {
+    "n": 623,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 624,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 625,
+    "id": "t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 626,
+    "id": "t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 627,
+    "id": "t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 628,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 629,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 630,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 631,
+    "id": "t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 632,
+    "id": "t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 633,
+    "id": "t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 634,
+    "id": "t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 635,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 636,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 637,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 638,
+    "id": "t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 639,
+    "id": "t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 640,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 641,
+    "id": "t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 642,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 643,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 644,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 645,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 646,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 647,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 648,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 649,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 650,
+    "id": "t3872",
+    "name": "public.tp_tramosstat (Tramos)"
+  },
+  {
+    "n": 651,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 652,
+    "id": "t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 653,
+    "id": "t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 654,
+    "id": "t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 655,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 656,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 657,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 658,
+    "id": "t3859",
+    "name": "public.ta_zonasdetalle (Tipo de Zonas)"
+  },
+  {
+    "n": 659,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 660,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 661,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 662,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 663,
+    "id": "t3866",
+    "name": "public.tp_palas (Ciclo Carguio)"
+  },
+  {
+    "n": 664,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 665,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 666,
+    "id": "t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 667,
+    "id": "t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 668,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 669,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 670,
+    "id": "t3779",
+    "name": "public.ta_factortonelaje (Factor de Tonelaje)"
+  },
+  {
+    "n": 671,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 672,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 673,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 674,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 675,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 676,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 677,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 678,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 679,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 680,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 681,
+    "id": "t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 682,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 683,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 684,
+    "id": "t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 685,
+    "id": "t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 686,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 687,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 688,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 689,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 690,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 691,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 692,
+    "id": "t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 693,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 694,
+    "id": "t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 695,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 696,
+    "id": "t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 697,
+    "id": "t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 698,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 699,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 700,
+    "id": "t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 701,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 702,
+    "id": "t3834",
+    "name": "public.ta_proyecto_hp (Proyectos HP)"
+  },
+  {
+    "n": 703,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 704,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 705,
+    "id": "t3832",
+    "name": "public.ta_procedenciatrabajador (Lugares de Procedencia)"
+  },
+  {
+    "n": 706,
+    "id": "t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 707,
+    "id": "t3786",
+    "name": "public.ta_idioma (Idioma)"
+  },
+  {
+    "n": 708,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 709,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 710,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 711,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 712,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 713,
+    "id": "t3881",
+    "name": "public.ts_configuracion_equipo (Configuracion ControlScreen)"
+  },
+  {
+    "n": 714,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 715,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 716,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 717,
+    "id": "t3865",
+    "name": "public.tp_nodos (Nodos)"
+  },
+  {
+    "n": 718,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 719,
+    "id": "t3865",
+    "name": "public.tp_nodos (Nodos)"
+  },
+  {
+    "n": 720,
+    "id": "t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 721,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 722,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 723,
+    "id": "t3808",
+    "name": "public.ta_multilenguajeestados"
+  },
+  {
+    "n": 724,
+    "id": "t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 725,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 726,
+    "id": "t3747",
+    "name": "public.ta_controlalertas (Alertas Control Sense)"
+  },
+  {
+    "n": 727,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 728,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 729,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 730,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 731,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 732,
+    "id": "t3805",
+    "name": "public.ta_modelocpu (Drivel del Equipo)"
+  },
+  {
+    "n": 733,
+    "id": "t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 734,
+    "id": "t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 735,
+    "id": "t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 736,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 737,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 738,
+    "id": "t3865",
+    "name": "public.tp_nodos (Nodos)"
+  },
+  {
+    "n": 739,
+    "id": "t3783",
+    "name": "public.ta_gmaterial (Grupo de Material)"
+  },
+  {
+    "n": 740,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 741,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 742,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 743,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 744,
+    "id": "t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 745,
+    "id": "t3750",
+    "name": "public.ta_coormapa"
+  },
+  {
+    "n": 746,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 747,
+    "id": "t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 748,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 749,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 750,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 751,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 752,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 753,
+    "id": "m101t3711",
+    "name": "public.st_rosterrotationpattern (Regimen de Trabajo)"
+  },
+  {
+    "n": 754,
+    "id": "m101t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 755,
+    "id": "m101t3770",
+    "name": "public.ta_empresas (Empresas)"
+  },
+  {
+    "n": 756,
+    "id": "m101t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 757,
+    "id": "m101t3786",
+    "name": "public.ta_idioma (Idioma)"
+  },
+  {
+    "n": 758,
+    "id": "m101t3832",
+    "name": "public.ta_procedenciatrabajador (Lugares de Procedencia)"
+  },
+  {
+    "n": 759,
+    "id": "m101t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 760,
+    "id": "m101t3711",
+    "name": "public.st_rosterrotationpattern (Regimen de Trabajo)"
+  },
+  {
+    "n": 761,
+    "id": "m101t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 762,
+    "id": "m101t3770",
+    "name": "public.ta_empresas (Empresas)"
+  },
+  {
+    "n": 763,
+    "id": "m101t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 764,
+    "id": "m101t3786",
+    "name": "public.ta_idioma (Idioma)"
+  },
+  {
+    "n": 765,
+    "id": "m101t3832",
+    "name": "public.ta_procedenciatrabajador (Lugares de Procedencia)"
+  },
+  {
+    "n": 766,
+    "id": "m101t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 767,
+    "id": "m102t3694",
+    "name": "public.at_equipment_model_history (Historial de modelos de equipos)"
+  },
+  {
+    "n": 768,
+    "id": "m102t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 769,
+    "id": "m102t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 770,
+    "id": "m102t3805",
+    "name": "public.ta_modelocpu (Drivel del Equipo)"
+  },
+  {
+    "n": 771,
+    "id": "m102t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 772,
+    "id": "m102t3822",
+    "name": "public.ta_plcamiones (Configuracion Payload)"
+  },
+  {
+    "n": 773,
+    "id": "m102t3823",
+    "name": "public.ta_plcamionesreal (Payload en tiempo real)"
+  },
+  {
+    "n": 774,
+    "id": "m102t3836",
+    "name": "public.ta_registro_horometro (Horometro Historico)"
+  },
+  {
+    "n": 775,
+    "id": "m102t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 776,
+    "id": "m102t3694",
+    "name": "public.at_equipment_model_history (Historial de modelos de equipos)"
+  },
+  {
+    "n": 777,
+    "id": "m102t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 778,
+    "id": "m102t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 779,
+    "id": "m102t3805",
+    "name": "public.ta_modelocpu (Drivel del Equipo)"
+  },
+  {
+    "n": 780,
+    "id": "m102t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 781,
+    "id": "m102t3822",
+    "name": "public.ta_plcamiones (Configuracion Payload)"
+  },
+  {
+    "n": 782,
+    "id": "m102t3823",
+    "name": "public.ta_plcamionesreal (Payload en tiempo real)"
+  },
+  {
+    "n": 783,
+    "id": "m102t3836",
+    "name": "public.ta_registro_horometro (Horometro Historico)"
+  },
+  {
+    "n": 784,
+    "id": "m102t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 785,
+    "id": "m103t3880",
+    "name": "public.ts_configuracion (Configuracion ControlSense)"
+  },
+  {
+    "n": 786,
+    "id": "m103t3881",
+    "name": "public.ts_configuracion_equipo (Configuracion ControlScreen)"
+  },
+  {
+    "n": 787,
+    "id": "m103t3882",
+    "name": "public.ts_configuracion_equipo_detalle (Configuracion Equipos)"
+  },
+  {
+    "n": 788,
+    "id": "m103t3880",
+    "name": "public.ts_configuracion (Configuracion ControlSense)"
+  },
+  {
+    "n": 789,
+    "id": "m103t3881",
+    "name": "public.ts_configuracion_equipo (Configuracion ControlScreen)"
+  },
+  {
+    "n": 790,
+    "id": "m103t3882",
+    "name": "public.ts_configuracion_equipo_detalle (Configuracion Equipos)"
+  },
+  {
+    "n": 791,
+    "id": "m104t3740",
+    "name": "public.ta_checklist (Registro de Checklist)"
+  },
+  {
+    "n": 792,
+    "id": "m104t3741",
+    "name": "public.ta_checklistdetalle (Registro de Checklist - Detalle por item)"
+  },
+  {
+    "n": 793,
+    "id": "m104t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 794,
+    "id": "m104t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 795,
+    "id": "m104t3877",
+    "name": "public.ts_checklistsi (Motivos en caso de incoformidad)"
+  },
+  {
+    "n": 796,
+    "id": "m104t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 797,
+    "id": "m104t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 798,
+    "id": "m104t3740",
+    "name": "public.ta_checklist (Registro de Checklist)"
+  },
+  {
+    "n": 799,
+    "id": "m104t3741",
+    "name": "public.ta_checklistdetalle (Registro de Checklist - Detalle por item)"
+  },
+  {
+    "n": 800,
+    "id": "m104t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 801,
+    "id": "m104t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 802,
+    "id": "m104t3877",
+    "name": "public.ts_checklistsi (Motivos en caso de incoformidad)"
+  },
+  {
+    "n": 803,
+    "id": "m104t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 804,
+    "id": "m104t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 805,
+    "id": "m105t3863",
+    "name": "public.tp_estados (Estados)"
+  },
+  {
+    "n": 806,
+    "id": "m105t3883",
+    "name": "public.ts_confirmaestado (Confirmacion Estados)"
+  },
+  {
+    "n": 807,
+    "id": "m105t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 808,
+    "id": "m105t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 809,
+    "id": "m105t3863",
+    "name": "public.tp_estados (Estados)"
+  },
+  {
+    "n": 810,
+    "id": "m105t3883",
+    "name": "public.ts_confirmaestado (Confirmacion Estados)"
+  },
+  {
+    "n": 811,
+    "id": "m105t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 812,
+    "id": "m105t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 813,
+    "id": "m106t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 814,
+    "id": "m106t3861",
+    "name": "public.tp_crewschedule (Calendario de Guardias)"
+  },
+  {
+    "n": 815,
+    "id": "m106t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 816,
+    "id": "m106t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 817,
+    "id": "m106t3861",
+    "name": "public.tp_crewschedule (Calendario de Guardias)"
+  },
+  {
+    "n": 818,
+    "id": "m106t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 819,
+    "id": "m107t3791",
+    "name": "public.ta_llamadas (Llamadas a equipos de campo)"
+  },
+  {
+    "n": 820,
+    "id": "m107t3801",
+    "name": "public.ta_mensajes_detalle (Mensajes de Chat)"
+  },
+  {
+    "n": 821,
+    "id": "m107t3803",
+    "name": "public.ta_message (Mensajes Predeterminados)"
+  },
+  {
+    "n": 822,
+    "id": "m107t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 823,
+    "id": "m107t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 824,
+    "id": "m107t3791",
+    "name": "public.ta_llamadas (Llamadas a equipos de campo)"
+  },
+  {
+    "n": 825,
+    "id": "m107t3801",
+    "name": "public.ta_mensajes_detalle (Mensajes de Chat)"
+  },
+  {
+    "n": 826,
+    "id": "m107t3803",
+    "name": "public.ta_message (Mensajes Predeterminados)"
+  },
+  {
+    "n": 827,
+    "id": "m107t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 828,
+    "id": "m107t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 829,
+    "id": "m108t3729",
+    "name": "public.ta_burnrate (Ratio de Consumo de Combustible)"
+  },
+  {
+    "n": 830,
+    "id": "m108t3743",
+    "name": "public.ta_combustible (Abastecimiento de combustible)"
+  },
+  {
+    "n": 831,
+    "id": "m108t3744",
+    "name": "public.ta_combustibletr (Combustible Actual de Equipo)"
+  },
+  {
+    "n": 832,
+    "id": "m108t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 833,
+    "id": "m108t3729",
+    "name": "public.ta_burnrate (Ratio de Consumo de Combustible)"
+  },
+  {
+    "n": 834,
+    "id": "m108t3743",
+    "name": "public.ta_combustible (Abastecimiento de combustible)"
+  },
+  {
+    "n": 835,
+    "id": "m108t3744",
+    "name": "public.ta_combustibletr (Combustible Actual de Equipo)"
+  },
+  {
+    "n": 836,
+    "id": "m108t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 837,
+    "id": "m109t3751",
+    "name": "public.ta_data_auxiliares (Sensores de Equipos-Auxiliares)"
+  },
+  {
+    "n": 838,
+    "id": "m109t3752",
+    "name": "public.ta_data_auxiliares_historic (Sensores de Equipos-Auxiliares Historico)"
+  },
+  {
+    "n": 839,
+    "id": "m109t3753",
+    "name": "public.ta_datacamion (Sensores de Equipos-Acarreo)"
+  },
+  {
+    "n": 840,
+    "id": "m109t3754",
+    "name": "public.ta_datacamion_historic (Sensores de Equipos-Acarreo Historico)"
+  },
+  {
+    "n": 841,
+    "id": "m109t3755",
+    "name": "public.ta_datacamiongps (Sensores de Equipos-Acarreo Ultima hora)"
+  },
+  {
+    "n": 842,
+    "id": "m109t3761",
+    "name": "public.ta_datapala (Sensores de Equipos-Carguio)"
+  },
+  {
+    "n": 843,
+    "id": "m109t3762",
+    "name": "public.ta_datapala_historic (Sensores de Equipos-Carguio Historico)"
+  },
+  {
+    "n": 844,
+    "id": "m109t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 845,
+    "id": "m109t3751",
+    "name": "public.ta_data_auxiliares (Sensores de Equipos-Auxiliares)"
+  },
+  {
+    "n": 846,
+    "id": "m109t3752",
+    "name": "public.ta_data_auxiliares_historic (Sensores de Equipos-Auxiliares Historico)"
+  },
+  {
+    "n": 847,
+    "id": "m109t3753",
+    "name": "public.ta_datacamion (Sensores de Equipos-Acarreo)"
+  },
+  {
+    "n": 848,
+    "id": "m109t3754",
+    "name": "public.ta_datacamion_historic (Sensores de Equipos-Acarreo Historico)"
+  },
+  {
+    "n": 849,
+    "id": "m109t3755",
+    "name": "public.ta_datacamiongps (Sensores de Equipos-Acarreo Ultima hora)"
+  },
+  {
+    "n": 850,
+    "id": "m109t3761",
+    "name": "public.ta_datapala (Sensores de Equipos-Carguio)"
+  },
+  {
+    "n": 851,
+    "id": "m109t3762",
+    "name": "public.ta_datapala_historic (Sensores de Equipos-Carguio Historico)"
+  },
+  {
+    "n": 852,
+    "id": "m109t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 853,
+    "id": "m110t3692",
+    "name": "public.at_collision_alerts (Alertas de colision)"
+  },
+  {
+    "n": 854,
+    "id": "m110t3719",
+    "name": "public.ta_alertasvims (Alertas CPU)"
+  },
+  {
+    "n": 855,
+    "id": "m110t3735",
+    "name": "public.ta_carguio_alerta (Alerta de Carguio)"
+  },
+  {
+    "n": 856,
+    "id": "m110t3747",
+    "name": "public.ta_controlalertas (Alertas Control Sense)"
+  },
+  {
+    "n": 857,
+    "id": "m110t3811",
+    "name": "public.ta_outroutecamion (Alerta de fuera de ruta)"
+  },
+  {
+    "n": 858,
+    "id": "m110t3842",
+    "name": "public.ta_speed_limits_exceeded (Alertas de exceso de velocidad)"
+  },
+  {
+    "n": 859,
+    "id": "m110t3857",
+    "name": "public.ta_wrongcarguiodesc (Alertas de carga / descarga erronea)"
+  },
+  {
+    "n": 860,
+    "id": "m110t3887",
+    "name": "public.ts_detallealertas (Detalle alertas Control Sense)"
+  },
+  {
+    "n": 861,
+    "id": "m110t3692",
+    "name": "public.at_collision_alerts (Alertas de colision)"
+  },
+  {
+    "n": 862,
+    "id": "m110t3719",
+    "name": "public.ta_alertasvims (Alertas CPU)"
+  },
+  {
+    "n": 863,
+    "id": "m110t3735",
+    "name": "public.ta_carguio_alerta (Alerta de Carguio)"
+  },
+  {
+    "n": 864,
+    "id": "m110t3747",
+    "name": "public.ta_controlalertas (Alertas Control Sense)"
+  },
+  {
+    "n": 865,
+    "id": "m110t3811",
+    "name": "public.ta_outroutecamion (Alerta de fuera de ruta)"
+  },
+  {
+    "n": 866,
+    "id": "m110t3842",
+    "name": "public.ta_speed_limits_exceeded (Alertas de exceso de velocidad)"
+  },
+  {
+    "n": 867,
+    "id": "m110t3857",
+    "name": "public.ta_wrongcarguiodesc (Alertas de carga / descarga erronea)"
+  },
+  {
+    "n": 868,
+    "id": "m110t3887",
+    "name": "public.ts_detallealertas (Detalle alertas Control Sense)"
+  },
+  {
+    "n": 869,
+    "id": "m111t3779",
+    "name": "public.ta_factortonelaje (Factor de Tonelaje)"
+  },
+  {
+    "n": 870,
+    "id": "m111t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 871,
+    "id": "m111t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 872,
+    "id": "m111t3860",
+    "name": "public.tp_cargadescarga (Ciclo Acarreo)"
+  },
+  {
+    "n": 873,
+    "id": "m111t3866",
+    "name": "public.tp_palas (Ciclo Carguio)"
+  },
+  {
+    "n": 874,
+    "id": "m111t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 875,
+    "id": "m111t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 876,
+    "id": "m111t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 877,
+    "id": "m111t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 878,
+    "id": "m111t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 879,
+    "id": "m111t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 880,
+    "id": "m111t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 881,
+    "id": "m111t3779",
+    "name": "public.ta_factortonelaje (Factor de Tonelaje)"
+  },
+  {
+    "n": 882,
+    "id": "m111t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 883,
+    "id": "m111t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 884,
+    "id": "m111t3860",
+    "name": "public.tp_cargadescarga (Ciclo Acarreo)"
+  },
+  {
+    "n": 885,
+    "id": "m111t3866",
+    "name": "public.tp_palas (Ciclo Carguio)"
+  },
+  {
+    "n": 886,
+    "id": "m111t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 887,
+    "id": "m111t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 888,
+    "id": "m111t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 889,
+    "id": "m111t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 890,
+    "id": "m111t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 891,
+    "id": "m111t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 892,
+    "id": "m111t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 893,
+    "id": "m112t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 894,
+    "id": "m112t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 895,
+    "id": "m112t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 896,
+    "id": "m112t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 897,
+    "id": "m112t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 898,
+    "id": "m112t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 899,
+    "id": "m112t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 900,
+    "id": "m112t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 901,
+    "id": "m112t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 902,
+    "id": "m112t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 903,
+    "id": "m112t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 904,
+    "id": "m112t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 905,
+    "id": "m112t3804",
+    "name": "public.ta_modelo_drill_tdrill (Estructura de perforacion)"
+  },
+  {
+    "n": 906,
+    "id": "m112t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 907,
+    "id": "m112t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 908,
+    "id": "m112t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 909,
+    "id": "m112t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 910,
+    "id": "m112t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 911,
+    "id": "m112t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 912,
+    "id": "m112t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 913,
+    "id": "m112t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 914,
+    "id": "m112t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 915,
+    "id": "m112t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 916,
+    "id": "m112t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 917,
+    "id": "m112t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 918,
+    "id": "m112t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 919,
+    "id": "m112t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 920,
+    "id": "m112t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 921,
+    "id": "m112t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 922,
+    "id": "m112t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 923,
+    "id": "m112t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 924,
+    "id": "m112t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 925,
+    "id": "m112t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 926,
+    "id": "m112t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 927,
+    "id": "m112t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 928,
+    "id": "m112t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 929,
+    "id": "m112t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 930,
+    "id": "m112t3804",
+    "name": "public.ta_modelo_drill_tdrill (Estructura de perforacion)"
+  },
+  {
+    "n": 931,
+    "id": "m112t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 932,
+    "id": "m112t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 933,
+    "id": "m112t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 934,
+    "id": "m112t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 935,
+    "id": "m112t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 936,
+    "id": "m112t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 937,
+    "id": "m112t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 938,
+    "id": "m112t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 939,
+    "id": "m112t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 940,
+    "id": "m112t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 941,
+    "id": "m112t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 942,
+    "id": "m112t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 943,
+    "id": "m113t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 944,
+    "id": "m113t3783",
+    "name": "public.ta_gmaterial (Grupo de Material)"
+  },
+  {
+    "n": 945,
+    "id": "m113t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 946,
+    "id": "m113t3830",
+    "name": "public.ta_prisma_hp (Bloques)"
+  },
+  {
+    "n": 947,
+    "id": "m113t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 948,
+    "id": "m113t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 949,
+    "id": "m113t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 950,
+    "id": "m113t3783",
+    "name": "public.ta_gmaterial (Grupo de Material)"
+  },
+  {
+    "n": 951,
+    "id": "m113t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 952,
+    "id": "m113t3830",
+    "name": "public.ta_prisma_hp (Bloques)"
+  },
+  {
+    "n": 953,
+    "id": "m113t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 954,
+    "id": "m113t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 955,
+    "id": "m114t3825",
+    "name": "public.ta_polyline_proyecto (Coordenadas Proyecto LP)"
+  },
+  {
+    "n": 956,
+    "id": "m114t3834",
+    "name": "public.ta_proyecto_hp (Proyectos HP)"
+  },
+  {
+    "n": 957,
+    "id": "m114t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 958,
+    "id": "m114t3868",
+    "name": "public.tp_proyectoreg_hp (Asignacion a Proyectos HP)"
+  },
+  {
+    "n": 959,
+    "id": "m114t3886",
+    "name": "public.ts_detalle_proyecto_tractores (Asignacion a Proyectos LP)"
+  },
+  {
+    "n": 960,
+    "id": "m114t3825",
+    "name": "public.ta_polyline_proyecto (Coordenadas Proyecto LP)"
+  },
+  {
+    "n": 961,
+    "id": "m114t3834",
+    "name": "public.ta_proyecto_hp (Proyectos HP)"
+  },
+  {
+    "n": 962,
+    "id": "m114t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 963,
+    "id": "m114t3868",
+    "name": "public.tp_proyectoreg_hp (Asignacion a Proyectos HP)"
+  },
+  {
+    "n": 964,
+    "id": "m114t3886",
+    "name": "public.ts_detalle_proyecto_tractores (Asignacion a Proyectos LP)"
+  },
+  {
+    "n": 965,
+    "id": "m115t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 966,
+    "id": "m115t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 967,
+    "id": "m115t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 968,
+    "id": "m115t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 969,
+    "id": "m115t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 970,
+    "id": "m115t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 971,
+    "id": "m115t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 972,
+    "id": "m115t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 973,
+    "id": "m115t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 974,
+    "id": "m115t3768",
+    "name": "public.ta_detalle_perforacion (Detalle de perforacion)"
+  },
+  {
+    "n": 975,
+    "id": "m115t3862",
+    "name": "public.tp_drill_cycle_tdrill (Actividades del ciclo de perforacion)"
+  },
+  {
+    "n": 976,
+    "id": "m115t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 977,
+    "id": "m115t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 978,
+    "id": "m115t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 979,
+    "id": "m116t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 980,
+    "id": "m116t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 981,
+    "id": "m116t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 982,
+    "id": "m116t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 983,
+    "id": "m116t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 984,
+    "id": "m116t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 985,
+    "id": "m116t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 986,
+    "id": "m116t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 987,
+    "id": "m116t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 988,
+    "id": "m116t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 989,
+    "id": "m116t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 990,
+    "id": "m116t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 991,
+    "id": "m116t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 992,
+    "id": "m116t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 993,
+    "id": "m116t3728",
+    "name": "public.ta_box_parts (Partes dentro del box por cada equipo)"
+  },
+  {
+    "n": 994,
+    "id": "m116t3731",
+    "name": "public.ta_cambio_parts_tdrill (Registro de cambio de partes en perforadora)"
+  },
+  {
+    "n": 995,
+    "id": "m116t3771",
+    "name": "public.ta_ensamblaje_detalle_tdrill (Detalle de Ensamblaje)"
+  },
+  {
+    "n": 996,
+    "id": "m116t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 997,
+    "id": "m116t3787",
+    "name": "public.ta_kit_drill_detalle_tdrill (Detalle de kit de perforacion)"
+  },
+  {
+    "n": 998,
+    "id": "m116t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 999,
+    "id": "m116t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 1000,
+    "id": "m116t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 1001,
+    "id": "m116t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 1002,
+    "id": "m116t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 1003,
+    "id": "m116t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 1004,
+    "id": "m116t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1005,
+    "id": "m117t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 1006,
+    "id": "m117t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 1007,
+    "id": "m117t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 1008,
+    "id": "m117t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 1009,
+    "id": "m117t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1010,
+    "id": "m117t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 1011,
+    "id": "m117t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 1012,
+    "id": "m117t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 1013,
+    "id": "m117t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 1014,
+    "id": "m117t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1015,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1016,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1017,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1018,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1019,
+    "id": "t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 1020,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1021,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1022,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1023,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1024,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1025,
+    "id": "t3773",
+    "name": "public.ta_equipo_cpu"
+  },
+  {
+    "n": 1026,
+    "id": "t3770",
+    "name": "public.ta_empresas (Empresas)"
+  },
+  {
+    "n": 1027,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1028,
+    "id": "t3727",
+    "name": "public.ta_box_drill (Box de partes por Equipo)"
+  },
+  {
+    "n": 1029,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 1030,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1031,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1032,
+    "id": "t3807",
+    "name": "public.ta_motivo_cambio_tdrill (Motivo de cambio de parte de perforacion)"
+  },
+  {
+    "n": 1033,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 1034,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 1035,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1036,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1037,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1038,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 1039,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 1040,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1041,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1042,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1043,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 1044,
+    "id": "t3740",
+    "name": "public.ta_checklist (Registro de Checklist)"
+  },
+  {
+    "n": 1045,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 1046,
+    "id": "t3877",
+    "name": "public.ts_checklistsi (Motivos en caso de incoformidad)"
+  },
+  {
+    "n": 1047,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1048,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1049,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1050,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1051,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1052,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1053,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1054,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1055,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1056,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1057,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1058,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1059,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1060,
+    "id": "t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 1061,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 1062,
+    "id": "t3772",
+    "name": "public.ta_ensamblaje_tdrill (Ensamblaje de partes en equipos)"
+  },
+  {
+    "n": 1063,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 1064,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1065,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1066,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1067,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1068,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1069,
+    "id": "t3711",
+    "name": "public.st_rosterrotationpattern (Regimen de Trabajo)"
+  },
+  {
+    "n": 1070,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1071,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1072,
+    "id": "t3788",
+    "name": "public.ta_kit_drill_tdrill (Kit de partes de perforacion)"
+  },
+  {
+    "n": 1073,
+    "id": "t3812",
+    "name": "public.ta_part_drill_tdrill (Parte de perforacion)"
+  },
+  {
+    "n": 1074,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1075,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1076,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1077,
+    "id": "t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 1078,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1079,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1080,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1081,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1082,
+    "id": "t3801",
+    "name": "public.ta_mensajes_detalle (Mensajes de Chat)"
+  },
+  {
+    "n": 1083,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1084,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1085,
+    "id": "t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 1086,
+    "id": "t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 1087,
+    "id": "t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 1088,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1089,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1090,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1091,
+    "id": "t3847",
+    "name": "public.ta_tipo_part_tdrill (Tipo de parte de perforacion)"
+  },
+  {
+    "n": 1092,
+    "id": "t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 1093,
+    "id": "t3813",
+    "name": "public.ta_partmodel_drill_tdrill (Modelos de partes de perforacion)"
+  },
+  {
+    "n": 1094,
+    "id": "t3833",
+    "name": "public.ta_proveedor_part_tdrill (Proveedores de partes de perforacion)"
+  },
+  {
+    "n": 1095,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1096,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1097,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1098,
+    "id": "t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 1099,
+    "id": "t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 1100,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 1101,
+    "id": "t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 1102,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1103,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1104,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1105,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1106,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1107,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1108,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1109,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1110,
+    "id": "t3872",
+    "name": "public.tp_tramosstat (Tramos)"
+  },
+  {
+    "n": 1111,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1112,
+    "id": "t3797",
+    "name": "public.ta_malla_tdrill (Mallas - Bancos de perforacion)"
+  },
+  {
+    "n": 1113,
+    "id": "t3785",
+    "name": "public.ta_holeestado (Estado de agujero de perforacion)"
+  },
+  {
+    "n": 1114,
+    "id": "t3848",
+    "name": "public.ta_tipo_taladro_tdrill (Tipo de taladro de perforacion)"
+  },
+  {
+    "n": 1115,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1116,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1117,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1118,
+    "id": "t3859",
+    "name": "public.ta_zonasdetalle (Tipo de Zonas)"
+  },
+  {
+    "n": 1119,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1120,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1121,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1122,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1123,
+    "id": "t3866",
+    "name": "public.tp_palas (Ciclo Carguio)"
+  },
+  {
+    "n": 1124,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1125,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1126,
+    "id": "t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 1127,
+    "id": "t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 1128,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 1129,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 1130,
+    "id": "t3779",
+    "name": "public.ta_factortonelaje (Factor de Tonelaje)"
+  },
+  {
+    "n": 1131,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1132,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1133,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 1134,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 1135,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 1136,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 1137,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 1138,
+    "id": "t3903",
+    "name": "public.ts_turnos (Turnos de Trabajo)"
+  },
+  {
+    "n": 1139,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1140,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1141,
+    "id": "t3718",
+    "name": "public.ta_actividades_drill_tdrill (Actividades disponibles para perforacion)"
+  },
+  {
+    "n": 1142,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1143,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1144,
+    "id": "t3867",
+    "name": "public.tp_perforacion_tdrill (Perforaciones)"
+  },
+  {
+    "n": 1145,
+    "id": "t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 1146,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1147,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 1148,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1149,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1150,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1151,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 1152,
+    "id": "t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 1153,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 1154,
+    "id": "t3893",
+    "name": "public.ts_locacion (Locacion)"
+  },
+  {
+    "n": 1155,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 1156,
+    "id": "t3884",
+    "name": "public.ts_descarga (Descargas)"
+  },
+  {
+    "n": 1157,
+    "id": "t3845",
+    "name": "public.ta_taladro_tdrill (Taladro de perforacion)"
+  },
+  {
+    "n": 1158,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1159,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1160,
+    "id": "t3733",
+    "name": "public.ta_caracteristicamaterial_tdril (Caracteristica del area perforada.)"
+  },
+  {
+    "n": 1161,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1162,
+    "id": "t3834",
+    "name": "public.ta_proyecto_hp (Proyectos HP)"
+  },
+  {
+    "n": 1163,
+    "id": "t3784",
+    "name": "public.ta_guardias (Guardia)"
+  },
+  {
+    "n": 1164,
+    "id": "t3871",
+    "name": "public.tp_trabajador (Trabajador)"
+  },
+  {
+    "n": 1165,
+    "id": "t3832",
+    "name": "public.ta_procedenciatrabajador (Lugares de Procedencia)"
+  },
+  {
+    "n": 1166,
+    "id": "t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 1167,
+    "id": "t3786",
+    "name": "public.ta_idioma (Idioma)"
+  },
+  {
+    "n": 1168,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 1169,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 1170,
+    "id": "t3878",
+    "name": "public.ts_checkliststruc (Estructura de Checklist)"
+  },
+  {
+    "n": 1171,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1172,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1173,
+    "id": "t3881",
+    "name": "public.ts_configuracion_equipo (Configuracion ControlScreen)"
+  },
+  {
+    "n": 1174,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1175,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 1176,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 1177,
+    "id": "t3865",
+    "name": "public.tp_nodos (Nodos)"
+  },
+  {
+    "n": 1178,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1179,
+    "id": "t3865",
+    "name": "public.tp_nodos (Nodos)"
+  },
+  {
+    "n": 1180,
+    "id": "t3895",
+    "name": "public.ts_mezcla (Mezcla)"
+  },
+  {
+    "n": 1181,
+    "id": "t3885",
+    "name": "public.ts_detal_estado (Jerarquia de estados)"
+  },
+  {
+    "n": 1182,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1183,
+    "id": "t3808",
+    "name": "public.ta_multilenguajeestados"
+  },
+  {
+    "n": 1184,
+    "id": "t3835",
+    "name": "public.ta_proyecto_tractores (Proyectos LP)"
+  },
+  {
+    "n": 1185,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1186,
+    "id": "t3747",
+    "name": "public.ta_controlalertas (Alertas Control Sense)"
+  },
+  {
+    "n": 1187,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1188,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1189,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1190,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1191,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1192,
+    "id": "t3805",
+    "name": "public.ta_modelocpu (Drivel del Equipo)"
+  },
+  {
+    "n": 1193,
+    "id": "t3721",
+    "name": "public.ta_arregloempresas (Jerarquia de Empresas)"
+  },
+  {
+    "n": 1194,
+    "id": "t3798",
+    "name": "public.ta_marcas (Marca del Equipo)"
+  },
+  {
+    "n": 1195,
+    "id": "t3806",
+    "name": "public.ta_modelos (Modelo del Equipo)"
+  },
+  {
+    "n": 1196,
+    "id": "t3889",
+    "name": "public.ts_equipos (Equipos y Flotas)"
+  },
+  {
+    "n": 1197,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1198,
+    "id": "t3865",
+    "name": "public.tp_nodos (Nodos)"
+  },
+  {
+    "n": 1199,
+    "id": "t3783",
+    "name": "public.ta_gmaterial (Grupo de Material)"
+  },
+  {
+    "n": 1200,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 1201,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 1202,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 1203,
+    "id": "t3899",
+    "name": "public.ts_poligono (Poligono)"
+  },
+  {
+    "n": 1204,
+    "id": "t3894",
+    "name": "public.ts_material (Material)"
+  },
+  {
+    "n": 1205,
+    "id": "t3750",
+    "name": "public.ta_coormapa"
+  },
+  {
+    "n": 1206,
+    "id": "t3789",
+    "name": "public.ta_leyes (Leyes)"
+  },
+  {
+    "n": 1207,
+    "id": "t3734",
+    "name": "public.ta_caracteristicapoligono (Caracteristica Poligono)"
+  },
+  {
+    "n": 1208,
+    "id": "t3858",
+    "name": "public.ta_zonas (Zonas de Mina)"
+  },
+  {
+    "n": 1209,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1210,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1211,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  },
+  {
+    "n": 1212,
+    "id": "t3873",
+    "name": "public.tp_usuarios (Usuarios ControlSense)"
+  }
+]

@@ -1,0 +1,60 @@
+Perfecto, Carlos 🙌 Aquí te presento una agrupación preliminar de los pares `id` y `name` según su área funcional. Esto puede ayudarte a visualizar mejor los módulos o entidades que se están gestionando en el sistema:
+
+---
+
+### 🧑‍🏭 Recursos Humanos
+- `m101`: Trabajadores  
+- `t3871`: public.tp_trabajador (Trabajador)  
+- `t3832`: public.ta_procedenciatrabajador (Lugares de Procedencia)  
+- `t3711`: public.st_rosterrotationpattern (Regimen de Trabajo)
+
+### ⚙️ Equipos y Configuración
+- `m102`: Equipos  
+- `m109`: Equipos - Sensores  
+- `m108`: Equipos - Combustible  
+- `m103`: Configuración  
+- `t3889`: public.ts_equipos (Equipos y Flotas)  
+- `t3806`: public.ta_modelos (Modelo del Equipo)  
+- `t3798`: public.ta_marcas (Marca del Equipo)  
+- `t3881`: public.ts_configuracion_equipo (Configuración ControlScreen)
+
+### 📋 Checklists y Estados
+- `m104`: CheckList  
+- `m105`: Estados  
+- `t3740`: public.ta_checklist (Registro de Checklist)  
+- `t3878`: public.ts_checkliststruc (Estructura de Checklist)  
+- `t3877`: public.ts_checklistsi (Motivos en caso de inconformidad)  
+- `t3885`: public.ts_detal_estado (Jerarquía de estados)
+
+### 🗓️ Operaciones y Calendario
+- `m106`: Calendario  
+- `t3903`: public.ts_turnos (Turnos de Trabajo)  
+- `t3784`: public.ta_guardias (Guardia)
+
+### 🚨 Alertas y Mensajes
+- `m110`: Alertas  
+- `m107`: Mensajes Llamadas  
+- `t3747`: public.ta_controlalertas (Alertas Control Sense)  
+- `t3801`: public.ta_mensajes_detalle (Mensajes de Chat)
+
+### ⛏️ Producción y Minería
+- `m111`: Producción Carguío Acarreo  
+- `m112`: Perforación  
+- `m115`: Perforación Producción  
+- `m116`: Perforación Logística  
+- `m117`: Perforación Proyectos  
+- `m113`: Geología  
+- `m114`: Proyectos  
+- `t3867`: public.tp_perforacion_tdrill (Perforaciones)  
+- `t3845`: public.ta_taladro_tdrill (Taladro de perforación)  
+- `t3797`: public.ta_malla_tdrill (Mallas - Bancos de perforación)  
+- `t3789`: public.ta_leyes (Leyes)  
+- `t3835`: public.ta_proyecto_tractores (Proyectos LP)
+
+### 🧑‍💻 Usuarios y Seguridad
+- `t3873`: public.tp_usuarios (Usuarios ControlSense)  
+- `t3865`: public.tp_nodos (Nodos)
+
+---
+
+¿Quieres que te ayude a hacer un diagrama funcional o mapping técnico con estas entidades? También puedo identificar posibles relaciones entre tablas o ayudarte a preparar un modelo para ETL o integración.
